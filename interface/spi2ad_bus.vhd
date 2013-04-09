@@ -97,7 +97,7 @@ begin
 		data_confn <= '0' ;
 		auto_inc <= '0' ;
 		rd_wrn <= '0' ;
-		data_in_latched <= (others => '0') ;
+		--data_in_latched <= (others => '0') ;
 	elsif sck'event and sck = '1' then
 		if data_confn = '0' and bit_count = 15 then
 			addr_bus_latched <= "00" & data_in_sr(14 downto 1);
