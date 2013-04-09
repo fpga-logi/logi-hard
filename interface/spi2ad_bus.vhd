@@ -60,7 +60,7 @@ signal data_byte : std_logic ;
 signal data_in_sr, data_out_sr, addr_bus_latched : std_logic_vector(15 downto 0);
 signal data_in_latched : std_logic_vector(15 downto 0);
 signal auto_inc, rd_wrn, data_confn : std_logic ; 
-signal wr_latched, rd_latched : std_logic ;
+signal wr_latched,  rd_latched : std_logic ;
 begin
 
 
@@ -98,7 +98,6 @@ begin
 		auto_inc <= '0' ;
 		rd_wrn <= '0' ;
 		data_in_latched <= (others => '0') ;
-		--addr_bus_latched <= (others => '0') ;
 	elsif sck'event and sck = '1' then
 		if data_confn = '0' and bit_count = 15 then
 			addr_bus_latched <= "00" & data_in_sr(14 downto 1);
