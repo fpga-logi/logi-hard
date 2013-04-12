@@ -41,7 +41,7 @@ use work.utils_pack.all ;
 -- [1] : one if read, zero if write 
 -- [0] : on for auto increment address, zero otherwise
 entity spi2ad_bus is
-generic(ADDR_WIDTH : positive := 16 ; DATA_WIDTH : positive := 16);
+generic(ADDR_WIDTH : positive := 16 ; DATA_WIDTH : positive := 16; BIG_ENDIAN : boolean := true);
 port(clk, resetn : in std_logic ;
 	  mosi, ss, sck : in std_logic;
 	  miso : out std_logic;
@@ -61,7 +61,9 @@ signal data_in_sr, data_out_sr, addr_bus_latched : std_logic_vector(15 downto 0)
 signal data_in_latched : std_logic_vector(15 downto 0);
 signal auto_inc, rd_wrn, data_confn : std_logic ; 
 signal wr_latched,  rd_latched : std_logic ;
+signal data_out_temp : std_logic_vector(15 downto 0);
 begin
+
 
 
 process(sck, ss)
@@ -84,7 +86,7 @@ elsif sck'event and sck = '0' then
 	data_out_sr(15 downto 1) <= data_out_sr(14 downto 0) ;
 	data_out_sr(0) <= '0' ;
 	if bit_count = 0 then
-		data_out_sr <= data_bus_in ;
+		data_out_sr <= data_out_temp ;
 	end if ;
 end if ;
 end process ;
@@ -141,7 +143,17 @@ begin
 	end if ;
 end process ;
 
-data_bus_out <= data_in_latched ;
+gen_be : if BIG_ENDIAN generate
+	data_bus_out(7 downto 0) <= data_in_latched(15 downto 8) ;
+	data_bus_out(15 downto 8) <= data_in_latched(7 downto 0) ;
+	data_out_temp(7 downto 0) <= data_bus_in(15 downto 8);
+	data_out_temp(15 downto 8) <= data_bus_in(7 downto 0);
+end generate ;
+
+gen_le : if (NOT BIG_ENDIAN) generate
+	data_bus_out <= data_in_latched ;
+	data_out_temp<= data_bus_in;
+end generate ;
 
 process(clk, resetn)
 begin
@@ -150,7 +162,7 @@ begin
 		wr <= '0' ;
 		rd <= '0' ;
 	elsif clk'event and clk = '1' then
-		addr_bus <= addr_bus_latched ;
+		addr_bus <= addr_bus_latched((ADDR_WIDTH-1) downto 0) ;
 		wr <= wr_latched ;
 		rd <= rd_latched ;
 	end if ;

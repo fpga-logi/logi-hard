@@ -39,7 +39,7 @@ port(clk, resetn : in std_logic ;
 end component;
 
 component spi2ad_bus is
-generic(ADDR_WIDTH : positive := 16 ; DATA_WIDTH : positive := 16);
+generic(ADDR_WIDTH : positive := 16 ; DATA_WIDTH : positive := 16; BIG_ENDIAN : boolean := true);
 port(clk, resetn : in std_logic ;
 	  mosi, ss, sck : in std_logic;
 	  miso : out std_logic;
