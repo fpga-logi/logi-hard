@@ -1,59 +1,34 @@
-----------------------------------------------------------------------------------
--- Company:LAAS-CNRS 
--- Author:Jonathan Piat <piat.jonathan@gmail.com> 
--- 
--- Create Date:    09:45:03 06/19/2012 
--- Design Name: 
--- Module Name:    muxed_addr_interface - Behavioral 
--- Project Name: 
--- Target Devices: Spartan 6 
--- Tool versions: ISE 14.1 
--- Description: 
---
--- Dependencies: 
---
--- Revision: 
--- Revision 0.01 - File Created
--- Additional Comments: 
---
-----------------------------------------------------------------------------------
 library IEEE;
-use IEEE.STD_LOGIC_1164.ALL;
-use IEEE.STD_LOGIC_UNSIGNED.ALL;
+  use IEEE.std_logic_1164.all;
+  use IEEE.numeric_std.all;
 
--- Uncomment the following library declaration if using
--- arithmetic functions with Signed or Unsigned values
---use IEEE.NUMERIC_STD.ALL;
+-- ----------------------------------------------------------------------------
+   entity spi_wishbone_wrapper is
+-- ----------------------------------------------------------------------------
+	generic(BIG_ENDIAN : boolean := true);
+    port
+    (
+      -- SPI SIGNALS
+      mosi, ss, sck : in std_logic;
+	   miso : out std_logic;
+		
+      -- Global Signals
+      gls_reset : in std_logic;
+      gls_clk   : in std_logic;
+      -- Wishbone interface signals
+      wbm_address    : out std_logic_vector(15 downto 0);  -- Address bus
+      wbm_readdata   : in  std_logic_vector(15 downto 0);  -- Data bus for read access
+      wbm_writedata  : out std_logic_vector(15 downto 0);  -- Data bus for write access
+      wbm_strobe     : out std_logic;                      -- Data Strobe
+      wbm_write      : out std_logic;                      -- Write access
+      wbm_ack        : in std_logic ;                      -- acknowledge
+      wbm_cycle      : out std_logic                       -- bus cycle in progress
+    );
+    end entity;
 
-library work ;
-use work.utils_pack.all ;
-
--- Uncomment the following library declaration if instantiating
--- any Xilinx primitives in this code.
---library UNISIM;
---use UNISIM.VComponents.all;
-
-
---This component generates the addr/data bus from spi commands
--- communication is made in 16 bit per word in mode 0 at max speed 50Mhz (for now)
--- The first written byte is interprated as follow:
--- [15 : 3] 14 bit bus address
--- [1] : on for auto increment address, zero otherwise
--- [0] : one if read, zero if write
-entity spi2ad_bus is
-generic(ADDR_WIDTH : positive := 16 ; DATA_WIDTH : positive := 16 ; BIG_ENDIAN : boolean := true);
-port(clk, resetn : in std_logic ;
-	  mosi, ss, sck : in std_logic;
-	  miso : out std_logic;
-	  data_bus_out	: out	std_logic_vector((DATA_WIDTH - 1) downto 0);
-	  data_bus_in	: in	std_logic_vector((DATA_WIDTH - 1) downto 0);
-	  addr_bus	:	out	std_logic_vector((ADDR_WIDTH - 1) downto 0);
-	  wr, rd	:	out	std_logic
-);
-end spi2ad_bus;
-
-
-architecture RTL of spi2ad_bus is
+-- ----------------------------------------------------------------------------
+Architecture RTL of spi_wishbone_wrapper is
+-- ----------------------------------------------------------------------------
 
 signal bit_count : std_logic_vector(3 downto 0) ;
 signal data_byte : std_logic ;
@@ -62,8 +37,14 @@ signal data_in_latched : std_logic_vector(15 downto 0);
 signal data_out_temp : std_logic_vector(15 downto 0);
 signal auto_inc, rd_wrn, data_confn : std_logic ; 
 signal wr_latched,  rd_latched : std_logic ;
-begin
 
+signal write      : std_logic;
+signal read       : std_logic;
+signal strobe     : std_logic;
+signal writedata  : std_logic_vector(15 downto 0);
+signal address    : std_logic_vector(15 downto 0);
+
+begin
 
 process(sck, ss)
 begin
@@ -149,28 +130,36 @@ end process ;
 
 
 gen_le : if (NOT BIG_ENDIAN) generate
-	data_out_temp <= data_bus_in ;
-	data_bus_out <= data_in_latched ;
+	data_out_temp <= wbm_readdata ;
+	writedata <= data_in_latched ;
 end generate ;
 
 gen_be : if BIG_ENDIAN generate
-	data_out_temp <= data_bus_in(7 downto 0) & data_bus_in(15 downto 8) ;
-	data_bus_out <= data_in_latched(7 downto 0) & data_in_latched(15 downto 8);
+	data_out_temp <= wbm_readdata(7 downto 0) & wbm_readdata(15 downto 8) ;
+	writedata <= data_in_latched(7 downto 0) & data_in_latched(15 downto 8);
 end generate ;
 
 
-process(clk, resetn)
+process(gls_clk, gls_reset)
 begin
-	if resetn = '0' then
-		--addr_bus <= (others => '0');
-		wr <= '0' ;
-		rd <= '0' ;
-	elsif clk'event and clk = '1' then
-		--addr_bus <= addr_bus_latched ;
-		wr <= wr_latched ;
-		rd <= rd_latched ;
+	if gls_reset = '1' then
+		write <= '0' ;
+		read <= '0' ;
+		strobe <= '0' ;
+	elsif gls_clk'event and gls_clk = '1' then
+		write <= wr_latched ;
+		read <= rd_latched ;
+		strobe <= wr_latched OR rd_latched;
 	end if ;
 end process ;
-addr_bus <= addr_bus_latched ;
+address <= addr_bus_latched ;
 
-end RTL ;
+
+wbm_address    <= address when (strobe = '1') else (others => '0');
+wbm_writedata  <= writedata when (write = '1') else (others => '0');
+wbm_strobe     <= strobe;
+wbm_write      <= write;
+wbm_cycle      <= strobe;
+
+
+end architecture RTL;
