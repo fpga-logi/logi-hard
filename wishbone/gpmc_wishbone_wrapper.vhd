@@ -8,12 +8,11 @@ library IEEE;
     port
     (
       -- GPMC SIGNALS
-      gpmc_ad : in    std_logic_vector(11 downto 0); -- LSB not used 
+      gpmc_ad : inout    std_logic_vector(15 downto 0); -- LSB not used 
       gpmc_csn    : in    std_logic;
       gpmc_oen    : in    std_logic;
-		gpmc_wrn    : in    std_logic;
+		gpmc_wen    : in    std_logic;
 		gpmc_advn    : in    std_logic;
-      imx_eb3_n   : in    std_logic;
 		
       -- Global Signals
       gls_reset : in std_logic;
@@ -60,7 +59,7 @@ begin
     strobe  <= '0';
     writedata <= (others => '0');
   elsif(rising_edge(gls_clk)) then
-    strobe  <= not (gpmc_csn) and not(gpmc_oen and gpmc_wrn);
+    strobe  <= not (gpmc_csn) and not(gpmc_oen and gpmc_wen);
     write   <= not (gpmc_csn or imx_wrn or latch_addr);
     read    <= not (gpmc_csn or gpmc_oen or latch_addr);
     if gpmc_advn = '1' then
