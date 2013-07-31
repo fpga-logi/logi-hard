@@ -8,7 +8,7 @@ library IEEE;
     port
     (
       -- GPMC SIGNALS
-      gpmc_ad : inout    std_logic_vector(15 downto 0); -- LSB not used 
+      gpmc_ad : inout   std_logic_vector(15 downto 0);
       gpmc_csn    : in    std_logic;
       gpmc_oen    : in    std_logic;
 		gpmc_wen    : in    std_logic;
@@ -40,6 +40,7 @@ signal address    : std_logic_vector(15 downto 0);
 
 begin
 
+
 process(gls_clk, gls_reset)
 begin
 	if gls_reset = '1' then
@@ -59,10 +60,10 @@ begin
     strobe  <= '0';
     writedata <= (others => '0');
   elsif(rising_edge(gls_clk)) then
-    strobe  <= not (gpmc_csn) and not(gpmc_oen and gpmc_wen);
-    write   <= not (gpmc_csn or imx_wrn or latch_addr);
-    read    <= not (gpmc_csn or gpmc_oen or latch_addr);
-    if gpmc_advn = '1' then
+    strobe  <= (not gpmc_csn) and ((not gpmc_oen) or (not gpmc_wen)) and gpmc_advn;
+    write   <= (not gpmc_csn) and (not gpmc_wen) and gpmc_advn;
+    read    <= (not gpmc_csn) and (not gpmc_oen) and gpmc_advn;
+    if gpmc_advn = '1' and gpmc_csn ='0' and gpmc_wen='0' then
 		writedata <= gpmc_ad;
 	 end if ;
   end if;
@@ -74,7 +75,7 @@ wbm_strobe     <= strobe;
 wbm_write      <= write;
 wbm_cycle      <= strobe;
 
-gpmc_ad <= wbm_readdata when(read = '1' ) else 
+gpmc_ad <= wbm_readdata when (gpmc_csn = '0' and gpmc_oen = '0') else 
 			 (others => 'Z');
 
 end architecture RTL;

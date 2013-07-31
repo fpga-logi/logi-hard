@@ -16,16 +16,16 @@ component gpmc_wishbone_wrapper is
 	port
 	(
 	-- GPMC SIGNALS
-	gpmc_ad : inout    std_logic_vector(15 downto 0); -- LSB not used 
+	gpmc_ad : inout    std_logic_vector(15 downto 0); 
 	gpmc_csn    : in    std_logic;
 	gpmc_oen    : in    std_logic;
 	gpmc_wen    : in    std_logic;
 	gpmc_advn    : in    std_logic;
-	imx_eb3_n   : in    std_logic;
 
 	-- Global Signals
 	gls_reset : in std_logic;
 	gls_clk   : in std_logic;
+	
 	-- Wishbone interface signals
 	wbm_address    : out std_logic_vector(15 downto 0);  -- Address bus
 	wbm_readdata   : in  std_logic_vector(15 downto 0);  -- Data bus for read access
