@@ -33,20 +33,23 @@ Architecture RTL of gpmc_wishbone_wrapper is
 -- ----------------------------------------------------------------------------
 
 signal write      : std_logic;
-signal read       : std_logic;
+signal read      : std_logic;
+signal cs : std_logic ;
 signal strobe     : std_logic;
 signal writedata  : std_logic_vector(15 downto 0);
 signal address    : std_logic_vector(15 downto 0);
-
+signal latch_addr : std_logic ;
 begin
 
+latch_addr <= '1' when gpmc_advn = '0' else
+				  '0' ;
 
 process(gls_clk, gls_reset)
 begin
 	if gls_reset = '1' then
 		address <= (others => '0');
 	elsif gls_clk'event and gls_clk = '1' then
-		if gpmc_advn = '0' then
+		if latch_addr = '1' then
 			address <= gpmc_ad;
 		end if ;
 	end if ;
@@ -56,24 +59,24 @@ process(gls_clk, gls_reset)
 begin
   if(gls_reset='1') then
     write   <= '0';
-    read    <= '0';
     strobe  <= '0';
+	 read <= '0' ;
     writedata <= (others => '0');
   elsif(rising_edge(gls_clk)) then
-    strobe  <= (not gpmc_csn) and ((not gpmc_oen) or (not gpmc_wen)) and gpmc_advn;
-    write   <= (not gpmc_csn) and (not gpmc_wen) and gpmc_advn;
-    read    <= (not gpmc_csn) and (not gpmc_oen) and gpmc_advn;
-    if gpmc_advn = '1' and gpmc_csn ='0' and gpmc_wen='0' then
+    cs  <= (not gpmc_csn) and (not latch_addr);
+    write   <= (not gpmc_csn) and (not gpmc_wen) and (not latch_addr);
+	 read   <= (not gpmc_csn) and (not gpmc_oen) and (not latch_addr);
+    if latch_addr = '0' and gpmc_csn ='0' and gpmc_wen='0' then
 		writedata <= gpmc_ad;
 	 end if ;
   end if;
 end process;
 
-wbm_address    <= address when (strobe = '1') else (others => '0');
-wbm_writedata  <= writedata when (write = '1') else (others => '0');
-wbm_strobe     <= strobe;
+wbm_address    <= address ; 
+wbm_writedata  <= writedata ;
+wbm_strobe     <= cs and (write or read);
 wbm_write      <= write;
-wbm_cycle      <= strobe;
+wbm_cycle      <= cs and (write or read);
 
 gpmc_ad <= wbm_readdata when (gpmc_csn = '0' and gpmc_oen = '0') else 
 			 (others => 'Z');

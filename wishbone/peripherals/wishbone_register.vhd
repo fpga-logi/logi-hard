@@ -39,7 +39,7 @@ entity wishbone_register is
 		  gls_reset    : in std_logic ;
 		  gls_clk      : in std_logic ;
 		  -- Wishbone signals
-		  wbs_add       : in std_logic ;
+		  wbs_add       : in std_logic_vector(15 downto 0) ;
 		  wbs_writedata : in std_logic_vector( wb_size-1 downto 0);
 		  wbs_readdata  : out std_logic_vector( wb_size-1 downto 0);
 		  wbs_strobe    : in std_logic ;
