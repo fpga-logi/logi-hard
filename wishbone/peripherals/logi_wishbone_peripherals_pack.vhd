@@ -63,6 +63,63 @@ port(
 );
 end component;
 
+component max7219_wb is
+generic(NB_DEVICE : positive := 2; 
+		  CLK_DIV : positive := 1024;
+		  wb_size : natural := 16 -- Data port size for wishbone
+		  );
+port(
+		  -- Syscon signals
+		  gls_reset    : in std_logic ;
+		  gls_clk      : in std_logic ;
+		  -- Wishbone signals
+		  wbs_add       : in std_logic_vector(15 downto 0) ;
+		  wbs_writedata : in std_logic_vector( wb_size-1 downto 0);
+		  wbs_readdata  : out std_logic_vector( wb_size-1 downto 0);
+		  wbs_strobe    : in std_logic ;
+		  wbs_cycle      : in std_logic ;
+		  wbs_write     : in std_logic ;
+		  wbs_ack       : out std_logic;
+
+		  -- max7219 signals
+		  DOUT : out std_logic ;
+		  SCLK : out std_logic ;
+		  LOAD : out std_logic
+
+);
+end component;
+
+
+
+component servo_controller_wb is
+generic(NB_SERVOS : positive := 2;
+			wb_size : natural := 16 ; -- Data port size for wishbone
+			pos_width	:	integer := 8 ;
+			clock_period             : integer := 10;
+			minimum_high_pulse_width : integer := 1000000;
+			maximum_high_pulse_width : integer := 2000000
+		  );
+port(
+		  -- Syscon signals
+		  gls_reset    : in std_logic ;
+		  gls_clk      : in std_logic ;
+		  -- Wishbone signals
+		  wbs_add       : in std_logic_vector(15 downto 0) ;
+		  wbs_writedata : in std_logic_vector( wb_size-1 downto 0);
+		  wbs_readdata  : out std_logic_vector( wb_size-1 downto 0);
+		  wbs_strobe    : in std_logic ;
+		  wbs_cycle      : in std_logic ;
+		  wbs_write     : in std_logic ;
+		  wbs_ack       : out std_logic;
+		  
+		  servos : out std_logic_vector(NB_SERVOS-1 downto 0)
+		  
+
+);
+
+end component;
+
+
 end logi_wishbone_peripherals_pack;
 
 package body logi_wishbone_peripherals_pack is

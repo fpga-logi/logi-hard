@@ -1,5 +1,6 @@
 library IEEE;
   use IEEE.std_logic_1164.all;
+  use IEEE.std_logic_unsigned.all;
   use IEEE.numeric_std.all;
 
 -- ----------------------------------------------------------------------------
@@ -155,8 +156,8 @@ end process ;
 address <= addr_bus_latched ;
 
 
-wbm_address    <= address when (strobe = '1') else (others => '0');
-wbm_writedata  <= writedata when (write = '1') else (others => '0');
+wbm_address    <= address ;
+wbm_writedata  <= writedata ;
 wbm_strobe     <= strobe;
 wbm_write      <= write;
 wbm_cycle      <= strobe;
