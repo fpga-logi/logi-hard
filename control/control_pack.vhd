@@ -25,7 +25,31 @@ component servo_controller is
         servo_out       : out std_logic);
 end component;
 
+
+component mcp3002_interface is
+generic(CLK_DIV : positive := 1024;
+		  SAMPLING_DIV : positive := 2048);
+port(
+
+		  clk, resetn : std_logic ;
+
+		  sample : out std_logic_vector(9 downto 0);
+		  dv : out std_logic ;
+		  chan : in std_logic ;
+		
+		  -- spi signals
+		  DOUT : out std_logic ;
+		  DIN : in std_logic ;
+		  SCLK : out std_logic ;
+		  SSN : out std_logic
+
+);
+end component;
+
+
+
 end control_pack;
+
 
 package body control_pack is
 
