@@ -2,9 +2,9 @@
 -- Company: 
 -- Engineer: 
 -- 
--- Create Date:    10:29:34 07/31/2013 
+-- Create Date:    15:34:11 08/28/2013 
 -- Design Name: 
--- Module Name:    wishbone_register - Behavioral 
+-- Module Name:    wishbone_pwm - Behavioral 
 -- Project Name: 
 -- Target Devices: 
 -- Tool versions: 
@@ -20,7 +20,6 @@
 library IEEE;
 use IEEE.STD_LOGIC_1164.ALL;
 use IEEE.STD_LOGIC_UNSIGNED.ALL;
-use IEEE.NUMERIC_STD.ALL;
 
 -- Uncomment the following library declaration if using
 -- arithmetic functions with Signed or Unsigned values
@@ -32,15 +31,13 @@ use IEEE.NUMERIC_STD.ALL;
 --use UNISIM.VComponents.all;
 
 library work ;
-use work.logi_wishbone_peripherals_pack.all ;
+use work.control_pack.all ;
 
-entity wishbone_register is
-	generic(
-		  wb_size : natural := 16; -- Data port size for wishbone
-		  nb_regs : natural := 1
-	 );
-	 port 
-	 (
+entity wishbone_pwm is
+generic( nb_chan : positive := 3;
+			wb_size : natural := 16  -- Data port size for wishbone
+		  );
+port(
 		  -- Syscon signals
 		  gls_reset    : in std_logic ;
 		  gls_clk      : in std_logic ;
@@ -52,34 +49,35 @@ entity wishbone_register is
 		  wbs_cycle      : in std_logic ;
 		  wbs_write     : in std_logic ;
 		  wbs_ack       : out std_logic;
-		  -- out signals
-		  reg_out : out slv16_array(0 to nb_regs-1);
-		  reg_in : in slv16_array(0 to nb_regs-1)
-	 );
-end wishbone_register;
+		  
+		  pwm_out : out std_logic_vector(nb_chan-1 downto 0)
+		  
 
-architecture Behavioral of wishbone_register is
-	signal reg_in_d, reg_out_d : slv16_array(0 to nb_regs-1) ;
-	signal read_ack : std_logic ;
-	signal write_ack : std_logic ;
+);
+end wishbone_pwm;
+
+architecture Behavioral of wishbone_pwm is
+signal pwm_regs : slv16_array(0 to (nb_chan+1)) ;
+
+signal read_ack : std_logic ;
+signal write_ack : std_logic ;
+
 begin
+
 wbs_ack <= read_ack or write_ack;
 
 write_bloc : process(gls_clk,gls_reset)
 begin
     if gls_reset = '1' then 
-        reg_out_d <= (others =>(others => '0'));
         write_ack <= '0';
     elsif rising_edge(gls_clk) then
         if ((wbs_strobe and wbs_write and wbs_cycle) = '1' ) then
-            reg_out_d(conv_integer(wbs_add)) <= wbs_writedata;
             write_ack <= '1';
         else
             write_ack <= '0';
         end if;
     end if;
 end process write_bloc;
-reg_out <= reg_out_d ;
 
 
 read_bloc : process(gls_clk, gls_reset)
@@ -87,7 +85,6 @@ begin
     if gls_reset = '1' then
         
     elsif rising_edge(gls_clk) then
-		  reg_in_d <= reg_in ; -- latching inputs
         if (wbs_strobe = '1' and wbs_write = '0'  and wbs_cycle = '1' ) then
             read_ack <= '1';
         else
@@ -95,7 +92,31 @@ begin
         end if;
     end if;
 end process read_bloc;
-wbs_readdata <= reg_in_d(conv_integer(wbs_add)) ;
+wbs_readdata <= pwm_regs(conv_integer(wbs_add)) ;
+
+register_mngmt : process(gls_clk, gls_reset)
+begin
+    if gls_reset = '1' then
+        
+    elsif rising_edge(gls_clk) then
+        if ((wbs_strobe and wbs_write and wbs_cycle) = '1' ) then
+            pwm_regs(conv_integer(wbs_add)) <= wbs_writedata;
+        end if ;
+    end if;
+end process register_mngmt;
+
+
+
+
+pwm_ctrl : pwm 
+	generic map(NB_CHANNEL => nb_chan)
+	port map(
+	clk => gls_clk, resetn => (NOT gls_reset),
+	divider => pwm_regs(0),
+	period => pwm_regs(1),
+	pulse_width => pwm_regs(2 to (2+(nb_chan-1))),
+	pwm => pwm_out 
+	);
 
 
 end Behavioral;

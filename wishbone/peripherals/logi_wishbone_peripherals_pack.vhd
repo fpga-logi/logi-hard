@@ -12,9 +12,12 @@ use IEEE.STD_LOGIC_1164.all;
 
 package logi_wishbone_peripherals_pack is
 
+type slv16_array is array(natural range <>) of std_logic_vector(15 downto 0);
+
 component wishbone_register is
 	generic(
-		  wb_size : natural := 16 -- Data port size for wishbone
+		  wb_size : natural := 16; -- Data port size for wishbone
+		  nb_regs : natural := 1 -- Data port size for wishbone
 	 );
 	 port 
 	 (
@@ -30,8 +33,8 @@ component wishbone_register is
 		  wbs_write     : in std_logic ;
 		  wbs_ack       : out std_logic;
 		  -- out signals
-		  reg_out : out std_logic_vector(wb_size-1 downto 0);
-		  reg_in : in std_logic_vector(wb_size-1 downto 0)
+		  reg_out : out slv16_array(0 to nb_regs-1);
+		  reg_in : in slv16_array(0 to nb_regs-1)
 	 );
 end component;
 
@@ -116,7 +119,29 @@ port(
 		  
 
 );
+end component;
 
+component wishbone_pwm is
+generic( nb_chan : positive := 3;
+			wb_size : natural := 16  -- Data port size for wishbone
+		  );
+port(
+		  -- Syscon signals
+		  gls_reset    : in std_logic ;
+		  gls_clk      : in std_logic ;
+		  -- Wishbone signals
+		  wbs_add       : in std_logic_vector(15 downto 0) ;
+		  wbs_writedata : in std_logic_vector( wb_size-1 downto 0);
+		  wbs_readdata  : out std_logic_vector( wb_size-1 downto 0);
+		  wbs_strobe    : in std_logic ;
+		  wbs_cycle      : in std_logic ;
+		  wbs_write     : in std_logic ;
+		  wbs_ack       : out std_logic;
+		  
+		  pwm_out : out std_logic_vector(nb_chan-1 downto 0)
+		  
+
+);
 end component;
 
 

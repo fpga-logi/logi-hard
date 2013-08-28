@@ -12,6 +12,8 @@ use IEEE.STD_LOGIC_1164.all;
 
 package control_pack is
 
+type slv16_array is array(natural range <>) of std_logic_vector(15 downto 0);
+
 component servo_controller is
   generic(
 	 pos_width	:	integer := 8 ;
@@ -46,6 +48,17 @@ port(
 );
 end component;
 
+
+component pwm is
+generic(NB_CHANNEL : positive := 1);
+port(
+	clk, resetn : in std_logic ;
+	divider : in std_logic_vector(15 downto 0);
+	period : in std_logic_vector(15 downto 0);
+	pulse_width : in slv16_array(0 to NB_CHANNEL-1) ;
+	pwm : out std_logic_vector(0 to NB_CHANNEL-1) 
+);
+end component;
 
 
 end control_pack;
