@@ -84,9 +84,9 @@ NET "PMOD1_1" LOC = "P121" ;
 NET "PMOD1_2" LOC = "P119" ;
 NET "PMOD1_3" LOC = "P101" ;
 NET "PMOD1_4" LOC = "P116" ;
-NET "PMOD1_7" LOC = "P112" ;
+NET "PMOD1_7" LOC = "P120" ;	#!
 NET "PMOD1_8" LOC = "P118" ;
-NET "PMOD1_9" LOC = "P117" ;	#?
+NET "PMOD1_9" LOC = "P117" ;	
 NET "PMOD1_10" LOC = "P115" ;
 #PMOD2#############################################################################
 NET "PMOD2_1" LOC = "P114" ;
