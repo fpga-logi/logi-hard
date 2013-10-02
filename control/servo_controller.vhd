@@ -57,7 +57,7 @@ architecture Behavioral of servo_controller is
   constant minimum_high_pulse_width_steps: integer := minimum_high_pulse_width / PWM_resolution_per_step;
   constant maximum_high_pulse_width_steps : integer := (maximum_high_pulse_width / PWM_resolution_per_step) - minimum_high_pulse_width_steps;
   constant low_pulse_width_steps : integer := (servo_PWM_period - maximum_high_pulse_width)/PWM_resolution_per_step ;
-
+  
   type   main_fsm_type is (reset, min_high_pulse, servo_pulse, low_pulse);
   signal current_state, next_state : main_fsm_type;
   

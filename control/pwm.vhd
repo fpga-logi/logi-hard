@@ -23,7 +23,7 @@ use IEEE.STD_LOGIC_UNSIGNED.ALL;
 
 
 library work ;
-use work.utils_pack.all ;
+use work.control_pack.all ;
 -- Uncomment the following library declaration if using
 -- arithmetic functions with Signed or Unsigned values
 --use IEEE.NUMERIC_STD.ALL;
@@ -34,7 +34,7 @@ use work.utils_pack.all ;
 --use UNISIM.VComponents.all;
 
 entity pwm is
-generic(NB_CHANNEL : positive := 1);
+generic(NB_CHANNEL : positive := 3);
 port(
 	clk, resetn : in std_logic ;
 	divider : in std_logic_vector(15 downto 0);

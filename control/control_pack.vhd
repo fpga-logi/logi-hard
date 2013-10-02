@@ -50,7 +50,7 @@ end component;
 
 
 component pwm is
-generic(NB_CHANNEL : positive := 1);
+generic(NB_CHANNEL : positive := 3);
 port(
 	clk, resetn : in std_logic ;
 	divider : in std_logic_vector(15 downto 0);
