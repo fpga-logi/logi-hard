@@ -74,9 +74,10 @@ component servo_controller is
         servo_out       : out std_logic);
 end component;
 
+constant reset_pulse : std_logic_vector(15 downto 0) := X"8080";
 type reg16_array is array (0 to (NB_SERVOS-1)) of std_logic_vector(15 downto 0) ;
 
-signal pos_regs : reg16_array ;
+signal pos_regs : reg16_array := (others => reset_pulse);
 
 signal read_ack : std_logic ;
 signal write_ack : std_logic ;
@@ -117,7 +118,7 @@ wbs_readdata <= pos_regs(conv_integer(wbs_add)) ;
 register_mngmt : process(gls_clk, gls_reset)
 begin
     if gls_reset = '1' then
-        
+        pos_regs <= (others => reset_pulse) ;
     elsif rising_edge(gls_clk) then
         if ((wbs_strobe and wbs_write and wbs_cycle) = '1' ) then
             pos_regs(conv_integer(wbs_add)) <= wbs_writedata;

@@ -1,11 +1,13 @@
 library IEEE;
   use IEEE.std_logic_1164.all;
+  use IEEE.std_logic_unsigned.all;
   use IEEE.numeric_std.all;
 
 -- ----------------------------------------------------------------------------
     entity gpmc_wishbone_wrapper is
 -- ----------------------------------------------------------------------------
-    port
+    generic(sync : boolean := false );
+	 port
     (
       -- GPMC SIGNALS
       gpmc_ad : inout   std_logic_vector(15 downto 0);
@@ -13,6 +15,7 @@ library IEEE;
       gpmc_oen    : in    std_logic;
 		gpmc_wen    : in    std_logic;
 		gpmc_advn    : in    std_logic;
+		gpmc_clk    : in    std_logic;
 		
       -- Global Signals
       gls_reset : in std_logic;
@@ -32,53 +35,120 @@ library IEEE;
 Architecture RTL of gpmc_wishbone_wrapper is
 -- ----------------------------------------------------------------------------
 
-signal write      : std_logic;
-signal read      : std_logic;
-signal cs : std_logic ;
-signal strobe     : std_logic;
-signal writedata  : std_logic_vector(15 downto 0);
-signal address    : std_logic_vector(15 downto 0);
-signal latch_addr : std_logic ;
+signal write, writen      : std_logic;
+signal read, readn      : std_logic;
+signal cs, csn : std_logic ;
+signal writedata, writedata_bridge,readdata, readdata_bridge  : std_logic_vector(15 downto 0);
+signal address, address_bridge    : std_logic_vector(15 downto 0);
+signal wbm_readdata_bridge : std_logic_vector(15 downto 0); 
+signal csn_bridge,wen_bridge, oen_bridge, advn_bridge : std_logic ;
+signal burst_read : std_logic ;
 begin
 
-latch_addr <= '1' when gpmc_advn = '0' else
-				  '0' ;
-
-process(gls_clk, gls_reset)
-begin
-	if gls_reset = '1' then
-		address <= (others => '0');
-	elsif gls_clk'event and gls_clk = '1' then
-		if latch_addr = '1' then
-			address <= gpmc_ad;
+gen_async : if sync = false generate
+	process(gls_clk, gls_reset)
+	begin
+		if gls_reset = '1' then
+			address <= (others => '0');
+		elsif gls_clk'event and gls_clk = '1' then
+			if gpmc_advn = '0' then
+				address <= gpmc_ad;
+			end if ;
 		end if ;
-	end if ;
-end process ;
+	end process ;
 
-process(gls_clk, gls_reset)
-begin
-  if(gls_reset='1') then
-    write   <= '0';
-    strobe  <= '0';
-	 read <= '0' ;
-    writedata <= (others => '0');
-  elsif(rising_edge(gls_clk)) then
-    cs  <= (not gpmc_csn) and (not latch_addr);
-    write   <= (not gpmc_csn) and (not gpmc_wen) and (not latch_addr);
-	 read   <= (not gpmc_csn) and (not gpmc_oen) and (not latch_addr);
-    if latch_addr = '0' and gpmc_csn ='0' and gpmc_wen='0' then
-		writedata <= gpmc_ad;
-	 end if ;
-  end if;
-end process;
-
-wbm_address    <= address ; 
-wbm_writedata  <= writedata ;
-wbm_strobe     <= cs and (write or read);
-wbm_write      <= write;
-wbm_cycle      <= cs and (write or read);
-
-gpmc_ad <= wbm_readdata when (gpmc_csn = '0' and gpmc_oen = '0') else 
+	process(gls_clk, gls_reset)
+	begin
+	  if(gls_reset='1') then
+		 write   <= '0';
+		 cs  <= '0';
+		 read <= '0' ;
+		 writedata <= (others => '0');
+	  elsif(rising_edge(gls_clk)) then
+		 cs  <= (not gpmc_csn) and (gpmc_advn) and (gpmc_wen XOR gpmc_oen) ;
+		 write   <= (not gpmc_wen) ;
+		 read   <= (not gpmc_oen) ;
+		 if gpmc_advn = '1' and gpmc_csn ='0' and gpmc_wen='0' then
+			writedata <= gpmc_ad;
+		 end if ;
+	  end if;
+	end process;
+	
+	gpmc_ad <= wbm_readdata when (gpmc_csn = '0' and gpmc_oen = '0') else 
 			 (others => 'Z');
+			 
+	wbm_address    <= address ; 
+	wbm_writedata  <= writedata ;
+	wbm_strobe     <= cs ;
+	wbm_write      <= write ;
+	wbm_cycle      <= cs ;
+			 
+end generate ;
+
+gen_syn : if sync = true generate
+
+	process(gpmc_clk, gls_reset)
+	begin
+	  if(gls_reset='1') then
+		 csn_bridge <= '1' ;
+		 wen_bridge   <= '1';
+		 oen_bridge <= '1' ;
+		 address_bridge <= (others => '0');
+		 writedata_bridge <= (others => '0');
+		 advn_bridge <= '1' ;
+	  elsif(rising_edge(gpmc_clk)) then
+		 csn_bridge  <= gpmc_csn  ;
+		 wen_bridge   <= gpmc_wen ;
+		 oen_bridge   <= gpmc_oen ;
+		 advn_bridge <= gpmc_advn ;
+		 if gpmc_advn = '0' then
+			address_bridge <= gpmc_ad;
+--		 elsif gpmc_oen = '0' then
+		 elsif oen_bridge = '0' then
+			address_bridge <= address_bridge + 1 ;
+		 end if ;
+		 readdata <= readdata_bridge  ;
+		 writedata_bridge <= gpmc_ad;
+	  end if;
+	end process;
+	
+	process(gls_clk, gls_reset)
+	begin
+	  if(gls_reset='1') then
+		 csn <= '1' ;
+		 writen   <= '1';
+		 readn <= '1' ;
+		 writedata <= (others => '0') ;
+		 address <=  (others => '0') ;
+	  elsif(rising_edge(gls_clk)) then
+		 csn  <= csn_bridge  ;
+		 writen   <= wen_bridge ;
+		 readn   <= oen_bridge ;
+		 writedata <= writedata_bridge ;
+		 if wbm_ack = '1' then
+			readdata_bridge <= wbm_readdata ;
+		 end if ;
+		 if address_bridge /= address then
+			burst_read <= '1' ;
+		 else
+			burst_read <= '0' ;
+		 end if ;
+		 address <= address_bridge ;
+	  end if;
+	end process;
+	
+	gpmc_ad <= readdata when (gpmc_csn = '0' and gpmc_oen = '0') else 
+			 (others => 'Z');
+			 
+	wbm_address <= address ;
+	wbm_writedata  <= writedata ;
+	wbm_strobe     <= (not csn) and (writen xor (readn or burst_read)) ;
+	wbm_write      <= (not writen) ;
+	wbm_cycle      <= (not csn) and (writen xor (readn or burst_read)) ;
+
+end generate ;
+
+
+
 
 end architecture RTL;

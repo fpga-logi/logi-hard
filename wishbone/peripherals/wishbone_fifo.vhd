@@ -33,7 +33,8 @@ entity wishbone_fifo is
 generic( ADDR_WIDTH: positive := 16; --! width of the address bus
 			WIDTH	: positive := 16; --! width of the data bus
 			SIZE	: positive	:= 128; --! fifo depth
-			BURST_SIZE : positive := 4;
+			B_BURST_SIZE : positive := 4;
+			A_BURST_SIZE : positive := 4;
 			SYNC_LOGIC_INTERFACE : boolean := false 
 			); 
 port(
@@ -53,7 +54,7 @@ port(
 	wrB, rdA : in std_logic ; --! logic side fifo control signal
 	inputB: in std_logic_vector((WIDTH - 1) downto 0); --! data input of fifo B
 	outputA	: out std_logic_vector((WIDTH - 1) downto 0); --! data output of fifo A
-	emptyA, fullA, emptyB, fullB, burst_available_B	:	out std_logic --! fifo state signals
+	emptyA, fullA, emptyB, fullB, burst_available_B, burst_available_A	:	out std_logic --! fifo state signals
 );
 end wishbone_fifo;
 
@@ -61,7 +62,7 @@ end wishbone_fifo;
 
 architecture RTL of wishbone_fifo is
 
-constant address_space_nbit : integer := MAX((nbit(BURST_SIZE)+1), 3);
+constant address_space_nbit : integer := MAX((nbit(B_BURST_SIZE)+1), 3);
 signal fifoA_wr, fifoB_rd, srazA, srazB : std_logic ;
 signal fifoA_in,  fifoB_out : std_logic_vector((WIDTH - 1) downto 0 ); 
 signal nb_availableA, nb_availableB  :  unsigned((WIDTH - 1) downto 0 ); 
@@ -70,7 +71,10 @@ signal data_bus_out_t	: std_logic_vector((WIDTH - 1) downto 0);
 
 
 signal write_ack, read_ack : std_logic ;
+signal gls_resetn : std_logic ;
 begin
+
+gls_resetn <= NOT gls_reset ;
 
 write_bloc : process(gls_clk,gls_reset)
 begin
@@ -104,7 +108,7 @@ wbs_ack <= read_ack or write_ack;
 fifo_A : dp_fifo -- write from bus, read from logic
 	generic map(N => SIZE , W => WIDTH, SYNC_RD => SYNC_LOGIC_INTERFACE, SYNC_WR => false)
 	port map(
- 		clk => gls_clk, resetn => (NOT gls_reset) , sraz => srazA , 
+ 		clk => gls_clk, resetn => gls_resetn , sraz => srazA , 
  		wr => fifoA_wr, rd => rdA,
 		empty => emptyA,
 		full => fullA ,
@@ -116,7 +120,7 @@ fifo_A : dp_fifo -- write from bus, read from logic
 fifo_B : dp_fifo -- read from bus, write from logic
 	generic map(N => SIZE , W => WIDTH, SYNC_WR => SYNC_LOGIC_INTERFACE, SYNC_RD => false)
 	port map(
- 		clk => gls_clk, resetn => (NOT gls_reset) , sraz => srazB , 
+ 		clk => gls_clk, resetn => gls_resetn , sraz => srazB , 
  		wr => wrB, rd => fifoB_rd,
 		empty => emptyB,
 		full => fullB ,
@@ -138,10 +142,9 @@ data_bus_out_t <= fifoB_out when wbs_add(address_space_nbit-1) = '0'  else --fif
 				( nb_availableA_latched) when wbs_add((address_space_nbit-1)) = '1' and wbs_add(1 downto 0)= "01" else
 				( nb_availableB_latched) when wbs_add((address_space_nbit-1)) = '1' and wbs_add(1 downto 0)= "10"  else
 				fifoB_out when wbs_add((address_space_nbit-1)) = '1' and wbs_add(1 downto 0)= "11" else -- peek !
-				(others => '0');
+				X"AA55";--(others => '0');
 
-wbs_readdata <= data_bus_out_t when wbs_strobe = '1' and wbs_write = '0'  and wbs_cycle = '1' else
-					(others => 'Z');
+wbs_readdata <= data_bus_out_t ;
 
 
 fifoB_rd <= '1' when wbs_add((address_space_nbit-1)) = '0' and wbs_strobe = '1' and wbs_write = '0'  and wbs_cycle = '1' else
@@ -158,7 +161,10 @@ srazB <= '1' when wbs_strobe = '1' and wbs_write = '1' and wbs_cycle = '1' and w
 				
 fifoA_in <= wbs_writedata ;
 
-burst_available_B <= '1' when nb_availableB_latched > BURST_SIZE else
+burst_available_B <= '1' when nb_availableB_latched > B_BURST_SIZE else
+							'0' ;
+							
+burst_available_A <= '1' when nb_availableA_latched > A_BURST_SIZE else
 							'0' ;
 
 end RTL;

@@ -93,10 +93,9 @@ begin
         else
             read_ack <= '0';
         end if;
+		  wbs_readdata <= reg_in_d(conv_integer(wbs_add)) ;
     end if;
 end process read_bloc;
-wbs_readdata <= reg_in_d(conv_integer(wbs_add)) ;
-
 
 end Behavioral;
 
