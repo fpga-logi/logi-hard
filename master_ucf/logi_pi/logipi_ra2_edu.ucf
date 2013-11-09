@@ -87,9 +87,9 @@ NET "sseg<6>"  LOC = P98	|	IOSTANDARD = LVCMOS33; 	# segment g		p3_1
 NET "sseg<7>"  LOC = P104	|	IOSTANDARD = LVCMOS33; 	# decimal point p2_10	
 
 #========================================================
-# UART to USB (FTDI)
+# UART for Rpi
 # TX = FGPA TX  = Host RX
 # RX = FPGA RX  = Host TX
 #========================================================
-NET "rx"  LOC = P50	|	IOSTANDARD = LVCMOS33;	
-NET "tx"  LOC = P51	|	IOSTANDARD = LVCMOS33;
+NET "rx"  LOC = P51	|	IOSTANDARD = LVCMOS33;	
+NET "tx"  LOC = P50	|	IOSTANDARD = LVCMOS33;
