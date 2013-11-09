@@ -41,9 +41,9 @@ NET "btn_n<0>"   LOC = P61;
 ## 2 slide switches
 #==========================================================
 # This is how the pins should be laid out.  Needs reversed on PCB					
-NET "sw<1>"  LOC = P40	|	IOSTANDARD = LVCMOS33;
+NET "sw_n<1>"  LOC = P40	|	IOSTANDARD = LVCMOS33;
 #NET "n_reset"  	LOC = P40;								--reset needs to be moved around depending on applicaion, use sw or button
-NET "sw<0>"  LOC = P41	|	IOSTANDARD = LVCMOS33;
+NET "sw_n<0>"  LOC = P41	|	IOSTANDARD = LVCMOS33;
 
 ###========================================================
 ### VGA outputs
