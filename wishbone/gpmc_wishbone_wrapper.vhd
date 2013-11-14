@@ -6,7 +6,7 @@ library IEEE;
 -- ----------------------------------------------------------------------------
     entity gpmc_wishbone_wrapper is
 -- ----------------------------------------------------------------------------
-    generic(sync : boolean := false );
+    generic(sync : boolean := false; burst : boolean := false );
 	 port
     (
       -- GPMC SIGNALS
@@ -65,7 +65,7 @@ gen_async : if sync = false generate
 		 read <= '0' ;
 		 writedata <= (others => '0');
 	  elsif(rising_edge(gls_clk)) then
-		 cs  <= (not gpmc_csn) and (gpmc_advn) and (gpmc_wen XOR gpmc_oen) ;
+		 cs  <= (not gpmc_csn) and (gpmc_advn) ;--and (gpmc_wen XOR gpmc_oen) ;
 		 write   <= (not gpmc_wen) ;
 		 read   <= (not gpmc_oen) ;
 		 if gpmc_advn = '1' and gpmc_csn ='0' and gpmc_wen='0' then
@@ -79,13 +79,44 @@ gen_async : if sync = false generate
 			 
 	wbm_address    <= address ; 
 	wbm_writedata  <= writedata ;
-	wbm_strobe     <= cs ;
+	wbm_strobe     <= cs and (write xor read);
 	wbm_write      <= write ;
-	wbm_cycle      <= cs ;
+	wbm_cycle      <= cs and (write xor read);
 			 
 end generate ;
 
 gen_syn : if sync = true generate
+
+	gen_burst : if burst = true generate
+		process(gpmc_clk, gls_reset)
+		begin
+		  if(gls_reset='1') then
+			 address_bridge <= (others => '0');
+		  elsif(rising_edge(gpmc_clk)) then
+			 if gpmc_advn = '0' then
+				address_bridge <= gpmc_ad;
+	--		 elsif gpmc_oen = '0' then
+			 elsif oen_bridge = '0' then
+				address_bridge <= address_bridge + 1 ;
+			 end if ;
+		  end if;
+		end process;
+	end generate ;
+	
+	gen_no_burst : if burst = false generate
+		process(gpmc_clk, gls_reset)
+		begin
+		  if(gls_reset='1') then
+			 address_bridge <= (others => '0');
+		  elsif(rising_edge(gpmc_clk)) then
+			 if gpmc_advn = '0' then
+				address_bridge <= gpmc_ad;
+			 end if ;
+		  end if;
+		end process;
+	end generate ;
+
+
 
 	process(gpmc_clk, gls_reset)
 	begin
@@ -93,7 +124,7 @@ gen_syn : if sync = true generate
 		 csn_bridge <= '1' ;
 		 wen_bridge   <= '1';
 		 oen_bridge <= '1' ;
-		 address_bridge <= (others => '0');
+		 --address_bridge <= (others => '0');
 		 writedata_bridge <= (others => '0');
 		 advn_bridge <= '1' ;
 	  elsif(rising_edge(gpmc_clk)) then
@@ -101,12 +132,12 @@ gen_syn : if sync = true generate
 		 wen_bridge   <= gpmc_wen ;
 		 oen_bridge   <= gpmc_oen ;
 		 advn_bridge <= gpmc_advn ;
-		 if gpmc_advn = '0' then
-			address_bridge <= gpmc_ad;
+--		 if gpmc_advn = '0' then
+--			address_bridge <= gpmc_ad;
 --		 elsif gpmc_oen = '0' then
-		 elsif oen_bridge = '0' then
-			address_bridge <= address_bridge + 1 ;
-		 end if ;
+--		 elsif oen_bridge = '0' then
+--			address_bridge <= address_bridge + 1 ;
+--		 end if ;
 		 readdata <= readdata_bridge  ;
 		 writedata_bridge <= gpmc_ad;
 	  end if;

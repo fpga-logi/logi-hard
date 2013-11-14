@@ -13,7 +13,7 @@ use IEEE.STD_LOGIC_1164.all;
 package logi_wishbone_pack is
 
  component gpmc_wishbone_wrapper is
-    generic(sync : boolean := false );
+    generic(sync : boolean := false ; burst : boolean := false );
 	 port
     (
       -- GPMC SIGNALS

@@ -104,7 +104,8 @@ gen_registers : for i in 0 to NB_INTERRUPTS-1 generate
 	 process (gls_clk, gls_reset)
 		begin
 		  if gls_reset = '1' then
-				interrupt_registers_d <= (others => '0') ;
+				interrupt_registers_d(i*2) <= '0' ;
+				interrupt_registers_d((i*2)+1) <= '0' ;
 		  elsif gls_clk'event and gls_clk = '1' then
 				if write_sig = '1' then
 					 interrupt_registers_d(i*2) <= wbs_writedata(i*2);
