@@ -90,10 +90,11 @@ begin
 		  reg_in_d <= reg_in ; -- latching inputs
         if (wbs_strobe = '1' and wbs_write = '0'  and wbs_cycle = '1' ) then
             read_ack <= '1';
+				wbs_readdata <= reg_in_d(conv_integer(wbs_add)) ;
         else
             read_ack <= '0';
         end if;
-		  wbs_readdata <= reg_in_d(conv_integer(wbs_add)) ;
+		  
     end if;
 end process read_bloc;
 

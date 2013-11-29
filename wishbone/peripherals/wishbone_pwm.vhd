@@ -86,13 +86,14 @@ begin
         
     elsif rising_edge(gls_clk) then
         if (wbs_strobe = '1' and wbs_write = '0'  and wbs_cycle = '1' ) then
+				wbs_readdata <= pwm_regs(conv_integer(wbs_add)) ;
             read_ack <= '1';
         else
             read_ack <= '0';
         end if;
     end if;
 end process read_bloc;
-wbs_readdata <= pwm_regs(conv_integer(wbs_add)) ;
+
 
 register_mngmt : process(gls_clk, gls_reset)
 begin

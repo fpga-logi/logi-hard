@@ -107,13 +107,13 @@ ram0 : dpram_NxN
 	port map(
  		clk => gls_clk,
  		we => write_mem ,
- 		
  		di => wbs_writedata, 
 		a	=> wbs_add ,
  		dpra => X"0000",
 		spo => wbs_readdata,
 		dpo => open 		
 	); 
+	
 
 end Behavioral;
 

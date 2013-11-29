@@ -42,7 +42,7 @@ signal writedata, writedata_bridge,readdata, readdata_bridge  : std_logic_vector
 signal address, address_bridge    : std_logic_vector(15 downto 0);
 signal wbm_readdata_bridge : std_logic_vector(15 downto 0); 
 signal csn_bridge,wen_bridge, oen_bridge, advn_bridge : std_logic ;
-signal burst_read : std_logic ;
+signal gpmc_clk_old, gpmc_clk_re : std_logic ;
 begin
 
 gen_async : if sync = false generate
@@ -92,11 +92,10 @@ gen_syn : if sync = true generate
 		begin
 		  if(gls_reset='1') then
 			 address_bridge <= (others => '0');
-		  elsif(rising_edge(gpmc_clk)) then
+		  elsif(falling_edge(gpmc_clk)) then
 			 if gpmc_advn = '0' then
 				address_bridge <= gpmc_ad;
-	--		 elsif gpmc_oen = '0' then
-			 elsif oen_bridge = '0' then
+			 elsif readn = '0' then
 				address_bridge <= address_bridge + 1 ;
 			 end if ;
 		  end if;
@@ -108,7 +107,7 @@ gen_syn : if sync = true generate
 		begin
 		  if(gls_reset='1') then
 			 address_bridge <= (others => '0');
-		  elsif(rising_edge(gpmc_clk)) then
+		  elsif(falling_edge(gpmc_clk)) then
 			 if gpmc_advn = '0' then
 				address_bridge <= gpmc_ad;
 			 end if ;
@@ -117,6 +116,15 @@ gen_syn : if sync = true generate
 	end generate ;
 
 
+--	process(gpmc_clk, gls_reset)
+--	begin
+--	  if(gls_reset='1') then
+--		 readdata <= (others => '0');
+--	  elsif(falling_edge(gpmc_clk)) then
+--		 readdata <= readdata_bridge ;
+--	  end if;
+--	end process;
+
 
 	process(gpmc_clk, gls_reset)
 	begin
@@ -124,20 +132,14 @@ gen_syn : if sync = true generate
 		 csn_bridge <= '1' ;
 		 wen_bridge   <= '1';
 		 oen_bridge <= '1' ;
-		 --address_bridge <= (others => '0');
+		 readdata <= (others => '0')  ;
 		 writedata_bridge <= (others => '0');
 		 advn_bridge <= '1' ;
-	  elsif(rising_edge(gpmc_clk)) then
+	  elsif(falling_edge(gpmc_clk)) then
 		 csn_bridge  <= gpmc_csn  ;
 		 wen_bridge   <= gpmc_wen ;
 		 oen_bridge   <= gpmc_oen ;
 		 advn_bridge <= gpmc_advn ;
---		 if gpmc_advn = '0' then
---			address_bridge <= gpmc_ad;
---		 elsif gpmc_oen = '0' then
---		 elsif oen_bridge = '0' then
---			address_bridge <= address_bridge + 1 ;
---		 end if ;
 		 readdata <= readdata_bridge  ;
 		 writedata_bridge <= gpmc_ad;
 	  end if;
@@ -150,7 +152,7 @@ gen_syn : if sync = true generate
 		 writen   <= '1';
 		 readn <= '1' ;
 		 writedata <= (others => '0') ;
-		 address <=  (others => '0') ;
+		 address <= (others => '0') ;
 	  elsif(rising_edge(gls_clk)) then
 		 csn  <= csn_bridge  ;
 		 writen   <= wen_bridge ;
@@ -158,11 +160,6 @@ gen_syn : if sync = true generate
 		 writedata <= writedata_bridge ;
 		 if wbm_ack = '1' then
 			readdata_bridge <= wbm_readdata ;
-		 end if ;
-		 if address_bridge /= address then
-			burst_read <= '1' ;
-		 else
-			burst_read <= '0' ;
 		 end if ;
 		 address <= address_bridge ;
 	  end if;
@@ -173,9 +170,9 @@ gen_syn : if sync = true generate
 			 
 	wbm_address <= address ;
 	wbm_writedata  <= writedata ;
-	wbm_strobe     <= (not csn) and (writen xor (readn or burst_read)) ;
+	wbm_strobe     <= (not csn) and (writen xor readn ) ;
 	wbm_write      <= (not writen) ;
-	wbm_cycle      <= (not csn) and (writen xor (readn or burst_read)) ;
+	wbm_cycle      <= (not csn) and (writen xor readn ) ;
 
 end generate ;
 
