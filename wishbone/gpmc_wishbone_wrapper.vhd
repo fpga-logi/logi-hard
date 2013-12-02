@@ -1,7 +1,7 @@
 library IEEE;
-  use IEEE.std_logic_1164.all;
-  use IEEE.std_logic_unsigned.all;
-  use IEEE.numeric_std.all;
+use IEEE.std_logic_1164.all;
+use IEEE.std_logic_unsigned.all;
+use IEEE.numeric_std.all;
 
 -- ----------------------------------------------------------------------------
     entity gpmc_wishbone_wrapper is
@@ -59,19 +59,20 @@ gen_async : if sync = false generate
 
 	process(gls_clk, gls_reset)
 	begin
-	  if(gls_reset='1') then
-		 write   <= '0';
-		 cs  <= '0';
-		 read <= '0';
-		 writedata <= (others => '0');
-	  elsif(rising_edge(gls_clk)) then
-		 cs  <= (not gpmc_csn) and (gpmc_advn) ;--and (gpmc_wen XOR gpmc_oen);
-		 write   <= (not gpmc_wen);
-		 read   <= (not gpmc_oen);
-		 if gpmc_advn = '1' and gpmc_csn ='0' and gpmc_wen='0' then
-			writedata <= gpmc_ad;
-		 end if;
-	  end if;
+		if(gls_reset='1') then
+			write   <= '0';
+			cs  <= '0';
+			read <= '0';
+			writedata <= (others => '0');
+		elsif(rising_edge(gls_clk)) then
+			cs  <= (not gpmc_csn) and (gpmc_advn) ;--and (gpmc_wen XOR gpmc_oen);
+			write   <= (not gpmc_wen);
+			read   <= (not gpmc_oen);
+
+			if gpmc_advn = '1' and gpmc_csn ='0' and gpmc_wen='0' then
+				writedata <= gpmc_ad;
+			end if;
+		end if;
 	end process;
 	
 	gpmc_ad <= wbm_readdata when (gpmc_csn = '0' and gpmc_oen = '0') else 
@@ -89,71 +90,74 @@ gen_syn : if sync = true generate
 	gen_burst : if burst = true generate
 		process(gpmc_clk, gls_reset)
 		begin
-		  if(gls_reset='1') then
-			 address_bridge <= (others => '0');
-		  elsif(falling_edge(gpmc_clk)) then
-			 if gpmc_advn = '0' then
-				address_bridge <= gpmc_ad;
-			 elsif readn = '0' then
-				address_bridge <= address_bridge + 1;
-			 end if;
-		  end if;
+			if(gls_reset='1') then
+				address_bridge <= (others => '0');
+			elsif(falling_edge(gpmc_clk)) then
+				if gpmc_advn = '0' then
+					address_bridge <= gpmc_ad;
+			 	elsif readn = '0' then
+					address_bridge <= address_bridge + 1;
+			 	end if;
+		  	end if;
 		end process;
 	end generate;
 	
 	gen_no_burst : if burst = false generate
 		process(gpmc_clk, gls_reset)
 		begin
-		  if(gls_reset='1') then
-			 address_bridge <= (others => '0');
-		  elsif(falling_edge(gpmc_clk)) then
-			 if gpmc_advn = '0' then
-				address_bridge <= gpmc_ad;
-			 end if;
-		  end if;
+			if(gls_reset='1') then
+				address_bridge <= (others => '0');
+		  	elsif(falling_edge(gpmc_clk)) then
+				if gpmc_advn = '0' then
+					address_bridge <= gpmc_ad;
+				end if;
+		  	end if;
 		end process;
 	end generate;
 
 	process(gpmc_clk, gls_reset)
 	begin
-	  if(gls_reset='1') then
-		 csn_bridge <= '1';
-		 wen_bridge   <= '1';
-		 oen_bridge <= '1';
-		 readdata <= (others => '0');
-		 writedata_bridge <= (others => '0');
-		 advn_bridge <= '1';
-	  elsif(falling_edge(gpmc_clk)) then
-		 csn_bridge  <= gpmc_csn;
-		 wen_bridge   <= gpmc_wen;
-		 oen_bridge   <= gpmc_oen;
-		 advn_bridge <= gpmc_advn;
-		 readdata <= readdata_bridge;
-	 	 writedata_bridge <= gpmc_ad;
+		if(gls_reset='1') then
+			csn_bridge <= '1';
+			wen_bridge   <= '1';
+			oen_bridge <= '1';
+			readdata <= (others => '0');
+			writedata_bridge <= (others => '0');
+			advn_bridge <= '1';
+		elsif(falling_edge(gpmc_clk)) then
+			csn_bridge  <= gpmc_csn;
+			wen_bridge   <= gpmc_wen;
+			oen_bridge   <= gpmc_oen;
+			advn_bridge <= gpmc_advn;
+			readdata <= readdata_bridge;
+			writedata_bridge <= gpmc_ad;
+		end if;
 	end process;
 
 	process(gls_clk, gls_reset)
 	begin
-	  if(gls_reset='1') then
-		 csn <= '1';
-		 writen   <= '1';
-		 readn <= '1';
-		 writedata <= (others => '0');
-		 address <= (others => '0');
-	  elsif(rising_edge(gls_clk)) then
-		 csn  <= csn_bridge;
-		 writen   <= wen_bridge;
-		 readn   <= oen_bridge;
-		 writedata <= writedata_bridge;
-		 if wbm_ack = '1' then
-			readdata_bridge <= wbm_readdata;
-		 end if ;
-		 address <= address_bridge;
-	  end if;
+		if(gls_reset='1') then
+			csn <= '1';
+			writen   <= '1';
+			readn <= '1';
+			writedata <= (others => '0');
+			address <= (others => '0');
+		elsif(rising_edge(gls_clk)) then
+			csn  <= csn_bridge;
+			writen   <= wen_bridge;
+			readn   <= oen_bridge;
+			writedata <= writedata_bridge;
+			
+			if wbm_ack = '1' then
+				readdata_bridge <= wbm_readdata;
+			end if;
+
+			address <= address_bridge;
+		end if;
 	end process;
 
 	gpmc_ad <= readdata when (gpmc_csn = '0' and gpmc_oen = '0') else
-			 (others => 'Z');
+		(others => 'Z');
 
 	wbm_address <= address;
 	wbm_writedata  <= writedata;
