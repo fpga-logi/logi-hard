@@ -141,10 +141,7 @@ gen_syn : if sync = true generate
 		 oen_bridge   <= gpmc_oen ;
 		 advn_bridge <= gpmc_advn ;
 		 readdata <= readdata_bridge  ;
-		 
-		 if(gpmc_csn = '0' and gpmc_wen = '0') then
-		 	writedata_bridge <= gpmc_ad;
-	  end if;
+	 	 writedata_bridge <= gpmc_ad;
 	end process;
 	
 	process(gls_clk, gls_reset)
