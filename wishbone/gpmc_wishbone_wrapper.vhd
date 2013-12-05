@@ -150,6 +150,8 @@ gen_syn : if sync = true generate
 			
 			if wbm_ack = '1' then
 				readdata_bridge <= wbm_readdata;
+			else
+				readdata_bridge <= x"0000";
 			end if;
 
 			address <= address_bridge;
