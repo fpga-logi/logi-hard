@@ -52,7 +52,6 @@ entity logi_virtual_led is
 end logi_virtual_led;
 
 architecture Behavioral of logi_virtual_led is
-	signal reg_in_d : std_logic_vector(15 downto 0) ;
 	signal read_ack : std_logic ;
 	signal write_ack : std_logic ;
 begin
@@ -77,8 +76,7 @@ begin
     if gls_reset = '1' then
         
     elsif rising_edge(gls_clk) then
-		  reg_in_d <= led ; -- latching inputs
-		  wbs_readdata <= reg_in_d ; -- this is not clear if this should only happen in the read part
+		  wbs_readdata <= led ; -- this is not clear if this should only happen in the read part
         if (wbs_strobe = '1' and wbs_write = '0'  and wbs_cycle = '1' ) then
             read_ack <= '1';
         else
