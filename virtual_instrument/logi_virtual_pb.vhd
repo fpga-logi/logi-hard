@@ -68,7 +68,6 @@ begin
 					reg_out_d <= wbs_writedata;
 					write_ack <= '1';
 			  else
-					reg_out_d <= (others => '0');
 					write_ack <= '0';
 			  end if;
 		 end if;
