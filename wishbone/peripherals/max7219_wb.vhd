@@ -1,3 +1,25 @@
+
+
+-- ----------------------------------------------------------------------
+--LOGI-hard
+--Copyright (c) 2013, Jonathan Piat, Michael Jones, All rights reserved.
+--
+--This library is free software; you can redistribute it and/or
+--modify it under the terms of the GNU Lesser General Public
+--License as published by the Free Software Foundation; either
+--version 3.0 of the License, or (at your option) any later version.
+--
+--This library is distributed in the hope that it will be useful,
+--but WITHOUT ANY WARRANTY; without even the implied warranty of
+--MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+--Lesser General Public License for more details.
+--
+--You should have received a copy of the GNU Lesser General Public
+--License along with this library.
+-- ----------------------------------------------------------------------
+
+
+
 ----------------------------------------------------------------------------------
 -- Company: 
 -- Engineer: 
@@ -6,8 +28,8 @@
 -- Design Name: 
 -- Module Name:    max7219 - Behavioral 
 -- Project Name: 
--- Target Devices: 
--- Tool versions: 
+-- Target Devices: Spartan 6 
+-- Tool versions: ISE 14.1 
 -- Description: 
 --
 -- Dependencies: 
