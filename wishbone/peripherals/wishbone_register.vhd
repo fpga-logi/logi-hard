@@ -88,9 +88,9 @@ begin
         
     elsif rising_edge(gls_clk) then
 		  reg_in_d <= reg_in ; -- latching inputs
+		  wbs_readdata <= reg_in_d(conv_integer(wbs_add)) ; -- this is not clear if this should only happen in the read part
         if (wbs_strobe = '1' and wbs_write = '0'  and wbs_cycle = '1' ) then
             read_ack <= '1';
-				wbs_readdata <= reg_in_d(conv_integer(wbs_add)) ;
         else
             read_ack <= '0';
         end if;
