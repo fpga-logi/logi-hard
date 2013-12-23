@@ -51,8 +51,10 @@ generic(
 		  wbs_write     : in std_logic ;
 		  wbs_ack       : out std_logic;
 		  -- out signals
-		  cathodes : in std_logic_vector(8 downto 0); -- common cathode
-		  anodes : in std_logic_vector(8 downto 0)
+		  --cathodes : in std_logic_vector(8 downto 0); -- common cathode
+		  --anodes : in std_logic_vector(8 downto 0)
+		  cathodes : in std_logic_vector(7 downto 0); -- common cathode
+		  anodes : in std_logic_vector(7 downto 0)
 	 );
 end logi_virtual_7seg;
 
@@ -69,7 +71,7 @@ begin
 
 -- sgement behavior, register loaded on cathode = '0' then value is kept until 
 -- the fade counter reaches 0
-gen_segi : for i in 0 to 8 generate
+gen_segi : for i in 0 to 7 generate
 	process(gls_clk, gls_reset)
 	begin
 		if gls_reset = '1' then

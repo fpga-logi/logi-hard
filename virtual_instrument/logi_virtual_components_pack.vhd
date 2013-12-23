@@ -100,8 +100,8 @@ generic(
 		  wbs_write     : in std_logic ;
 		  wbs_ack       : out std_logic;
 		  -- out signals
-		  cathodes : in std_logic_vector(8 downto 0); -- common cathode
-		  anodes : in std_logic_vector(8 downto 0)
+		  cathodes : in std_logic_vector(7 downto 0); -- common cathode
+		  anodes : in std_logic_vector(7 downto 0)
 	 );
 end component;
 
