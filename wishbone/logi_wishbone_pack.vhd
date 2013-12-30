@@ -34,6 +34,10 @@ use IEEE.STD_LOGIC_1164.all;
 
 package logi_wishbone_pack is
 
+type array_of_addr is array(NATURAL range <>) of std_logic_vector(15 downto 0);
+type array_of_slv16 is array(NATURAL range <>) of std_logic_vector(15 downto 0);
+
+
  component gpmc_wishbone_wrapper is
     generic(sync : boolean := false ; burst : boolean := false );
 	 port
@@ -81,6 +85,36 @@ generic(BIG_ENDIAN : boolean := true);
 	wbm_ack        : in std_logic ;                      -- acknowledge
 	wbm_cycle      : out std_logic                       -- bus cycle in progress
 	);
+end component;
+
+
+component wishbone_intercon is
+generic(memory_map : array_of_addr := ("000000000000000", "00000000000001-") );
+port(
+		-- Syscon signals
+		gls_reset    : in std_logic ;
+		gls_clk      : in std_logic ;
+		
+		
+		-- Wishbone slave signals
+		wbs_addr       : in std_logic_vector(15 downto 0) ;
+		wbs_writedata : in std_logic_vector(15 downto 0);
+		wbs_readdata  : out std_logic_vector(15 downto 0);
+		wbs_strobe    : in std_logic ;
+		wbs_cycle      : in std_logic ;
+		wbs_write     : in std_logic ;
+		wbs_ack       : out std_logic;
+		
+		-- Wishbone master signals
+		wbm_addr       : out array_of_slv16((memory_map'length-1) downto 0) ;
+		wbm_writedata : out array_of_slv16((memory_map'length-1) downto 0);
+		wbm_readdata  : in array_of_slv16((memory_map'length-1) downto 0);
+		wbm_strobe    : out std_logic_vector((memory_map'length-1) downto 0) ;
+		wbm_cycle     : out std_logic_vector((memory_map'length-1) downto 0) ;
+		wbm_write     : out std_logic_vector((memory_map'length-1) downto 0) ;
+		wbm_ack       : in std_logic_vector((memory_map'length-1) downto 0)
+		
+);
 end component;
 
 end logi_wishbone_pack;
