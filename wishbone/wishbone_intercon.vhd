@@ -82,14 +82,13 @@ gen_cs : for i in 0 to (memory_map'length-1) generate
 	
 	wbs_readdata <= wbm_readdata(i) when cs_vector(i) = '1' else
 						(others => 'Z') ;
-						
-	wbs_ack <= wbm_ack(i) when cs_vector(i) = '1' else 
-				  'Z' ;
 	
 end generate ;
 
-wbs_ack <= '0' when cs_vector = 0 else
-			  'Z' ;
+wbs_ack <= '1' when (cs_vector and wbm_ack) /= 0 else
+			  '0' ;
+wbs_readdata <= (others => '0') when cs_vector = 0 else
+					(others => 'Z') ;
 
 end Behavioral;
 
