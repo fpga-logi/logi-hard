@@ -37,7 +37,7 @@ package logi_wishbone_peripherals_pack is
 type wishbone_bus_16bit is
   record
      -- Wishbone signals
-	wbs_add       : std_logic_vector(15 downto 0) ;
+	wbs_address       : std_logic_vector(15 downto 0) ;
 	wbs_writedata :  std_logic_vector(15 downto 0);
 	wbs_readdata  :  std_logic_vector(15 downto 0);
 	wbs_strobe    : std_logic ;
@@ -71,7 +71,7 @@ component wishbone_register is
 		  gls_reset    : in std_logic ;
 		  gls_clk      : in std_logic ;
 		  -- Wishbone signals
-		  wbs_add       : in std_logic_vector(15 downto 0) ;
+		  wbs_address       : in std_logic_vector(15 downto 0) ;
 		  wbs_writedata : in std_logic_vector( wb_size-1 downto 0);
 		  wbs_readdata  : out std_logic_vector( wb_size-1 downto 0);
 		  wbs_strobe    : in std_logic ;
@@ -97,7 +97,7 @@ port(
 	gls_reset    : in std_logic ;
 	gls_clk      : in std_logic ;
 	-- Wishbone signals
-	wbs_add       : in std_logic_vector(ADDR_WIDTH-1 downto 0) ;
+	wbs_address       : in std_logic_vector(ADDR_WIDTH-1 downto 0) ;
 	wbs_writedata : in std_logic_vector( WIDTH-1 downto 0);
 	wbs_readdata  : out std_logic_vector( WIDTH-1 downto 0);
 	wbs_strobe    : in std_logic ;
@@ -123,7 +123,7 @@ port(
 		  gls_reset    : in std_logic ;
 		  gls_clk      : in std_logic ;
 		  -- Wishbone signals
-		  wbs_add       : in std_logic_vector(15 downto 0) ;
+		  wbs_address       : in std_logic_vector(15 downto 0) ;
 		  wbs_writedata : in std_logic_vector( wb_size-1 downto 0);
 		  wbs_readdata  : out std_logic_vector( wb_size-1 downto 0);
 		  wbs_strobe    : in std_logic ;
@@ -154,7 +154,7 @@ port(
 		  gls_reset    : in std_logic ;
 		  gls_clk      : in std_logic ;
 		  -- Wishbone signals
-		  wbs_add       : in std_logic_vector(15 downto 0) ;
+		  wbs_address       : in std_logic_vector(15 downto 0) ;
 		  wbs_writedata : in std_logic_vector( wb_size-1 downto 0);
 		  wbs_readdata  : out std_logic_vector( wb_size-1 downto 0);
 		  wbs_strobe    : in std_logic ;
@@ -177,7 +177,7 @@ port(
 		  gls_reset    : in std_logic ;
 		  gls_clk      : in std_logic ;
 		  -- Wishbone signals
-		  wbs_add       : in std_logic_vector(15 downto 0) ;
+		  wbs_address       : in std_logic_vector(15 downto 0) ;
 		  wbs_writedata : in std_logic_vector( wb_size-1 downto 0);
 		  wbs_readdata  : out std_logic_vector( wb_size-1 downto 0);
 		  wbs_strobe    : in std_logic ;
@@ -202,7 +202,7 @@ port(
 	gls_reset    : in std_logic ;
 	gls_clk      : in std_logic ;
 	-- Wishbone signals
-	wbs_add       : in std_logic_vector(ADDR_WIDTH-1 downto 0) ;
+	wbs_address       : in std_logic_vector(ADDR_WIDTH-1 downto 0) ;
 	wbs_writedata : in std_logic_vector( DATA_WIDTH-1 downto 0);
 	wbs_readdata  : out std_logic_vector( DATA_WIDTH-1 downto 0);
 	wbs_strobe    : in std_logic ;
@@ -227,7 +227,7 @@ port(
 		  gls_reset    : in std_logic ;
 		  gls_clk      : in std_logic ;
 		  -- Wishbone signals
-		  wbs_add       : in std_logic_vector(wb_addr_size-1 downto 0) ;
+		  wbs_address       : in std_logic_vector(wb_addr_size-1 downto 0) ;
 		  wbs_writedata : in std_logic_vector( wb_size-1 downto 0);
 		  wbs_readdata  : out std_logic_vector( wb_size-1 downto 0);
 		  wbs_strobe    : in std_logic ;

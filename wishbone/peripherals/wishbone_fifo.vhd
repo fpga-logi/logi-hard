@@ -64,7 +64,7 @@ port(
 	gls_reset    : in std_logic ;
 	gls_clk      : in std_logic ;
 	-- Wishbone signals
-	wbs_add       : in std_logic_vector(ADDR_WIDTH-1 downto 0) ;
+	wbs_address       : in std_logic_vector(ADDR_WIDTH-1 downto 0) ;
 	wbs_writedata : in std_logic_vector( WIDTH-1 downto 0);
 	wbs_readdata  : out std_logic_vector( WIDTH-1 downto 0);
 	wbs_strobe    : in std_logic ;

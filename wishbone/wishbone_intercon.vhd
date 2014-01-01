@@ -42,7 +42,7 @@ port(
 		
 		
 		-- Wishbone slave signals
-		wbs_addr       : in std_logic_vector(15 downto 0) ;
+		wbs_addressess       : in std_logic_vector(15 downto 0) ;
 		wbs_writedata : in std_logic_vector(15 downto 0);
 		wbs_readdata  : out std_logic_vector(15 downto 0);
 		wbs_strobe    : in std_logic ;
@@ -51,7 +51,7 @@ port(
 		wbs_ack       : out std_logic;
 		
 		-- Wishbone master signals
-		wbm_addr       : out array_of_slv16((memory_map'length-1) downto 0) ;
+		wbm_address       : out array_of_slv16((memory_map'length-1) downto 0) ;
 		wbm_writedata : out array_of_slv16((memory_map'length-1) downto 0);
 		wbm_readdata  : in array_of_slv16((memory_map'length-1) downto 0);
 		wbm_strobe    : out std_logic_vector((memory_map'length-1) downto 0) ;
@@ -71,10 +71,10 @@ begin
 
 gen_cs : for i in 0 to (memory_map'length-1) generate
 	
-	cs_vector(i) <= '1' when wbs_addr = memory_map(i) else
+	cs_vector(i) <= '1' when wbs_address = memory_map(i) else
 					    '0' ;
 						 
-	wbm_addr(i) <= wbs_addr ;
+	wbm_address(i) <= wbs_address ;
 	wbm_writedata(i) <= wbs_writedata ;
 	wbm_write(i) <= wbs_write and cs_vector(i) ;
 	wbm_strobe(i) <= wbs_strobe and cs_vector(i) ;

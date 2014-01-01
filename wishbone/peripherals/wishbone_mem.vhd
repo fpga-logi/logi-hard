@@ -61,7 +61,7 @@ port(
 		  gls_reset    : in std_logic ;
 		  gls_clk      : in std_logic ;
 		  -- Wishbone signals
-		  wbs_add       : in std_logic_vector(wb_addr_size-1 downto 0) ;
+		  wbs_address       : in std_logic_vector(wb_addr_size-1 downto 0) ;
 		  wbs_writedata : in std_logic_vector( wb_size-1 downto 0);
 		  wbs_readdata  : out std_logic_vector( wb_size-1 downto 0);
 		  wbs_strobe    : in std_logic ;
@@ -130,7 +130,7 @@ ram0 : dpram_NxN
  		clk => gls_clk,
  		we => write_mem ,
  		di => wbs_writedata, 
-		a	=> wbs_add ,
+		a	=> wbs_address ,
  		dpra => X"0000",
 		spo => wbs_readdata,
 		dpo => open 		

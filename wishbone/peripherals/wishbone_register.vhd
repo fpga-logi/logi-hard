@@ -67,7 +67,7 @@ entity wishbone_register is
 		  gls_reset    : in std_logic ;
 		  gls_clk      : in std_logic ;
 		  -- Wishbone signals
-		  wbs_add       : in std_logic_vector(15 downto 0) ;
+		  wbs_address       : in std_logic_vector(15 downto 0) ;
 		  wbs_writedata : in std_logic_vector( wb_size-1 downto 0);
 		  wbs_readdata  : out std_logic_vector( wb_size-1 downto 0);
 		  wbs_strobe    : in std_logic ;
@@ -94,7 +94,7 @@ begin
         write_ack <= '0';
     elsif rising_edge(gls_clk) then
         if ((wbs_strobe and wbs_write and wbs_cycle) = '1' ) then
-            reg_out_d(conv_integer(wbs_add)) <= wbs_writedata;
+            reg_out_d(conv_integer(wbs_address)) <= wbs_writedata;
             write_ack <= '1';
         else
             write_ack <= '0';
@@ -110,7 +110,7 @@ begin
         
     elsif rising_edge(gls_clk) then
 		  reg_in_d <= reg_in ; -- latching inputs
-		  wbs_readdata <= reg_in_d(conv_integer(wbs_add)) ; -- this is not clear if this should only happen in the read part
+		  wbs_readdata <= reg_in_d(conv_integer(wbs_address)) ; -- this is not clear if this should only happen in the read part
         if (wbs_strobe = '1' and wbs_write = '0'  and wbs_cycle = '1' ) then
             read_ack <= '1';
         else
