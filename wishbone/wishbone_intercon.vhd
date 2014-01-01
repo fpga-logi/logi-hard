@@ -42,7 +42,7 @@ port(
 		
 		
 		-- Wishbone slave signals
-		wbs_addressess       : in std_logic_vector(15 downto 0) ;
+		wbs_address       : in std_logic_vector(15 downto 0) ;
 		wbs_writedata : in std_logic_vector(15 downto 0);
 		wbs_readdata  : out std_logic_vector(15 downto 0);
 		wbs_strobe    : in std_logic ;

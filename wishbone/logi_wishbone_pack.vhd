@@ -97,7 +97,7 @@ port(
 		
 		
 		-- Wishbone slave signals
-		wbs_addr       : in std_logic_vector(15 downto 0) ;
+		wbs_address       : in std_logic_vector(15 downto 0) ;
 		wbs_writedata : in std_logic_vector(15 downto 0);
 		wbs_readdata  : out std_logic_vector(15 downto 0);
 		wbs_strobe    : in std_logic ;
@@ -106,7 +106,7 @@ port(
 		wbs_ack       : out std_logic;
 		
 		-- Wishbone master signals
-		wbm_addr       : out array_of_slv16((memory_map'length-1) downto 0) ;
+		wbm_address       : out array_of_slv16((memory_map'length-1) downto 0) ;
 		wbm_writedata : out array_of_slv16((memory_map'length-1) downto 0);
 		wbm_readdata  : in array_of_slv16((memory_map'length-1) downto 0);
 		wbm_strobe    : out std_logic_vector((memory_map'length-1) downto 0) ;
