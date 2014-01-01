@@ -34,7 +34,7 @@ library work ;
 use work.logi_wishbone_pack.all ;
 
 entity wishbone_intercon is
-generic(memory_map : array_of_addr := ("000000000000000", "00000000000001-") );
+generic(memory_map : array_of_addr );
 port(
 		-- Syscon signals
 		gls_reset    : in std_logic ;
@@ -71,7 +71,7 @@ begin
 
 gen_cs : for i in 0 to (memory_map'length-1) generate
 	
-	cs_vector(i) <= '1' when wbs_address = memory_map(i) else
+	cs_vector(i) <= '1' when wbs_address(wbs_address'length-1 downto find_X(memory_map(i))) = memory_map(i)(wbs_address'length-1 downto find_X(memory_map(i))) else
 					    '0' ;
 						 
 	wbm_address(i) <= wbs_address ;

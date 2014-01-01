@@ -34,6 +34,8 @@ use IEEE.STD_LOGIC_1164.all;
 
 package logi_wishbone_pack is
 
+function find_X(slv : std_logic_vector) return natural;
+
 type array_of_addr is array(NATURAL range <>) of std_logic_vector(15 downto 0);
 type array_of_slv16 is array(NATURAL range <>) of std_logic_vector(15 downto 0);
 
@@ -89,7 +91,7 @@ end component;
 
 
 component wishbone_intercon is
-generic(memory_map : array_of_addr := ("000000000000000", "00000000000001-") );
+generic(memory_map : array_of_addr );
 port(
 		-- Syscon signals
 		gls_reset    : in std_logic ;
@@ -120,5 +122,15 @@ end component;
 end logi_wishbone_pack;
 
 package body logi_wishbone_pack is
+
+ function find_X(slv : std_logic_vector) return natural is
+	begin
+	  for i in slv'range loop
+		 if slv(i) ='X' then
+			return i+1 ;
+		 end if;
+	  end loop;
+  return 0;
+end function find_X;
 
 end logi_wishbone_pack;
