@@ -34,29 +34,6 @@ use IEEE.STD_LOGIC_1164.all;
 
 package logi_wishbone_peripherals_pack is
 
-type wishbone_bus_16bit is
-  record
-     -- Wishbone signals
-	wbs_address       : std_logic_vector(15 downto 0) ;
-	wbs_writedata :  std_logic_vector(15 downto 0);
-	wbs_readdata  :  std_logic_vector(15 downto 0);
-	wbs_strobe    : std_logic ;
-	wbs_cycle      : std_logic ;
-	wbs_write     :  std_logic ;
-	wbs_ack       :  std_logic;
-end record;
-
-type fifo_interface_16_bit is
-  record
-	fifo_data_in  : std_logic_vector(15 downto 0) ;
-	fifo_data_out :  std_logic_vector(15 downto 0);
-	fifo_rd    : std_logic ;
-	fifo_wr    : std_logic ;
-	fifo_full  :  std_logic ;
-	fifo_empty :  std_logic;
-end record;
-
-
 type slv16_array is array(natural range <>) of std_logic_vector(15 downto 0);
 type slv32_array is array(natural range <>) of std_logic_vector(31 downto 0);
 
