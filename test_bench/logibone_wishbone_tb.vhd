@@ -32,10 +32,10 @@ USE ieee.std_logic_1164.ALL;
 -- arithmetic functions with Signed or Unsigned values
 --USE ieee.numeric_std.ALL;
  
-ENTITY logibonone_wishbone_tb IS
-END logibonone_wishbone_tb;
+ENTITY logibone_wishbone_tb IS
+END logibone_wishbone_tb;
  
-ARCHITECTURE behavior OF logibonone_wishbone_tb IS 
+ARCHITECTURE behavior OF logibone_wishbone_tb IS 
  
     -- Component Declaration for the Unit Under Test (UUT)
  
