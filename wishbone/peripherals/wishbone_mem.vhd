@@ -122,7 +122,7 @@ begin
     end if;
 end process read_bloc;
 
-write_mem  <= wbs_strobe and wbs_write  and wbs_cycle  ;
+write_mem  <= wbs_strobe and wbs_write and wbs_cycle  ;
 
 ram0 : dpram_NxN 
 	generic map(SIZE => mem_size,  NBIT => wb_size, ADDR_WIDTH=> wb_addr_size)

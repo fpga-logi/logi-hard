@@ -108,7 +108,7 @@ begin
         
     elsif rising_edge(gls_clk) then
         if (wbs_strobe = '1' and wbs_write = '0'  and wbs_cycle = '1' ) then
-				wbs_readdata <= pwm_regs(conv_integer(wbs_add)) ;
+				wbs_readdata <= pwm_regs(conv_integer(wbs_address)) ;
             read_ack <= '1';
         else
             read_ack <= '0';
@@ -123,7 +123,7 @@ begin
         
     elsif rising_edge(gls_clk) then
         if ((wbs_strobe and wbs_write and wbs_cycle) = '1' ) then
-            pwm_regs(conv_integer(wbs_add)) <= wbs_writedata;
+            pwm_regs(conv_integer(wbs_address)) <= wbs_writedata;
         end if ;
     end if;
 end process register_mngmt;
