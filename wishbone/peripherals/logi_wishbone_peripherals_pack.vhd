@@ -86,7 +86,8 @@ port(
 	wrB, rdA : in std_logic ; --! logic side fifo control signal
 	inputB: in std_logic_vector((WIDTH - 1) downto 0); --! data input of fifo B
 	outputA	: out std_logic_vector((WIDTH - 1) downto 0); --! data output of fifo A
-	emptyA, fullA, emptyB, fullB, burst_available_B, burst_available_A	:	out std_logic --! fifo state signals
+	emptyA, fullA, emptyB, fullB, burst_available_B, burst_available_A	:	out std_logic ;--! fifo state signals
+	fifoA_reset, fifoB_reset : out std_logic
 );
 end component;
 
@@ -118,7 +119,7 @@ end component;
 
 
 
-component servo_controller_wb is
+component wishbone_servo is
 generic(NB_SERVOS : positive := 2;
 			wb_size : natural := 16 ; -- Data port size for wishbone
 			pos_width	:	integer := 8 ;

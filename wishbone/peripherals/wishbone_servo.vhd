@@ -53,7 +53,7 @@ use IEEE.NUMERIC_STD.ALL;
 --library UNISIM;
 --use UNISIM.VComponents.all;
 
-entity servo_controller_wb is
+entity wishbone_servo is
 generic(NB_SERVOS : positive := 2;
 			wb_size : natural := 16 ; -- Data port size for wishbone
 			pos_width	:	integer := 8 ;
@@ -79,9 +79,9 @@ port(
 
 );
 
-end servo_controller_wb;
+end wishbone_servo;
 
-architecture Behavioral of servo_controller_wb is
+architecture Behavioral of wishbone_servo is
 
 component servo_controller is
   generic(

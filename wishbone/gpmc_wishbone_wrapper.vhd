@@ -62,9 +62,17 @@ signal read, readn      : std_logic;
 signal cs, csn : std_logic ;
 signal writedata, writedata_bridge,readdata, readdata_bridge  : std_logic_vector(15 downto 0);
 signal address, address_bridge : std_logic_vector(15 downto 0);
+signal burst_counter : std_logic_vector(16 downto 0);
 signal wbm_readdata_bridge : std_logic_vector(15 downto 0); 
 signal csn_bridge,wen_bridge, oen_bridge, advn_bridge : std_logic;
 signal gpmc_clk_old, gpmc_clk_re : std_logic;
+
+attribute IOB: string;
+attribute IOB of csn_bridge: signal is "true";
+attribute IOB of wen_bridge: signal is "true";
+attribute IOB of oen_bridge    : signal is "true";
+--attribute IOB of advn_bridge    : signal is "true";
+--attribute IOB of address_bridge : signal is "true" ;
 begin
 
 gen_async : if sync = false generate
@@ -117,12 +125,26 @@ gen_syn : if sync = true generate
 			elsif(falling_edge(gpmc_clk)) then
 				if gpmc_advn = '0' then
 					address_bridge <= gpmc_ad;
-			 	elsif readn = '0' then
+			 	elsif readn = '0' and burst_counter(16) = '0' then
 					address_bridge <= address_bridge + 1;
 			 	end if;
 		  	end if;
 		end process;
 	end generate;
+	
+	
+		process(gpmc_clk, gls_reset)
+		begin
+			if(gls_reset='1') then
+				burst_counter <= (others => '0');
+			elsif(falling_edge(gpmc_clk)) then
+				if gpmc_csn = '1' then
+					burst_counter <= '0' & X"0001";
+			 	elsif readn = '0' and burst_counter(16) = '0' then
+					burst_counter <= burst_counter(15 downto 0) & '0'; -- burst access should be a maximum of 16 accesses
+			 	end if;
+		  	end if;
+		end process;
 	
 	gen_no_burst : if burst = false generate
 		process(gpmc_clk, gls_reset)
@@ -169,13 +191,11 @@ gen_syn : if sync = true generate
 			writen   <= wen_bridge;
 			readn   <= oen_bridge;
 			writedata <= writedata_bridge;
-			
 			if wbm_ack = '1' then
 				readdata_bridge <= wbm_readdata;
 			end if;
-
 			address <= address_bridge;
-		end if;
+		end if ;
 	end process;
 
 	gpmc_ad <= readdata when (gpmc_csn = '0' and gpmc_oen = '0') else
