@@ -82,6 +82,15 @@ port(
 );
 end component;
 
+component heart_beat is
+    generic(clk_period_ns : positive := 10; 
+				beat_period_ns : positive := 1_000_000_000;
+				beat_length_ns : positive := 200_000_000);
+	 port ( clk : in  STD_LOGIC;
+           reset : in  STD_LOGIC;
+           beat_out : out  STD_LOGIC);
+end component;
+
 
 end control_pack;
 
