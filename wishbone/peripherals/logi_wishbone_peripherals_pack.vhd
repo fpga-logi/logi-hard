@@ -67,7 +67,8 @@ generic( ADDR_WIDTH: positive := 16; --! width of the address bus
 			SIZE	: positive	:= 128; --! fifo depth
 			B_BURST_SIZE : positive := 4;
 			A_BURST_SIZE : positive := 4;
-			SYNC_LOGIC_INTERFACE : boolean := false 
+			SYNC_LOGIC_INTERFACE : boolean := false;
+			AUTO_INC : boolean := false
 			); 
 port(
 	-- Syscon signals

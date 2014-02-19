@@ -57,7 +57,8 @@ generic( ADDR_WIDTH: positive := 16; --! width of the address bus
 			SIZE	: positive	:= 128; --! fifo depth
 			B_BURST_SIZE : positive := 4;
 			A_BURST_SIZE : positive := 4;
-			SYNC_LOGIC_INTERFACE : boolean := false 
+			SYNC_LOGIC_INTERFACE : boolean := false;
+			AUTO_INC : boolean := false
 			); 
 port(
 	-- Syscon signals
@@ -146,7 +147,7 @@ fifo_A : dp_fifo -- write from bus, read from logic
 	); 
 	
 fifo_B : dp_fifo -- read from bus, write from logic
-	generic map(N => SIZE , W => WIDTH, SYNC_WR => SYNC_LOGIC_INTERFACE, SYNC_RD => true)
+	generic map(N => SIZE , W => WIDTH, SYNC_WR => SYNC_LOGIC_INTERFACE, SYNC_RD => AUTO_INC)
 	port map(
  		clk => gls_clk, resetn => gls_resetn , sraz => srazB , 
  		wr => wrB, rd => fifoB_rd,
@@ -184,9 +185,17 @@ fifo_data <= fifoB_out ;
 wbs_readdata <= control_latched when  data_access = '0' else
 					 fifo_data ; 
 
-
-fifoB_rd <= addr_inc when data_access = '1' and wbs_strobe = '1' and wbs_write = '0'  and wbs_cycle = '1' else
+gen_auto_inc : if AUTO_INC = true generate
+	fifoB_rd <= addr_inc when data_access = '1' and wbs_strobe = '1' and wbs_write = '0'  and wbs_cycle = '1' else
 				'0' ;
+end generate ;
+
+gen_no_auto_inc : if AUTO_INC = false generate
+	fifoB_rd <= '1' when wbs_address((address_space_nbit-1)) = '0'  and wbs_strobe = '1' and wbs_write = '0'  and wbs_cycle = '1' else
+				'0' ;
+end generate ;
+
+
 				
 fifoA_wr <= '1' when wbs_address((address_space_nbit-1)) = '0' and (wbs_strobe and wbs_write and wbs_cycle)= '1' else
 				'0' ;
