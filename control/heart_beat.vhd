@@ -37,8 +37,8 @@ entity heart_beat is
     generic(clk_period_ns : positive := 10; 
 				beat_period_ns : positive := 900_000_000;
 				beat_length_ns : positive := 100_000_000);
-	 port ( clk : in  STD_LOGIC;
-           reset : in  STD_LOGIC;
+	 port ( gls_clk : in  STD_LOGIC;
+           gls_reset : in  STD_LOGIC;
            beat_out : out  STD_LOGIC);
 end heart_beat;
 
@@ -52,11 +52,11 @@ signal time_counter,load_value : std_logic_vector(nbit(period_count)-1 downto 0)
 signal load_counter : std_logic ;
 begin
 
-time_count0 : process(clk, reset)
+time_count0 : process(gls_clk, gls_reset)
 begin
-	if reset = '1' then
+	if gls_reset = '1' then
 		time_counter <= std_logic_vector(to_unsigned(period_count, nbit(period_count)));
-	elsif clk'event and clk = '1' then
+	elsif gls_clk'event and gls_clk = '1' then
 		if load_counter = '1' then
 			time_counter <= load_value ;
 		else
@@ -67,11 +67,11 @@ end process ;
 load_counter <= '1' when time_counter = 0 else
 					 '0' ;
 
-cycle_count0 : process(clk, reset)
+cycle_count0 : process(gls_clk, gls_reset)
 begin
-	if reset = '1' then
+	if gls_reset = '1' then
 		cycle_counter <= (others => '0');
-	elsif clk'event and clk = '1' then
+	elsif gls_clk'event and gls_clk = '1' then
 		if time_counter = 0 then
 			cycle_counter <= cycle_counter + 1 ;
 		end if ;
