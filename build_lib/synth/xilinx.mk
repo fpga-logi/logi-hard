@@ -31,6 +31,7 @@
 #
 # TODO: .xco files are device dependant, should use a template based system
 
+SHELL = /bin/bash
 coregen_work_dir ?= ./coregen-tmp
 map_opts ?= -w -logic_opt off -ol high -t 1 -xt 0 -register_duplication off -r 4 -global_opt off -mt off -ir off -pr off -lc off -power off
 par_opts ?= -ol high
