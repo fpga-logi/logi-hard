@@ -73,7 +73,7 @@ port(
 		  wbs_cycle      : in std_logic ;
 		  wbs_write     : in std_logic ;
 		  wbs_ack       : out std_logic;
-		  
+		  failsafe : in std_logic ;
 		  servos : out std_logic_vector(NB_SERVOS-1 downto 0)
 		  
 
@@ -100,6 +100,9 @@ constant reset_pulse : std_logic_vector(15 downto 0) := X"8080";
 type reg16_array is array (0 to (NB_SERVOS-1)) of std_logic_vector(15 downto 0) ;
 
 signal pos_regs : reg16_array := (others => reset_pulse);
+signal failsafe_regs : reg16_array := (others => reset_pulse);
+
+signal servo_pos : reg16_array ;
 
 signal read_ack : std_logic ;
 signal write_ack : std_logic ;
@@ -135,31 +138,39 @@ begin
         end if;
     end if;
 end process read_bloc;
-wbs_readdata <= pos_regs(conv_integer(wbs_add)) ;
+wbs_readdata <= pos_regs(conv_integer(wbs_address)) ;
 
 register_mngmt : process(gls_clk, gls_reset)
 begin
     if gls_reset = '1' then
         pos_regs <= (others => reset_pulse) ;
     elsif rising_edge(gls_clk) then
-        if ((wbs_strobe and wbs_write and wbs_cycle) = '1' ) then
-            pos_regs(conv_integer(wbs_add)) <= wbs_writedata;
+        if ((wbs_strobe and wbs_write and wbs_cycle) = '1' ) and wbs_address(0) = '0' then
+            pos_regs(conv_integer(wbs_address(15 downto 1))) <= wbs_writedata;
+        end if ;
+		  
+		  if ((wbs_strobe and wbs_write and wbs_cycle) = '1' ) and wbs_address(0) = '1' then
+            failsafe_regs(conv_integer(wbs_address(15 downto 1))) <= wbs_writedata;
         end if ;
     end if;
 end process register_mngmt;
 
 
 gen_servo_ctrl : for i in 0 to (NB_SERVOS-1) generate
+
+	servo_pos(i) <= pos_regs(i) when failsafe = '0' else
+						failsafe_regs(i) ;
+	
 	servo_ctrl : servo_controller
 	  generic map(
-		 pos_width	=> 8,
+		 pos_width	=> pos_width,
 		 clock_period  => clock_period,
 		 minimum_high_pulse_width => minimum_high_pulse_width,
 		 maximum_high_pulse_width => maximum_high_pulse_width
 		 )
 	  port map(clk => gls_clk,
 			  rst => gls_reset,
-			  servo_position => pos_regs(i)(pos_width-1 downto 0),
+			  servo_position =>servo_pos(i)(pos_width-1 downto 0),
 			  servo_out      => servos(i)
 	  );
 end generate ;

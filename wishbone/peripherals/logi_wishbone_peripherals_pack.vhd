@@ -141,6 +141,7 @@ port(
 		  wbs_write     : in std_logic ;
 		  wbs_ack       : out std_logic;
 		  
+		  failsafe : in std_logic ;
 		  servos : out std_logic_vector(NB_SERVOS-1 downto 0)
 		  
 
