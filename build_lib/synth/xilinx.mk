@@ -32,7 +32,7 @@
 # TODO: .xco files are device dependant, should use a template based system
 
 coregen_work_dir ?= ./coregen-tmp
-map_opts ?= -timing -ol high -detail -pr b -register_duplication -w
+map_opts ?= -w -logic_opt off -ol high -t 1 -xt 0 -register_duplication off -r 4 -global_opt off -mt off -ir off -pr off -lc off -power off
 par_opts ?= -ol high
 isedir ?= /opt/Xilinx/14.1/ISE_DS
 xil_env ?= . $(isedir)/settings64.sh
@@ -98,7 +98,7 @@ junk += $(project).mcs $(project).cfi $(project).prm
 
 $(project).bit: $(project)_par.ncd
 	$(xil_env); \
-	bitgen $(intstyle) -g DriveDone:yes -g StartupClk:Cclk -w $(project)_par.ncd $(project).bit
+	bitgen $(intstyle) -f $(project).ut $(project)_par.ncd $(project).bit
 junk += $(project).bgn $(project).bit $(project).drc $(project)_bd.bmm
 
 
@@ -114,21 +114,27 @@ junk += $(project)_par_pad.csv $(project)_par_pad.txt
 junk += $(project)_par.grf $(project)_par.ptwx
 junk += $(project)_par.unroutes $(project)_par.xpi
 
+#$(project).ncd: $(project).ngd
+#	if [ -r $(project)_par.ncd ]; then \
+#		cp $(project)_par.ncd smartguide.ncd; \
+#		smartguide="-smartguide smartguide.ncd"; \
+#	else \
+#		smartguide=""; \
+#	fi; \
+#	$(xil_env); \
+#	map $(intstyle) $(map_opts) $$smartguide $<
+#junk += $(project).ncd $(project).pcf $(project).ngm $(project).mrp $(project).map
+#junk += smartguide.ncd $(project).psr 
+#junk += $(project)_summary.xml $(project)_usage.xml
+
 $(project).ncd: $(project).ngd
-	if [ -r $(project)_par.ncd ]; then \
-		cp $(project)_par.ncd smartguide.ncd; \
-		smartguide="-smartguide smartguide.ncd"; \
-	else \
-		smartguide=""; \
-	fi; \
 	$(xil_env); \
-	map $(intstyle) $(map_opts) $$smartguide $<
+	map $(intstyle) -p $(part) $(map_opts) -o $(project).ncd $(project).ngd $(project).pcf
 junk += $(project).ncd $(project).pcf $(project).ngm $(project).mrp $(project).map
-junk += smartguide.ncd $(project).psr 
-junk += $(project)_summary.xml $(project)_usage.xml
+
 
 $(project).ngd: $(project).ngc $(ucf) $(project).bmm
-	$(xil_env); ngdbuild $(intstyle) $(project).ngc -bm $(project).bmm
+	$(xil_env); ngdbuild $(intstyle) -dd _ngo -nt timestamp -uc $(ucf) -p $(part) $(project).ngc $(project).ngd
 junk += $(project).ngd $(project).bld
 
 $(project).ngc: $(vfiles) $(local_corengcs) $(project).scr $(project).prj
