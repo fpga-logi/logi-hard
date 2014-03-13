@@ -64,14 +64,13 @@ signal writedata, writedata_bridge,readdata, readdata_bridge  : std_logic_vector
 signal address, address_bridge : std_logic_vector(15 downto 0);
 signal burst_counter : std_logic_vector(16 downto 0);
 signal wbm_readdata_bridge : std_logic_vector(15 downto 0); 
-signal csn_bridge,wen_bridge, oen_bridge, advn_bridge : std_logic;
+signal csn_bridge,wen_bridge, oen_bridge : std_logic;
 signal gpmc_clk_old, gpmc_clk_re : std_logic;
 
 attribute IOB: string;
 attribute IOB of csn_bridge: signal is "true";
 attribute IOB of wen_bridge: signal is "true";
 attribute IOB of oen_bridge    : signal is "true";
---attribute IOB of advn_bridge    : signal is "true";
 --attribute IOB of address_bridge : signal is "true" ;
 begin
 
@@ -167,12 +166,10 @@ gen_syn : if sync = true generate
 			oen_bridge <= '1';
 			readdata <= (others => '0');
 			writedata_bridge <= (others => '0');
-			advn_bridge <= '1';
 		elsif(falling_edge(gpmc_clk)) then
 			csn_bridge  <= gpmc_csn;
 			wen_bridge   <= gpmc_wen;
 			oen_bridge   <= gpmc_oen;
-			advn_bridge <= gpmc_advn;
 			readdata <= readdata_bridge;
 			writedata_bridge <= gpmc_ad;
 		end if;
