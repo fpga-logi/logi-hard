@@ -1,3 +1,25 @@
+
+
+-- ----------------------------------------------------------------------
+--LOGI-hard
+--Copyright (c) 2013, Jonathan Piat, Michael Jones, All rights reserved.
+--
+--This library is free software; you can redistribute it and/or
+--modify it under the terms of the GNU Lesser General Public
+--License as published by the Free Software Foundation; either
+--version 3.0 of the License, or (at your option) any later version.
+--
+--This library is distributed in the hope that it will be useful,
+--but WITHOUT ANY WARRANTY; without even the implied warranty of
+--MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+--Lesser General Public License for more details.
+--
+--You should have received a copy of the GNU Lesser General Public
+--License along with this library.
+-- ----------------------------------------------------------------------
+
+
+
 --
 --	Package File Template
 --
@@ -11,6 +33,12 @@ library IEEE;
 use IEEE.STD_LOGIC_1164.all;
 
 package logi_wishbone_pack is
+
+function find_X(slv : std_logic_vector) return natural;
+
+type array_of_addr is array(NATURAL range <>) of std_logic_vector(15 downto 0);
+type array_of_slv16 is array(NATURAL range <>) of std_logic_vector(15 downto 0);
+
 
  component gpmc_wishbone_wrapper is
     generic(sync : boolean := false ; burst : boolean := false );
@@ -61,8 +89,48 @@ generic(BIG_ENDIAN : boolean := true);
 	);
 end component;
 
+
+component wishbone_intercon is
+generic(memory_map : array_of_addr );
+port(
+		-- Syscon signals
+		gls_reset    : in std_logic ;
+		gls_clk      : in std_logic ;
+		
+		
+		-- Wishbone slave signals
+		wbs_address       : in std_logic_vector(15 downto 0) ;
+		wbs_writedata : in std_logic_vector(15 downto 0);
+		wbs_readdata  : out std_logic_vector(15 downto 0);
+		wbs_strobe    : in std_logic ;
+		wbs_cycle      : in std_logic ;
+		wbs_write     : in std_logic ;
+		wbs_ack       : out std_logic;
+		
+		-- Wishbone master signals
+		wbm_address       : out array_of_slv16((memory_map'length-1) downto 0) ;
+		wbm_writedata : out array_of_slv16((memory_map'length-1) downto 0);
+		wbm_readdata  : in array_of_slv16((memory_map'length-1) downto 0);
+		wbm_strobe    : out std_logic_vector((memory_map'length-1) downto 0) ;
+		wbm_cycle     : out std_logic_vector((memory_map'length-1) downto 0) ;
+		wbm_write     : out std_logic_vector((memory_map'length-1) downto 0) ;
+		wbm_ack       : in std_logic_vector((memory_map'length-1) downto 0)
+		
+);
+end component;
+
 end logi_wishbone_pack;
 
 package body logi_wishbone_pack is
+
+ function find_X(slv : std_logic_vector) return natural is
+	begin
+	  for i in slv'range loop
+		 if slv(i) ='X' then
+			return i+1 ;
+		 end if;
+	  end loop;
+  return 0;
+end function find_X;
 
 end logi_wishbone_pack;

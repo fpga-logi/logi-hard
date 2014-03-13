@@ -1,3 +1,25 @@
+
+
+-- ----------------------------------------------------------------------
+--LOGI-hard
+--Copyright (c) 2013, Jonathan Piat, Michael Jones, All rights reserved.
+--
+--This library is free software; you can redistribute it and/or
+--modify it under the terms of the GNU Lesser General Public
+--License as published by the Free Software Foundation; either
+--version 3.0 of the License, or (at your option) any later version.
+--
+--This library is distributed in the hope that it will be useful,
+--but WITHOUT ANY WARRANTY; without even the implied warranty of
+--MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+--Lesser General Public License for more details.
+--
+--You should have received a copy of the GNU Lesser General Public
+--License along with this library.
+-- ----------------------------------------------------------------------
+
+
+
 ----------------------------------------------------------------------------------
 -- Company: 
 -- Engineer: 
@@ -6,8 +28,8 @@
 -- Design Name: 
 -- Module Name:    wishbone_pwm - Behavioral 
 -- Project Name: 
--- Target Devices: 
--- Tool versions: 
+-- Target Devices: Spartan 6 
+-- Tool versions: ISE 14.1 
 -- Description: 
 --
 -- Dependencies: 
@@ -42,7 +64,7 @@ port(
 		  gls_reset    : in std_logic ;
 		  gls_clk      : in std_logic ;
 		  -- Wishbone signals
-		  wbs_add       : in std_logic_vector(15 downto 0) ;
+		  wbs_address       : in std_logic_vector(15 downto 0) ;
 		  wbs_writedata : in std_logic_vector( wb_size-1 downto 0);
 		  wbs_readdata  : out std_logic_vector( wb_size-1 downto 0);
 		  wbs_strobe    : in std_logic ;
@@ -86,7 +108,7 @@ begin
         
     elsif rising_edge(gls_clk) then
         if (wbs_strobe = '1' and wbs_write = '0'  and wbs_cycle = '1' ) then
-				wbs_readdata <= pwm_regs(conv_integer(wbs_add)) ;
+				wbs_readdata <= pwm_regs(conv_integer(wbs_address)) ;
             read_ack <= '1';
         else
             read_ack <= '0';
@@ -101,7 +123,7 @@ begin
         
     elsif rising_edge(gls_clk) then
         if ((wbs_strobe and wbs_write and wbs_cycle) = '1' ) then
-            pwm_regs(conv_integer(wbs_add)) <= wbs_writedata;
+            pwm_regs(conv_integer(wbs_address)) <= wbs_writedata;
         end if ;
     end if;
 end process register_mngmt;

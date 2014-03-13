@@ -1,3 +1,25 @@
+
+
+-- ----------------------------------------------------------------------
+--LOGI-hard
+--Copyright (c) 2013, Jonathan Piat, Michael Jones, All rights reserved.
+--
+--This library is free software; you can redistribute it and/or
+--modify it under the terms of the GNU Lesser General Public
+--License as published by the Free Software Foundation; either
+--version 3.0 of the License, or (at your option) any later version.
+--
+--This library is distributed in the hope that it will be useful,
+--but WITHOUT ANY WARRANTY; without even the implied warranty of
+--MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+--Lesser General Public License for more details.
+--
+--You should have received a copy of the GNU Lesser General Public
+--License along with this library.
+-- ----------------------------------------------------------------------
+
+
+
 --
 --	Package File Template
 --
@@ -58,6 +80,15 @@ port(
 	pulse_width : in slv16_array(0 to NB_CHANNEL-1) ;
 	pwm : out std_logic_vector(0 to NB_CHANNEL-1) 
 );
+end component;
+
+component heart_beat is
+    generic(clk_period_ns : positive := 10; 
+				beat_period_ns : positive := 1_000_000_000;
+				beat_length_ns : positive := 200_000_000);
+	 port ( gls_clk : in  STD_LOGIC;
+           gls_reset : in  STD_LOGIC;
+           beat_out : out  STD_LOGIC);
 end component;
 
 

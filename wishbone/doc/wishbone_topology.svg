@@ -1,0 +1,339 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+
+<svg
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   width="1770.5625"
+   height="783.0318"
+   id="svg2"
+   version="1.1"
+   inkscape:version="0.48.3.1 r9886"
+   sodipodi:docname="wishbone_topology.svg">
+  <defs
+     id="defs4">
+    <marker
+       inkscape:stockid="Arrow1Mstart"
+       orient="auto"
+       refY="0"
+       refX="0"
+       id="Arrow1Mstart"
+       style="overflow:visible">
+      <path
+         id="path3948"
+         d="M 0,0 5,-5 -12.5,0 5,5 0,0 z"
+         style="fill-rule:evenodd;stroke:#000000;stroke-width:1pt"
+         transform="matrix(0.4,0,0,0.4,4,0)"
+         inkscape:connector-curvature="0" />
+    </marker>
+    <marker
+       inkscape:stockid="Arrow1Mend"
+       orient="auto"
+       refY="0"
+       refX="0"
+       id="Arrow1Mend"
+       style="overflow:visible">
+      <path
+         id="path3951"
+         d="M 0,0 5,-5 -12.5,0 5,5 0,0 z"
+         style="fill-rule:evenodd;stroke:#000000;stroke-width:1pt"
+         transform="matrix(-0.4,0,0,-0.4,-4,0)"
+         inkscape:connector-curvature="0" />
+    </marker>
+  </defs>
+  <sodipodi:namedview
+     id="base"
+     pagecolor="#ffffff"
+     bordercolor="#666666"
+     borderopacity="1.0"
+     inkscape:pageopacity="0.0"
+     inkscape:pageshadow="2"
+     inkscape:zoom="0.7"
+     inkscape:cx="815.21134"
+     inkscape:cy="428.11816"
+     inkscape:document-units="px"
+     inkscape:current-layer="layer1"
+     showgrid="false"
+     inkscape:window-width="1301"
+     inkscape:window-height="744"
+     inkscape:window-x="65"
+     inkscape:window-y="24"
+     inkscape:window-maximized="1"
+     fit-margin-top="0"
+     fit-margin-left="0"
+     fit-margin-right="0"
+     fit-margin-bottom="0" />
+  <metadata
+     id="metadata7">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+        <dc:title></dc:title>
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+  <g
+     inkscape:label="Layer 1"
+     inkscape:groupmode="layer"
+     id="layer1"
+     transform="translate(395.28125,107.8125)">
+    <rect
+       style="opacity:0.675;fill:none;stroke:#000000;stroke-width:2.13083053;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none"
+       id="rect3934"
+       width="579.44757"
+       height="193.38451"
+       x="252.85715"
+       y="-106.73663"
+       ry="19.171757" />
+    <rect
+       style="opacity:0.675;fill:#ff0000;fill-opacity:1;fill-rule:evenodd;stroke:none"
+       id="rect2985"
+       width="62.325855"
+       height="394.28571"
+       x="10"
+       y="232.36218"
+       ry="16.428585" />
+    <text
+       xml:space="preserve"
+       style="font-size:24px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;font-family:Sans"
+       x="-564.78741"
+       y="54.284611"
+       id="text2987"
+       sodipodi:linespacing="125%"
+       transform="matrix(0,-1,1,0,0,0)"><tspan
+         sodipodi:role="line"
+         id="tspan2989"
+         x="-564.78741"
+         y="54.284611"
+         style="font-size:32px">Wishbone Master</tspan></text>
+    <rect
+       style="opacity:0.675;fill:#ff7f2a;fill-opacity:1;fill-rule:evenodd;stroke:none"
+       id="rect2985-4"
+       width="62.325855"
+       height="394.28571"
+       x="204.55135"
+       y="232.36218"
+       ry="16.428585" />
+    <text
+       xml:space="preserve"
+       style="font-size:24px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;font-family:Sans"
+       x="-566.216"
+       y="246.83598"
+       id="text2987-9"
+       sodipodi:linespacing="125%"
+       transform="matrix(0,-1,1,0,0,0)"><tspan
+         sodipodi:role="line"
+         id="tspan2989-7"
+         x="-566.216"
+         y="246.83598"
+         style="font-size:32px">Wishbone Intercon</tspan></text>
+    <g
+       id="g3892">
+      <rect
+         ry="16.428585"
+         y="170.93361"
+         x="442.85715"
+         height="62.857143"
+         width="180"
+         id="rect3015"
+         style="opacity:0.675;fill:#ff00ff;fill-opacity:1;fill-rule:evenodd;stroke:none" />
+      <text
+         sodipodi:linespacing="125%"
+         id="text3017"
+         y="209.50504"
+         x="460.57004"
+         style="font-size:24px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;font-family:Sans"
+         xml:space="preserve"><tspan
+           y="209.50504"
+           x="460.57004"
+           id="tspan3019"
+           sodipodi:role="line">wbs_slave 0</tspan></text>
+    </g>
+    <g
+       id="g3887"
+       transform="translate(0,101.28571)">
+      <rect
+         ry="16.428585"
+         y="292.36218"
+         x="442.85715"
+         height="62.857143"
+         width="180"
+         id="rect3015-8"
+         style="opacity:0.675;fill:#ff00ff;fill-opacity:1;fill-rule:evenodd;stroke:none" />
+      <text
+         sodipodi:linespacing="125%"
+         id="text3017-5"
+         y="330.93359"
+         x="460.88058"
+         style="font-size:24px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;font-family:Sans"
+         xml:space="preserve"><tspan
+           y="330.93359"
+           x="460.88058"
+           id="tspan3019-0"
+           sodipodi:role="line">wbs_slave 1</tspan></text>
+    </g>
+    <g
+       id="g3897">
+      <rect
+         ry="16.428585"
+         y="612.36218"
+         x="442.85715"
+         height="62.857143"
+         width="180"
+         id="rect3015-8-7-6-6"
+         style="opacity:0.675;fill:#ff00ff;fill-opacity:1;fill-rule:evenodd;stroke:none" />
+      <text
+         sodipodi:linespacing="125%"
+         id="text3017-5-8-3-9"
+         y="650.93353"
+         x="459.6091"
+         style="font-size:24px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;font-family:Sans"
+         xml:space="preserve"><tspan
+           y="650.93353"
+           x="459.6091"
+           id="tspan3019-0-0-0-6"
+           sodipodi:role="line">wbs_slave N</tspan></text>
+    </g>
+    <path
+       style="fill:none;stroke:#000000;stroke-width:5;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:30, 5;stroke-dashoffset:0"
+       d="M 71.428571,419.50504 204.28571,418.07647"
+       id="path3885"
+       inkscape:connector-curvature="0" />
+    <path
+       style="fill:none;stroke:#000000;stroke-width:5;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:10, 5;stroke-dashoffset:0"
+       d="m 267.14286,422.36219 175.71428,0"
+       id="path3902"
+       inkscape:connector-curvature="0" />
+    <path
+       style="fill:none;stroke:#000000;stroke-width:5;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:10, 5;stroke-dashoffset:0"
+       d="m 267.14286,348.07647 120,0 0,-148.57143 54.28571,0"
+       id="path3904"
+       inkscape:connector-curvature="0" />
+    <path
+       style="fill:none;stroke:#000000;stroke-width:5;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:10, 5;stroke-dashoffset:0"
+       d="m 268,496.6479 120,0 0,148.57143 54.28571,0"
+       id="path3904-9"
+       inkscape:connector-curvature="0" />
+    <text
+       xml:space="preserve"
+       style="font-size:24px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;font-family:Sans"
+       x="274.28571"
+       y="-72.78067"
+       id="text3924"
+       sodipodi:linespacing="125%"><tspan
+         sodipodi:role="line"
+         id="tspan3926"
+         x="274.28571"
+         y="-72.78067">generate wishbone signals for</tspan><tspan
+         sodipodi:role="line"
+         x="274.28571"
+         y="-42.78067"
+         id="tspan3928">each of the slave according to </tspan><tspan
+         sodipodi:role="line"
+         x="274.28571"
+         y="-12.78067"
+         id="tspan3930">the memory-map. Acts as a cross-bar (switch)</tspan><tspan
+         sodipodi:role="line"
+         x="274.28571"
+         y="17.21933"
+         id="tspan3932">in the multi-master case. Intercon is</tspan><tspan
+         sodipodi:role="line"
+         x="274.28571"
+         y="47.21933"
+         id="tspan4401">architecture specific, so must be coded for </tspan><tspan
+         sodipodi:role="line"
+         x="274.28571"
+         y="77.21933"
+         id="tspan4403">each architecture.</tspan></text>
+    <path
+       style="fill:none;stroke:#000000;stroke-width:2;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;marker-end:url(#Arrow1Mend)"
+       d="M 255.71429,79.505039 C 204.20026,168.13511 213.25501,122.24532 234.28571,232.36218"
+       id="path3936"
+       inkscape:connector-curvature="0"
+       sodipodi:nodetypes="cc" />
+    <text
+       xml:space="preserve"
+       style="font-size:24px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;font-family:Sans"
+       x="-381.42859"
+       y="134.93358"
+       id="text4405"
+       sodipodi:linespacing="125%"><tspan
+         sodipodi:role="line"
+         id="tspan4407"
+         x="-381.42859"
+         y="134.93358">Generates the write, cycle, strobe, address,</tspan><tspan
+         sodipodi:role="line"
+         x="-381.42859"
+         y="164.93358"
+         id="tspan4409">writedata signals.</tspan></text>
+    <rect
+       style="opacity:0.675;fill:none;stroke:#000000;stroke-width:2;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0"
+       id="rect4411"
+       width="541.42859"
+       height="78.571426"
+       x="-404.28571"
+       y="210.17465"
+       transform="translate(10,-107.8125)"
+       ry="19.171757" />
+    <path
+       style="fill:none;stroke:#000000;stroke-width:2;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;marker-end:url(#Arrow1Mend)"
+       d="m -178.57143,290.17466 c 21.57563,54.39156 49.6577,105.41771 179.6597886,103.72662"
+       id="path4413"
+       inkscape:connector-curvature="0"
+       transform="translate(10,-107.8125)"
+       sodipodi:nodetypes="cc" />
+    <text
+       xml:space="preserve"
+       style="font-size:24px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;font-family:Sans"
+       x="716"
+       y="190.07643"
+       id="text4597"
+       sodipodi:linespacing="125%"><tspan
+         sodipodi:role="line"
+         id="tspan4599"
+         x="716"
+         y="190.07643">Generates the readdata and ack signals. Each</tspan><tspan
+         sodipodi:role="line"
+         x="716"
+         y="220.07643"
+         id="tspan4605">slave has its specific wishbone signals that are routed</tspan><tspan
+         sodipodi:role="line"
+         x="716"
+         y="250.07643"
+         id="tspan4607">by the intercon.</tspan><tspan
+         sodipodi:role="line"
+         x="716"
+         y="280.07642"
+         id="tspan4601" /></text>
+    <rect
+       style="opacity:0.675;fill:none;stroke:#000000;stroke-width:3.45071292;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0"
+       id="rect4603"
+       width="674.26355"
+       height="109.97786"
+       x="699.29675"
+       y="157.37321"
+       ry="43.409649" />
+    <path
+       style="fill:none;stroke:#000000;stroke-width:2;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;marker-start:url(#Arrow1Mstart);marker-end:url(#Arrow1Mend)"
+       d="m 614.28571,310.17466 c 67.95418,185.81088 247.55576,94.28782 405.71429,60 C 919.90705,445.04107 844.1966,534.72584 612.85714,533.0318"
+       id="path4609"
+       inkscape:connector-curvature="0"
+       transform="translate(10,-107.8125)"
+       sodipodi:nodetypes="ccc" />
+    <path
+       style="fill:none;stroke:#000000;stroke-width:2;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;marker-end:url(#Arrow1Mend)"
+       d="M 1020,370.17466 C 999.77227,551.30198 818.69157,656.92687 614.28571,751.60323"
+       id="path4611"
+       inkscape:connector-curvature="0"
+       transform="translate(10,-107.8125)"
+       sodipodi:nodetypes="cc" />
+  </g>
+</svg>

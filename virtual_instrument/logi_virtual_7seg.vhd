@@ -24,9 +24,9 @@
 -- Company: 
 -- Engineer: 
 -- 
--- Create Date:    10:29:34 07/31/2013 
+-- Create Date:    15:25:53 12/17/2013 
 -- Design Name: 
--- Module Name:    wishbone_register - Behavioral 
+-- Module Name:    logi_virtual_7seg - Behavioral 
 -- Project Name: 
 -- Target Devices: Spartan 6 
 -- Tool versions: ISE 14.1 
@@ -53,13 +53,11 @@ use IEEE.NUMERIC_STD.ALL;
 --library UNISIM;
 --use UNISIM.VComponents.all;
 
-library work ;
-use work.logi_wishbone_peripherals_pack.all ;
+entity logi_virtual_7seg is
 
-entity wishbone_register is
-	generic(
-		  wb_size : natural := 16; -- Data port size for wishbone
-		  nb_regs : natural := 1
+generic(
+		  wb_size : natural := 16 ;-- Data port size for wishbone
+		  fade_cycle : positive := 3_600_000
 	 );
 	 port 
 	 (
@@ -75,33 +73,62 @@ entity wishbone_register is
 		  wbs_write     : in std_logic ;
 		  wbs_ack       : out std_logic;
 		  -- out signals
-		  reg_out : out slv16_array(0 to nb_regs-1);
-		  reg_in : in slv16_array(0 to nb_regs-1)
+		  --cathodes : in std_logic_vector(8 downto 0); -- common cathode
+		  --anodes : in std_logic_vector(8 downto 0)
+		  cathodes : in std_logic_vector(7 downto 0); -- common cathode
+		  anodes : in std_logic_vector(7 downto 0)
 	 );
-end wishbone_register;
+end logi_virtual_7seg;
 
-architecture Behavioral of wishbone_register is
-	signal reg_in_d, reg_out_d : slv16_array(0 to nb_regs-1) ;
+architecture Behavioral of logi_virtual_7seg is
+	type u32_array is array (0 to 7) of std_logic_vector(31 downto 0);
+	type u8_array is array (0 to 7) of std_logic_vector(7 downto 0);
+	signal counter_array : u32_array ; 
+	signal seg_states : u8_array ;
+	
 	signal read_ack : std_logic ;
 	signal write_ack : std_logic ;
 begin
+
+
+-- sgement behavior, register loaded on cathode = '0' then value is kept until 
+-- the fade counter reaches 0
+gen_segi : for i in 0 to 7 generate
+	process(gls_clk, gls_reset)
+	begin
+		if gls_reset = '1' then
+			counter_array(i) <= (others => '0') ;
+			seg_states(i) <= (others => '0');
+		elsif gls_clk'event and gls_clk = '1' then
+			if cathodes(i) = '0' then
+				seg_states(i) <= anodes ;
+				counter_array(i) <= std_logic_vector(to_unsigned(fade_cycle, 32));
+			elsif counter_array(i) > 0 then
+				counter_array(i) <= counter_array(i)  - 1 ;
+			else
+				seg_states(i) <= (others => '0') ;
+				counter_array(i) <= (others => '0') ;
+			end if ;
+		end if ;
+	
+	end process ;
+end generate ;
+
+
 wbs_ack <= read_ack or write_ack;
 
 write_bloc : process(gls_clk,gls_reset)
 begin
     if gls_reset = '1' then 
-        reg_out_d <= (others =>(others => '0'));
         write_ack <= '0';
     elsif rising_edge(gls_clk) then
         if ((wbs_strobe and wbs_write and wbs_cycle) = '1' ) then
-            reg_out_d(conv_integer(wbs_address)) <= wbs_writedata;
             write_ack <= '1';
         else
             write_ack <= '0';
         end if;
     end if;
 end process write_bloc;
-reg_out <= reg_out_d ;
 
 
 read_bloc : process(gls_clk, gls_reset)
@@ -109,8 +136,7 @@ begin
     if gls_reset = '1' then
         
     elsif rising_edge(gls_clk) then
-		  reg_in_d <= reg_in ; -- latching inputs
-		  wbs_readdata <= reg_in_d(conv_integer(wbs_address)) ; -- this is not clear if this should only happen in the read part
+		  wbs_readdata <= seg_states(conv_integer(wbs_address & '1')) & seg_states(conv_integer(wbs_address & '0')) ; -- this is not clear if this should only happen in the read part
         if (wbs_strobe = '1' and wbs_write = '0'  and wbs_cycle = '1' ) then
             read_ack <= '1';
         else
@@ -119,6 +145,7 @@ begin
 		  
     end if;
 end process read_bloc;
+
 
 end Behavioral;
 

@@ -1,3 +1,25 @@
+
+
+-- ----------------------------------------------------------------------
+--LOGI-hard
+--Copyright (c) 2013, Jonathan Piat, Michael Jones, All rights reserved.
+--
+--This library is free software; you can redistribute it and/or
+--modify it under the terms of the GNU Lesser General Public
+--License as published by the Free Software Foundation; either
+--version 3.0 of the License, or (at your option) any later version.
+--
+--This library is distributed in the hope that it will be useful,
+--but WITHOUT ANY WARRANTY; without even the implied warranty of
+--MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+--Lesser General Public License for more details.
+--
+--You should have received a copy of the GNU Lesser General Public
+--License along with this library.
+-- ----------------------------------------------------------------------
+
+
+
 --
 --	Package File Template
 --
@@ -11,29 +33,6 @@ library IEEE;
 use IEEE.STD_LOGIC_1164.all;
 
 package logi_wishbone_peripherals_pack is
-
-type wishbone_bus_16bit is
-  record
-     -- Wishbone signals
-	wbs_add       : std_logic_vector(15 downto 0) ;
-	wbs_writedata :  std_logic_vector(15 downto 0);
-	wbs_readdata  :  std_logic_vector(15 downto 0);
-	wbs_strobe    : std_logic ;
-	wbs_cycle      : std_logic ;
-	wbs_write     :  std_logic ;
-	wbs_ack       :  std_logic;
-end record;
-
-type fifo_interface_16_bit is
-  record
-	fifo_data_in  : std_logic_vector(15 downto 0) ;
-	fifo_data_out :  std_logic_vector(15 downto 0);
-	fifo_rd    : std_logic ;
-	fifo_wr    : std_logic ;
-	fifo_full  :  std_logic ;
-	fifo_empty :  std_logic;
-end record;
-
 
 type slv16_array is array(natural range <>) of std_logic_vector(15 downto 0);
 type slv32_array is array(natural range <>) of std_logic_vector(31 downto 0);
@@ -49,7 +48,7 @@ component wishbone_register is
 		  gls_reset    : in std_logic ;
 		  gls_clk      : in std_logic ;
 		  -- Wishbone signals
-		  wbs_add       : in std_logic_vector(15 downto 0) ;
+		  wbs_address       : in std_logic_vector(15 downto 0) ;
 		  wbs_writedata : in std_logic_vector( wb_size-1 downto 0);
 		  wbs_readdata  : out std_logic_vector( wb_size-1 downto 0);
 		  wbs_strobe    : in std_logic ;
@@ -68,14 +67,15 @@ generic( ADDR_WIDTH: positive := 16; --! width of the address bus
 			SIZE	: positive	:= 128; --! fifo depth
 			B_BURST_SIZE : positive := 4;
 			A_BURST_SIZE : positive := 4;
-			SYNC_LOGIC_INTERFACE : boolean := false 
+			SYNC_LOGIC_INTERFACE : boolean := false;
+			AUTO_INC : boolean := false
 			); 
 port(
 	-- Syscon signals
 	gls_reset    : in std_logic ;
 	gls_clk      : in std_logic ;
 	-- Wishbone signals
-	wbs_add       : in std_logic_vector(ADDR_WIDTH-1 downto 0) ;
+	wbs_address       : in std_logic_vector(ADDR_WIDTH-1 downto 0) ;
 	wbs_writedata : in std_logic_vector( WIDTH-1 downto 0);
 	wbs_readdata  : out std_logic_vector( WIDTH-1 downto 0);
 	wbs_strobe    : in std_logic ;
@@ -87,7 +87,8 @@ port(
 	wrB, rdA : in std_logic ; --! logic side fifo control signal
 	inputB: in std_logic_vector((WIDTH - 1) downto 0); --! data input of fifo B
 	outputA	: out std_logic_vector((WIDTH - 1) downto 0); --! data output of fifo A
-	emptyA, fullA, emptyB, fullB, burst_available_B, burst_available_A	:	out std_logic --! fifo state signals
+	emptyA, fullA, emptyB, fullB, burst_available_B, burst_available_A	:	out std_logic ;--! fifo state signals
+	fifoA_reset, fifoB_reset : out std_logic
 );
 end component;
 
@@ -101,7 +102,7 @@ port(
 		  gls_reset    : in std_logic ;
 		  gls_clk      : in std_logic ;
 		  -- Wishbone signals
-		  wbs_add       : in std_logic_vector(15 downto 0) ;
+		  wbs_address       : in std_logic_vector(15 downto 0) ;
 		  wbs_writedata : in std_logic_vector( wb_size-1 downto 0);
 		  wbs_readdata  : out std_logic_vector( wb_size-1 downto 0);
 		  wbs_strobe    : in std_logic ;
@@ -119,7 +120,7 @@ end component;
 
 
 
-component servo_controller_wb is
+component wishbone_servo is
 generic(NB_SERVOS : positive := 2;
 			wb_size : natural := 16 ; -- Data port size for wishbone
 			pos_width	:	integer := 8 ;
@@ -132,7 +133,7 @@ port(
 		  gls_reset    : in std_logic ;
 		  gls_clk      : in std_logic ;
 		  -- Wishbone signals
-		  wbs_add       : in std_logic_vector(15 downto 0) ;
+		  wbs_address       : in std_logic_vector(15 downto 0) ;
 		  wbs_writedata : in std_logic_vector( wb_size-1 downto 0);
 		  wbs_readdata  : out std_logic_vector( wb_size-1 downto 0);
 		  wbs_strobe    : in std_logic ;
@@ -140,6 +141,7 @@ port(
 		  wbs_write     : in std_logic ;
 		  wbs_ack       : out std_logic;
 		  
+		  failsafe : in std_logic ;
 		  servos : out std_logic_vector(NB_SERVOS-1 downto 0)
 		  
 
@@ -155,7 +157,7 @@ port(
 		  gls_reset    : in std_logic ;
 		  gls_clk      : in std_logic ;
 		  -- Wishbone signals
-		  wbs_add       : in std_logic_vector(15 downto 0) ;
+		  wbs_address       : in std_logic_vector(15 downto 0) ;
 		  wbs_writedata : in std_logic_vector( wb_size-1 downto 0);
 		  wbs_readdata  : out std_logic_vector( wb_size-1 downto 0);
 		  wbs_strobe    : in std_logic ;
@@ -180,7 +182,7 @@ port(
 	gls_reset    : in std_logic ;
 	gls_clk      : in std_logic ;
 	-- Wishbone signals
-	wbs_add       : in std_logic_vector(ADDR_WIDTH-1 downto 0) ;
+	wbs_address       : in std_logic_vector(ADDR_WIDTH-1 downto 0) ;
 	wbs_writedata : in std_logic_vector( DATA_WIDTH-1 downto 0);
 	wbs_readdata  : out std_logic_vector( DATA_WIDTH-1 downto 0);
 	wbs_strobe    : in std_logic ;
@@ -205,7 +207,7 @@ port(
 		  gls_reset    : in std_logic ;
 		  gls_clk      : in std_logic ;
 		  -- Wishbone signals
-		  wbs_add       : in std_logic_vector(wb_addr_size-1 downto 0) ;
+		  wbs_address       : in std_logic_vector(wb_addr_size-1 downto 0) ;
 		  wbs_writedata : in std_logic_vector( wb_size-1 downto 0);
 		  wbs_readdata  : out std_logic_vector( wb_size-1 downto 0);
 		  wbs_strobe    : in std_logic ;
@@ -213,6 +215,28 @@ port(
 		  wbs_write     : in std_logic ;
 		  wbs_ack       : out std_logic
 		  );
+end component;
+
+component wishbone_gpio is
+	generic(
+		  wb_size : natural := 16
+	 );
+	 port 
+	 (
+		  -- Syscon signals
+		  gls_reset    : in std_logic ;
+		  gls_clk      : in std_logic ;
+		  -- Wishbone signals
+		  wbs_address       : in std_logic_vector(15 downto 0) ;
+		  wbs_writedata : in std_logic_vector( wb_size-1 downto 0);
+		  wbs_readdata  : out std_logic_vector( wb_size-1 downto 0);
+		  wbs_strobe    : in std_logic ;
+		  wbs_cycle      : in std_logic ;
+		  wbs_write     : in std_logic ;
+		  wbs_ack       : out std_logic;
+		  -- out signals
+		  gpio: inout std_logic_vector(15 downto 0)
+	 );
 end component;
 
 end logi_wishbone_peripherals_pack;

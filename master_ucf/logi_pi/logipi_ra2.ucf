@@ -118,6 +118,26 @@ NET "PMOD4_7" LOC = "P88" ;
 NET "PMOD4_8" LOC = "P87" ;
 NET "PMOD4_9" LOC = "P83" ;
 NET "PMOD4_10" LOC = "P82" ;
+#PMOD3-LVDS-Pins#############################################################################
+#NET "P3_1_LVDS7_P" LOC = "P98" | IOSTANDARD = LVDS_33;
+#NET "P3_2_LVDS7_N" LOC = "P97" | IOSTANDARD = LVDS_33;
+#NET "P3_3_LVDS5_P" LOC = "P93" | IOSTANDARD = LVDS_33;
+#NET "P3_4_LVDS5_N" LOC = "P92" | IOSTANDARD = LVDS_33;
+#NET "P3_7_LVDS8_P" LOC = "P100" | IOSTANDARD = LVDS_33;
+#NET "P3_8_LVDS8_N" LOC = "P99" | IOSTANDARD = LVDS_33;
+#NET "P3_9_LVDS6_P" LOC = "P95" | IOSTANDARD = LVDS_33;
+#NET "P3_10_LVDS6_N" LOC = "P94" | IOSTANDARD = LVDS_33;
+#PMOD4-LVDS-Pins#############################################################################
+#NET "P4_1_LVDS3_P" LOC = "P85" | IOSTANDARD = LVDS_33;
+#NET "P4_2_LVDS3_N" LOC = "P84" | IOSTANDARD = LVDS_33;
+#NET "P4_3_LVDS1_P" LOC = "P81" | IOSTANDARD = LVDS_33;
+#NET "P4_4_LVDS1_N" LOC = "P80" | IOSTANDARD = LVDS_33;
+#NET "P4_7_LVDS4_P" LOC = "P88" | IOSTANDARD = LVDS_33;
+#NET "P4_8_LVDS4_N" LOC = "P87" | IOSTANDARD = LVDS_33;
+#NET "P4_9_LVDS2_P" LOC = "P83" | IOSTANDARD = LVDS_33;
+#NET "P4_10_LVDS2_N" LOC = "P82" | IOSTANDARD = LVDS_33;
+
+
 
 #RASPBERRY-PI CONNECTOR###############################################################
 NET "SYS_SPI_MOSI" LOC = "P65";	#Shared - Used to clk bitstream data to fpga / ARduino MOSI
