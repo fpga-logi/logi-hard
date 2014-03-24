@@ -51,14 +51,15 @@ end async_serial;
 
 architecture Behavioral of async_serial is
 type rx_states is (WAIT_START, RECEIVE, DONE);
-constant clk_divider : positive := (CLK_FREQ/BAUDRATE) - 1  ;
-constant fast_clk_divider : positive := 9  ;
-constant clk_divider_x2 : positive := clk_divider/2  ;
+constant clk_divider : positive := (CLK_FREQ/BAUDRATE) - 1  ; --divides main clock to generate baudrate
+constant fast_clk_divider : positive := 9  ; -- trying to re-sync on start bit
+constant clk_divider_x2 : positive := clk_divider/2  ; --allows to center sampling after start bit is detected
 
 
 -- serial rx signals
 signal rx_current, rx_next : rx_states;
 signal rx_end_prediv, tx_end_prediv : std_logic ;
+signal buffered_rx : std_logic ;
 signal rx_baud_counter, tx_baud_counter : std_logic_vector(nbit(clk_divider) downto 0);
 signal rx_baud_counter_load_value : std_logic_vector(nbit(clk_divider) downto 0);
 signal baud_counter_x2 : std_logic_vector(nbit(clk_divider_x2)-1 downto 0);
@@ -72,6 +73,17 @@ signal data_transmit_buffer : std_logic_vector(9 downto 0) ;
 signal tx_bit_counter : std_logic_vector(3 downto 0);
 
 begin
+
+
+process(clk, reset)
+begin
+	if reset = '1' then
+		buffered_rx <= '1' ;
+	elsif clk'event and clk = '1' then
+		buffered_rx <= rx ;
+	end if ;
+end process ;
+
 
 process(clk, reset)
 begin
@@ -90,20 +102,23 @@ rx_end_prediv <= '1' when rx_baud_counter = 0 else
 				  '0' ; 
 				
 
-rx_baud_counter_load_value <=    std_logic_vector(to_unsigned(fast_clk_divider ,nbit(clk_divider)+1)) when rx_current = WAIT_START and rx = '1' else
-											std_logic_vector(to_unsigned(fast_clk_divider ,nbit(clk_divider)+1)) when rx_current = DONE else
-											std_logic_vector(to_unsigned(fast_clk_divider ,nbit(clk_divider)+1)) when rx_current = RECEIVE and rx_bit_counter = 8 else
-											std_logic_vector(to_unsigned(clk_divider+clk_divider_x2 ,nbit(clk_divider)+1)) when rx_current = WAIT_START and rx = '0' else
-											std_logic_vector(to_unsigned(clk_divider ,nbit(clk_divider)+1)) ;
+rx_baud_counter_load_value <=    std_logic_vector(to_unsigned(fast_clk_divider ,nbit(clk_divider)+1)) when rx_current = WAIT_START and buffered_rx = '1' else -- load fast baudrate to detect start bit
+											std_logic_vector(to_unsigned(fast_clk_divider ,nbit(clk_divider)+1)) when rx_current = DONE else -- load fast baudrate after stop is detected
+											std_logic_vector(to_unsigned(fast_clk_divider ,nbit(clk_divider)+1)) when rx_current = RECEIVE and rx_bit_counter = 8 else -- load fast baudrate when stop si detected
+											std_logic_vector(to_unsigned(clk_divider+clk_divider_x2 ,nbit(clk_divider)+1)) when rx_current = WAIT_START and buffered_rx = '0' else -- load 1.5 baudrate counter after start is detected
+											std_logic_vector(to_unsigned(clk_divider ,nbit(clk_divider)+1)) ; -- load baudrate counter to detect byte bits
 
 process(clk, reset)
 begin
 	if reset = '1' then
 		data_receive_buffer <= (others => '1');
 	elsif clk'event and clk = '1' then
-		if rx_end_prediv = '1' then
-			data_receive_buffer(9 downto 1) <= data_receive_buffer(8 downto 0);
-			data_receive_buffer(0) <= rx;
+		if rx_current = DONE then
+			data_receive_buffer <= (others => '1');
+		elsif rx_end_prediv = '1' then
+			data_receive_buffer(8 downto 0) <= data_receive_buffer(9 downto 1);
+			data_receive_buffer(9) <= buffered_rx;
+			
 		end if ;
 	end if ;
 end process ;
@@ -135,7 +150,7 @@ begin
 	rx_next <= rx_current ;
 	case rx_current is
 		when WAIT_START => 
-			if rx = '0' and rx_end_prediv = '1' then
+			if buffered_rx = '0' and rx_end_prediv = '1' then
 				rx_next <= RECEIVE ;
 			end if;
 		when RECEIVE => 
@@ -149,13 +164,11 @@ begin
 	end case ;
 end process ;
 
-
-data_ready_temp <= '1' when data_receive_buffer(9) = '0' and data_receive_buffer(0) = '1' and rx_current = DONE else
+				  
+data_ready_temp <= '1' when data_receive_buffer(9) = '1' and data_receive_buffer(0) = '0' and rx_current = DONE else
 				  '0' ;
 				  
-gen_revers : for i in data_out_temp'range generate
-   data_out_temp(i) <= data_receive_buffer(8-i) ;
-end generate;
+data_out_temp <= data_receive_buffer(8 downto 1);
 
 process(clk, reset)
 begin
