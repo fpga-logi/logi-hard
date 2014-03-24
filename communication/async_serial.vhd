@@ -191,7 +191,9 @@ begin
 	if reset = '1' then
 		tx_baud_counter <= std_logic_vector(to_unsigned(clk_divider ,nbit(clk_divider)+1));
 	elsif clk'event and clk = '1' then
-		if tx_baud_counter = 0 then
+		if data_send = '1' then
+			tx_baud_counter <= std_logic_vector(to_unsigned(clk_divider ,nbit(clk_divider)+1));
+		elsif tx_baud_counter = 0 then
 			tx_baud_counter <= std_logic_vector(to_unsigned(clk_divider ,nbit(clk_divider)+1));
 		else
 			tx_baud_counter <= tx_baud_counter - 1 ;
