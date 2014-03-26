@@ -58,7 +58,7 @@ entity wishbone_7seg4x is
 generic(
 		  wb_size : natural := 16; -- Data port size for wishbone
 		  clock_freq_hz : natural := 100_000_000;
-		  refresh_rate_hz : natural := 30
+		  refresh_rate_hz : natural := 100
 	 );
 	 port 
 	 (
@@ -81,7 +81,7 @@ end wishbone_7seg4x;
 
 architecture Behavioral of wishbone_7seg4x is
 
-	constant clk_divider : positive := clock_freq_hz/(refresh_rate_hz*4);
+	constant clk_divider : positive := clock_freq_hz/(refresh_rate_hz*5);
 	--sseg register data
 	signal sseg_edu_regs: slv16_array(0 to 2);
 
@@ -100,9 +100,10 @@ write_bloc : process(gls_clk,gls_reset)
 begin
     if gls_reset = '1' then 
         write_ack <= '0';  
+		  sseg_edu_regs <= (others => (others => '0')) ;
     elsif rising_edge(gls_clk) then
         if ((wbs_strobe and wbs_write and wbs_cycle) = '1' ) then
-				sseg_edu_regs(conv_integer(wbs_address)) <= wbs_writedata;
+				sseg_edu_regs(conv_integer(wbs_address(1 downto 0))) <= wbs_writedata;
             write_ack <= '1';
         else
             write_ack <= '0';
@@ -144,14 +145,17 @@ end process ;
 divider_end <= '1' when divider_counter = 0 else
 					'0' ;
 
+
+
 process(gls_clk, gls_reset)
 begin
 	if gls_reset = '1' then
-		cathode_buffer <= "11110";
+		cathode_buffer(0) <= '1' ;
+		cathode_buffer(4 downto 1) <= (others => '0');
 	elsif gls_clk'event and gls_clk = '1' then
 		if divider_end = '1' then
-			cathode_buffer(0) <= cathode_buffer(4);
 			cathode_buffer(4 downto 1) <= cathode_buffer(3 downto 0);
+			cathode_buffer(0) <= cathode_buffer(4);
 		end if ;
 	end if ;
 end process ;
@@ -161,13 +165,15 @@ end process ;
 
 
 with cathode_buffer select
-	sseg_edu_anode_out <= sseg_edu_regs(0)(7 downto 0) when "11110",
-								 sseg_edu_regs(0)(15 downto 8) when "11101",
-								 sseg_edu_regs(1)(7 downto 0) when "11011",
-								 sseg_edu_regs(1)(15 downto 8) when "10111",
-								 sseg_edu_regs(2)(7 downto 0) when "01111",
+	sseg_edu_anode_out <= sseg_edu_regs(0)(7 downto 0) when 	"00001",
+								 sseg_edu_regs(0)(15 downto 8) when "00010",
+								 sseg_edu_regs(1)(7 downto 0) when 	"00100",
+								 sseg_edu_regs(1)(15 downto 8) when "01000",
+								 sseg_edu_regs(2)(7 downto 0) when 	"10000",
 								 (others => '0') when others ;
-
+								 
+								 
+sseg_edu_cathode_out <= cathode_buffer ;
 
 end Behavioral;
 

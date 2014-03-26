@@ -269,7 +269,7 @@ component wishbone_7seg4x is
 generic(
 		  wb_size : natural := 16; -- Data port size for wishbone
 		  clock_freq_hz : natural := 100_000_000;
-		  refresh_rate_hz : natural := 30
+		  refresh_rate_hz : natural := 100
 	 );
 	 port 
 	 (

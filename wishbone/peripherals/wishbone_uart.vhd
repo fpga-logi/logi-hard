@@ -150,6 +150,7 @@ port map( clk => gls_clk, reset => gls_reset ,
 		available => uart_available
 );
 
+
 fifo_0 : small_fifo 
 generic map( WIDTH => 8, DEPTH => 256, THRESHOLD => 4)
 port map(clk => gls_clk, 
