@@ -265,6 +265,32 @@ component wishbone_watchdog is
 end component;
 
 
+component wishbone_7seg4x is
+generic(
+		  wb_size : natural := 16; -- Data port size for wishbone
+		  clock_freq_hz : natural := 100_000_000;
+		  refresh_rate_hz : natural := 30
+	 );
+	 port 
+	 (
+		  -- Syscon signals
+		  gls_reset    : in std_logic ;
+		  gls_clk      : in std_logic ;
+		  -- Wishbone signals
+		  wbs_address       : in std_logic_vector(15 downto 0) ;
+		  wbs_writedata : in std_logic_vector( wb_size-1 downto 0);
+		  wbs_readdata  : out std_logic_vector( wb_size-1 downto 0);
+		  wbs_strobe    : in std_logic ;
+		  wbs_cycle      : in std_logic ;
+		  wbs_write     : in std_logic ;
+		  wbs_ack       : out std_logic;
+		  -- SSEG to EDU from Host
+		  sseg_edu_cathode_out : out std_logic_vector(4 downto 0); -- common cathode
+		  sseg_edu_anode_out : out std_logic_vector(7 downto 0) -- sseg anode	  
+	 );
+end component;
+
+
 end logi_wishbone_peripherals_pack;
 
 package body logi_wishbone_peripherals_pack is
