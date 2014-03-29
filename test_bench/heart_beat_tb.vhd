@@ -44,8 +44,8 @@ ARCHITECTURE behavior OF heart_beat_tb IS
 				beat_period_ns : positive := 1_000_000_000;
 				beat_length_ns : positive := 200_000_000);
     PORT(
-         clk : IN  std_logic;
-         reset : IN  std_logic;
+         gls_clk : IN  std_logic;
+         gls_reset : IN  std_logic;
          beat_out : OUT  std_logic
         );
     END COMPONENT;
@@ -69,8 +69,8 @@ BEGIN
 				beat_period_ns => 100_000,
 				beat_length_ns => 20_000)
 	PORT MAP (
-          clk => clk,
-          reset => reset,
+          gls_clk => clk,
+          gls_reset => reset,
           beat_out => beat_out
         );
 
