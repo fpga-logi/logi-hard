@@ -57,8 +57,7 @@ generic( ADDR_WIDTH: positive := 16; --! width of the address bus
 			SIZE	: positive	:= 128; --! fifo depth
 			B_BURST_SIZE : positive := 4;
 			A_BURST_SIZE : positive := 4;
-			SYNC_LOGIC_INTERFACE : boolean := false;
-			AUTO_INC : boolean := false
+			SYNC_LOGIC_INTERFACE : boolean := false
 			); 
 port(
 	-- Syscon signals
@@ -146,7 +145,7 @@ fifo_A : dp_fifo -- write from bus, read from logic
 	); 
 	
 fifo_B : dp_fifo -- read from bus, write from logic
-	generic map(N => SIZE , W => WIDTH, SYNC_WR => SYNC_LOGIC_INTERFACE, SYNC_RD => AUTO_INC)
+	generic map(N => SIZE , W => WIDTH, SYNC_WR => SYNC_LOGIC_INTERFACE, SYNC_RD => false)
 	port map(
  		clk => gls_clk, resetn => gls_resetn , sraz => srazB , 
  		wr => wrB, rd => fifoB_rd,

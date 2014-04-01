@@ -290,6 +290,33 @@ generic(
 	 );
 end component;
 
+component wishbone_shared_mem is
+generic( mem_size : positive := 256;
+			wb_size : natural := 16 ; -- Data port size for wishbone
+			wb_addr_size : natural := 16  -- Data port size for wishbone
+		  );
+port(
+		  -- Syscon signals
+		  gls_reset    : in std_logic ;
+		  gls_clk      : in std_logic ;
+		  -- Wishbone signals
+		  wbs_address       : in std_logic_vector(wb_addr_size-1 downto 0) ;
+		  wbs_writedata : in std_logic_vector( wb_size-1 downto 0);
+		  wbs_readdata  : out std_logic_vector( wb_size-1 downto 0);
+		  wbs_strobe    : in std_logic ;
+		  wbs_cycle      : in std_logic ;
+		  wbs_write     : in std_logic ;
+		  wbs_ack       : out std_logic;
+		  
+		  
+		  -- Logic signals
+		  write_in : in std_logic ;
+		  addr_in : in std_logic_vector(nbit(mem_size)-1 downto 0);
+		  data_in : in std_logic_vector(15 downto 0);
+		  data_out : out std_logic_vector(15 downto 0)
+		  );
+end component;
+
 
 end logi_wishbone_peripherals_pack;
 
