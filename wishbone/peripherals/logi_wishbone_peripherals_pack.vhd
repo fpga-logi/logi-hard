@@ -32,6 +32,9 @@
 library IEEE;
 use IEEE.STD_LOGIC_1164.all;
 
+library work;
+use work.logi_utils_pack.all ;
+
 package logi_wishbone_peripherals_pack is
 
 type slv16_array is array(natural range <>) of std_logic_vector(15 downto 0);
