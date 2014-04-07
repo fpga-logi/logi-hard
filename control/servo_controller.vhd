@@ -47,7 +47,7 @@ use ieee.std_logic_unsigned.all;
 
 
 library work ;
-use work.utils_pack.all ;
+use work.logi_utils_pack.all ;
 
 -- Uncomment the following library declaration if using
 -- arithmetic functions with Signed or Unsigned values

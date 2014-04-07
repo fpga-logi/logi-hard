@@ -134,7 +134,8 @@ end process register_mngmt;
 pwm_ctrl : pwm 
 	generic map(NB_CHANNEL => nb_chan)
 	port map(
-	clk => gls_clk, resetn => (NOT gls_reset),
+	clk => gls_clk,
+	resetn => (NOT gls_reset),
 	divider => pwm_regs(0),
 	period => pwm_regs(1),
 	pulse_width => pwm_regs(2 to (2+(nb_chan-1))),
