@@ -31,10 +31,13 @@ use IEEE.NUMERIC_STD.ALL;
 --library UNISIM;
 --use UNISIM.VComponents.all;
 
+use work.all;
+
 entity nes_ctl is
 	generic(
 			--N: integer :=  4		--SIMULATION
-			N: integer :=  17		--17 bit overflow 131k
+			--N: integer :=  17		--17 bit overflow 131k
+			N: integer :=  18		--18 bit overflow 131k for 100mhz clock
 	 );
 	port(
 			clk : in std_logic;
@@ -95,6 +98,7 @@ begin
 					nes_data_next <= nes_data_next;	
 					nes_lat <= '0';	--default outputs
 					nes_clk <= '0';
+					
 --					nes_a <= '0';
 --					nes_b <= '0';
 --					nes_left <= '0';
@@ -103,7 +107,7 @@ begin
 --					nes_down <= '0';
 --					nes_sel <= '0';
 --					nes_start <= '0';
---					test_a <= '0';
+
 				case state_reg is
 					when s0 =>
 						state_next <= s1;
