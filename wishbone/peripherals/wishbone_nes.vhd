@@ -1,5 +1,3 @@
-
-
 -- ----------------------------------------------------------------------
 --LOGI-hard
 --Copyright (c) 2013, Jonathan Piat, Michael Jones, All rights reserved.
@@ -18,19 +16,17 @@
 --License along with this library.
 -- ----------------------------------------------------------------------
 
-
-
-----------------------------------------------------------------------------------
+-------------------------------------------------------------------------
 -- Company: 
 -- Engineer: 
 -- 
--- Create Date:    15:34:11 08/28/2013 
+-- Create Date:    15:25:53 12/17/2013 
 -- Design Name: 
--- Module Name:    wishbone_pwm - Behavioral 
+-- Module Name:    
 -- Project Name: 
 -- Target Devices: Spartan 6 
 -- Tool versions: ISE 14.1 
--- Description: 
+-- Description: NES (nintendo) controller wishbone driver to access NES data from the EDU board
 --
 -- Dependencies: 
 --
@@ -38,10 +34,13 @@
 -- Revision 0.01 - File Created
 -- Additional Comments: 
 --
-----------------------------------------------------------------------------------
+---------------------------------------------------------------------------
 library IEEE;
 use IEEE.STD_LOGIC_1164.ALL;
 use IEEE.STD_LOGIC_UNSIGNED.ALL;
+use IEEE.NUMERIC_STD.ALL;
+
+use work.all;
 
 -- Uncomment the following library declaration if using
 -- arithmetic functions with Signed or Unsigned values
@@ -52,14 +51,14 @@ use IEEE.STD_LOGIC_UNSIGNED.ALL;
 --library UNISIM;
 --use UNISIM.VComponents.all;
 
-library work ;
-use work.control_pack.all ;
+entity wishbone_nes is
 
-entity wishbone_pwm is
-generic( nb_chan : positive := 3;
-			wb_size : natural := 16  -- Data port size for wishbone
-		  );
-port(
+generic(
+		  wb_size : natural := 16; -- Data port size for wishbone
+		  N: integer :=  17		--17 bit overflow 131k
+	 );
+	 port 
+	 (
 		  -- Syscon signals
 		  gls_reset    : in std_logic ;
 		  gls_clk      : in std_logic ;
@@ -71,44 +70,53 @@ port(
 		  wbs_cycle      : in std_logic ;
 		  wbs_write     : in std_logic ;
 		  wbs_ack       : out std_logic;
-		  
-		  pwm_out : out std_logic_vector(nb_chan-1 downto 0)
-		  
+		
+		--nes data signals
+			nes1_dat : in std_logic;
+			nes2_dat : in std_logic;
+			nes_lat : out std_logic;
+			nes_clk : out std_logic;
+			nes1_data_out: out std_logic_vector(7 downto 0);
+			nes2_data_out: out std_logic_vector(7 downto 0)
+	  
+	 );
+end wishbone_nes;
 
-);
-end wishbone_pwm;
+architecture Behavioral of wishbone_nes is
 
-architecture Behavioral of wishbone_pwm is
-signal pwm_regs : slv16_array(0 to (nb_chan+1)) ;
-
-signal read_ack : std_logic ;
-signal write_ack : std_logic ;
-
+	signal read_ack : std_logic ;
+	signal write_ack : std_logic ;
+	
+	signal nes1_data_out_buf: std_logic_vector(7 downto 0);
+	signal nes2_data_out_buf: std_logic_vector(7 downto 0);
 begin
 
 wbs_ack <= read_ack or write_ack;
 
+--WBM-WRITE 
 write_bloc : process(gls_clk,gls_reset)
 begin
     if gls_reset = '1' then 
-        write_ack <= '0';
+        write_ack <= '0';  
+		  --sseg_edu_regs <= (others => (others => '0')) ;	--RESET REGISTERS HERE
     elsif rising_edge(gls_clk) then
         if ((wbs_strobe and wbs_write and wbs_cycle) = '1' ) then
-            write_ack <= '1';
+				--sseg_edu_regs(conv_integer(wbs_address(1 downto 0))) <= wbs_writedata; --WRITE TO REGISTERS HERE
+            write_ack <= '1'; 
         else
             write_ack <= '0';
         end if;
     end if;
 end process write_bloc;
 
-
+--WBM-READ
 read_bloc : process(gls_clk, gls_reset)
 begin
     if gls_reset = '1' then
         
     elsif rising_edge(gls_clk) then
+			wbs_readdata <= nes2_data_out_buf & nes1_data_out_buf;		--MASTER READ FROM REGISTERS HERE
         if (wbs_strobe = '1' and wbs_write = '0'  and wbs_cycle = '1' ) then
-				wbs_readdata <= pwm_regs(conv_integer(wbs_address)) ;
             read_ack <= '1';
         else
             read_ack <= '0';
@@ -117,31 +125,31 @@ begin
 end process read_bloc;
 
 
-register_mngmt : process(gls_clk, gls_reset)
-begin
-    if gls_reset = '1' then
-        
-    elsif rising_edge(gls_clk) then
-        if ((wbs_strobe and wbs_write and wbs_cycle) = '1' ) then
-            pwm_regs(conv_integer(wbs_address)) <= wbs_writedata;
-        end if ;
-    end if;
-end process register_mngmt;
 
-
-
-
-pwm_ctrl : pwm 
-	generic map(NB_CHANNEL => nb_chan)
+nes1: entity work.nes_ctl
 	port map(
-	clk => gls_clk,
-	resetn => (NOT gls_reset),
-	divider => pwm_regs(0),
-	period => pwm_regs(1),
-	pulse_width => pwm_regs(2 to (2+(nb_chan-1))),
-	pwm => pwm_out 
+			clk => gls_clk,
+			reset => gls_reset,
+			nes_dat => nes1_dat,
+			nes_lat => nes_lat,
+			nes_clk => nes_clk,	
+			nes_data_out =>  nes1_data_out_buf
 	);
+
+	
+nes2: entity work.nes_ctl
+	port map(
+			clk => gls_clk,
+			reset => gls_reset,
+			nes_dat => nes2_dat,
+			nes_lat => open,
+			nes_clk => open,	
+			nes_data_out =>  nes2_data_out_buf
+	);
+	
+
+nes1_data_out <= nes1_data_out_buf;
+nes2_data_out <= nes2_data_out_buf;
 
 
 end Behavioral;
-
