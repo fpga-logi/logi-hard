@@ -25,7 +25,7 @@
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
      inkscape:zoom="1.0217974"
-     inkscape:cx="366.98456"
+     inkscape:cx="155.8924"
      inkscape:cy="93.5004"
      inkscape:document-units="px"
      inkscape:current-layer="layer1"
@@ -62,18 +62,18 @@
        width="243.21608"
        height="168.32111"
        x="-202.48257"
-       y="160.30026" />
+       y="176.30026" />
     <text
        xml:space="preserve"
        style="font-size:28px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;font-family:Sans"
        x="-186.97513"
-       y="251.79576"
+       y="267.79578"
        id="text2987"
        sodipodi:linespacing="125%"><tspan
          sodipodi:role="line"
          id="tspan2989"
          x="-186.97513"
-         y="251.79576">wishbone_logic</tspan></text>
+         y="267.79578">wishbone_logic</tspan></text>
     <g
        id="g3820"
        transform="translate(5.7908325,-92.591218)">
@@ -164,19 +164,19 @@
        sodipodi:nodetypes="cc" />
     <path
        style="fill:none;stroke:#000000;stroke-width:3;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none"
-       d="m 307.59988,405.5711 -73.99025,0 0,-98.93078 -193.70478,0"
+       d="M 307.0097,307.61899 39.90485,306.64032"
        id="path4187"
        inkscape:connector-curvature="0"
-       sodipodi:nodetypes="cccc" />
+       sodipodi:nodetypes="cc" />
     <path
        style="fill:none;stroke:#000000;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
-       d="m 39.904849,224.72145 229.737851,0 -0.0685,89.65964 39.81599,0.14753"
+       d="m 39.904849,224.72145 269.863221,0"
        id="path4198"
        inkscape:connector-curvature="0"
-       sodipodi:nodetypes="cccc" />
+       sodipodi:nodetypes="cc" />
     <path
        style="fill:none;stroke:#000000;stroke-width:3;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none"
-       d="m 40.7362,261.74737 217.81397,0 0,69.83348 49.88106,0"
+       d="m 40.7362,261.74737 193.69549,0 -0.70454,-17.25692 74.73507,-0.3591"
        id="path4200"
        inkscape:connector-curvature="0"
        sodipodi:nodetypes="cccc" />
