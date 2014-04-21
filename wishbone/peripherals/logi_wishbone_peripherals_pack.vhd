@@ -296,7 +296,9 @@ end component;
 component wishbone_shared_mem is
 generic( mem_size : positive := 256;
 			wb_size : natural := 16 ; -- Data port size for wishbone
-			wb_addr_size : natural := 16  -- Data port size for wishbone
+			wb_addr_size : natural := 16 ;  -- Data port size for wishbone
+			logic_addr_size : natural := 10 ;
+			logic_data_size : natural := 16
 		  );
 port(
 		  -- Syscon signals
@@ -314,9 +316,9 @@ port(
 		  
 		  -- Logic signals
 		  write_in : in std_logic ;
-		  addr_in : in std_logic_vector(nbit(mem_size)-1 downto 0);
-		  data_in : in std_logic_vector(15 downto 0);
-		  data_out : out std_logic_vector(15 downto 0)
+		  addr_in : in std_logic_vector(logic_addr_size-1 downto 0);
+		  data_in : in std_logic_vector(logic_data_size-1 downto 0);
+		  data_out : out std_logic_vector(logic_data_size-1 downto 0)
 		  );
 end component;
 

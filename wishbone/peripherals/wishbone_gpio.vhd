@@ -91,7 +91,11 @@ begin
         
     elsif rising_edge(gls_clk) then
 		  input <= gpio ; -- latching inputs
-		  wbs_readdata <= input ; 
+		  if wbs_address(0) = '0' then
+			wbs_readdata <= input ; 
+		  else
+			wbs_readdata <= dir ;
+		  end if ;
         if (wbs_strobe = '1' and wbs_write = '0'  and wbs_cycle = '1' ) and wbs_address(0)='0' then
             read_ack <= '1';
         else
