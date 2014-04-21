@@ -32,6 +32,9 @@
 library IEEE;
 use IEEE.STD_LOGIC_1164.all;
 
+library work;
+use work.logi_utils_pack.all ;
+
 package logi_wishbone_peripherals_pack is
 
 type slv16_array is array(natural range <>) of std_logic_vector(15 downto 0);
@@ -238,6 +241,87 @@ component wishbone_gpio is
 		  gpio: inout std_logic_vector(15 downto 0)
 	 );
 end component;
+
+component wishbone_watchdog is
+	generic(
+		  wb_size : natural := 16; -- Data port size for wishbone
+		  watchdog_timeout_ms : positive := 160;
+		  clock_period_ns : positive := 10
+	 );
+	 port 
+	 (
+		  -- Syscon signals
+		  gls_reset    : in std_logic ;
+		  gls_clk      : in std_logic ;
+		  -- Wishbone signals
+		  wbs_address       : in std_logic_vector(15 downto 0) ;
+		  wbs_writedata : in std_logic_vector( wb_size-1 downto 0);
+		  wbs_readdata  : out std_logic_vector( wb_size-1 downto 0);
+		  wbs_strobe    : in std_logic ;
+		  wbs_cycle      : in std_logic ;
+		  wbs_write     : in std_logic ;
+		  wbs_ack       : out std_logic;
+		 
+		  -- out signals
+		  reset_out : out std_logic  
+	 );
+end component;
+
+
+component wishbone_7seg4x is
+generic(
+		  wb_size : natural := 16; -- Data port size for wishbone
+		  clock_freq_hz : natural := 100_000_000;
+		  refresh_rate_hz : natural := 100
+	 );
+	 port 
+	 (
+		  -- Syscon signals
+		  gls_reset    : in std_logic ;
+		  gls_clk      : in std_logic ;
+		  -- Wishbone signals
+		  wbs_address       : in std_logic_vector(15 downto 0) ;
+		  wbs_writedata : in std_logic_vector( wb_size-1 downto 0);
+		  wbs_readdata  : out std_logic_vector( wb_size-1 downto 0);
+		  wbs_strobe    : in std_logic ;
+		  wbs_cycle      : in std_logic ;
+		  wbs_write     : in std_logic ;
+		  wbs_ack       : out std_logic;
+		  -- SSEG to EDU from Host
+		  sseg_edu_cathode_out : out std_logic_vector(4 downto 0); -- common cathode
+		  sseg_edu_anode_out : out std_logic_vector(7 downto 0) -- sseg anode	  
+	 );
+end component;
+
+component wishbone_shared_mem is
+generic( mem_size : positive := 256;
+			wb_size : natural := 16 ; -- Data port size for wishbone
+			wb_addr_size : natural := 16 ;  -- Data port size for wishbone
+			logic_addr_size : natural := 10 ;
+			logic_data_size : natural := 16
+		  );
+port(
+		  -- Syscon signals
+		  gls_reset    : in std_logic ;
+		  gls_clk      : in std_logic ;
+		  -- Wishbone signals
+		  wbs_address       : in std_logic_vector(wb_addr_size-1 downto 0) ;
+		  wbs_writedata : in std_logic_vector( wb_size-1 downto 0);
+		  wbs_readdata  : out std_logic_vector( wb_size-1 downto 0);
+		  wbs_strobe    : in std_logic ;
+		  wbs_cycle      : in std_logic ;
+		  wbs_write     : in std_logic ;
+		  wbs_ack       : out std_logic;
+		  
+		  
+		  -- Logic signals
+		  write_in : in std_logic ;
+		  addr_in : in std_logic_vector(logic_addr_size-1 downto 0);
+		  data_in : in std_logic_vector(logic_data_size-1 downto 0);
+		  data_out : out std_logic_vector(logic_data_size-1 downto 0)
+		  );
+end component;
+
 
 end logi_wishbone_peripherals_pack;
 

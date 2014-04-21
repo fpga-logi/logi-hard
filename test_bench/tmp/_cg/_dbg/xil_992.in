@@ -1,0 +1,39 @@
+SET_FLAG DEBUG FALSE
+SET_FLAG MODE INTERACTIVE
+SET_FLAG STANDALONE_MODE FALSE
+SET_PREFERENCE devicefamily spartan6
+SET_PREFERENCE device xc6slx9
+SET_PREFERENCE speedgrade -2
+SET_PREFERENCE package tqg144
+SET_PREFERENCE verilogsim false
+SET_PREFERENCE vhdlsim true
+SET_PREFERENCE simulationfiles Behavioral
+SET_PREFERENCE busformat BusFormatAngleBracketNotRipped
+SET_PREFERENCE outputdirectory /home/jpiat/development/FPGA/logi-family/logi-hard/test_bench/
+SET_PREFERENCE workingdirectory /home/jpiat/development/FPGA/logi-family/logi-hard/test_bench/tmp/
+SET_PREFERENCE subworkingdirectory /home/jpiat/development/FPGA/logi-family/logi-hard/test_bench/tmp/_cg/
+SET_PREFERENCE transientdirectory /home/jpiat/development/FPGA/logi-family/logi-hard/test_bench/tmp/_cg/_dbg/
+SET_PREFERENCE designentry VHDL
+SET_PREFERENCE flowvendor Other
+SET_PREFERENCE addpads false
+SET_PREFERENCE projectname coregen
+SET_PREFERENCE formalverification false
+SET_PREFERENCE asysymbol false
+SET_PREFERENCE implementationfiletype Ngc
+SET_PREFERENCE foundationsym false
+SET_PREFERENCE createndf false
+SET_PREFERENCE removerpms false
+SET_PARAMETER Component_Name test
+SET_PARAMETER Component_name test
+SET_SIM_PARAMETER c_component_name test
+SET_CORE_NAME SelectIO Interface Wizard
+SET_CORE_VERSION 4.1
+SET_CORE_VLNV xilinx.com:ip:selectio_wiz:4.1
+SET_CORE_CLASS com.xilinx.ip.selectio_wiz_v4_1.selectio_wiz_v4_1
+SET_CORE_PATH /opt/Xilinx/14.1/ISE_DS/ISE/coregen/ip/xilinx/network/com/xilinx/ip/selectio_wiz_v4_1
+SET_CORE_GUIPATH /opt/Xilinx/14.1/ISE_DS/ISE/coregen/ip/xilinx/network/com/xilinx/ip/selectio_wiz_v4_1/gui/selectio_wiz_v4_1.tcl
+SET_CORE_DATASHEET /opt/Xilinx/14.1/ISE_DS/ISE/coregen/ip/xilinx/network/com/xilinx/ip/selectio_wiz_v4_1/doc/selectio_wiz_ds746.pdf
+ADD_CORE_DOCUMENT </opt/Xilinx/14.1/ISE_DS/ISE/coregen/ip/xilinx/network/com/xilinx/ip/selectio_wiz_v4_1/doc/selectio_wiz_gsg700.pdf><selectio_wiz_gsg700.pdf>
+ADD_CORE_DOCUMENT </opt/Xilinx/14.1/ISE_DS/ISE/coregen/ip/xilinx/network/com/xilinx/ip/selectio_wiz_v4_1/doc/selectio_wiz_ds746.pdf><selectio_wiz_ds746.pdf>
+ADD_CORE_DOCUMENT </opt/Xilinx/14.1/ISE_DS/ISE/coregen/ip/xilinx/network/com/xilinx/ip/selectio_wiz_v4_1/doc/selectio_wiz_v4_1_vinfo.html><selectio_wiz_v4_1_vinfo.html>
+ADD_CORE_DOCUMENT </opt/Xilinx/14.1/ISE_DS/ISE/coregen/ip/xilinx/network/com/xilinx/ip/selectio_wiz_v4_1/doc/selectio_wiz_v4_1_readme.txt><selectio_wiz_v4_1_readme.txt>

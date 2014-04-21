@@ -19,6 +19,19 @@ function nbit(max : integer) return integer;
 function count_ones(slv : std_logic_vector) return natural;
 function max(LEFT : integer ; RIGHT: integer) return integer ;
 
+
+type fifo16_bus is
+record
+	fifo_data_in : std_logic_vector(15 downto 0);
+	fifo_data_out : std_logic_vector(15 downto 0);
+	fifo_wr : std_logic ;
+	fifo_rd  : std_logic ;
+	fifo_full : std_logic ;
+	fifo_empty : std_logic ;
+	fifo_nb_free : std_logic_vector(15 downto 0);
+	fifo_nb_available : std_logic_vector(15 downto 0);
+end record;
+
 type slv8_array is array (natural range <>) of std_logic_vector(7 downto 0);
 type slv16_array is array (natural range <>) of std_logic_vector(15 downto 0);
 type slv32_array is array (natural range <>) of std_logic_vector(31 downto 0);

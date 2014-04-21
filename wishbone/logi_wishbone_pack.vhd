@@ -36,6 +36,18 @@ package logi_wishbone_pack is
 
 function find_X(slv : std_logic_vector) return natural;
 
+type wishbone16_bus is
+record
+	address : std_logic_vector(15 downto 0);
+	writedata : std_logic_vector(15 downto 0);
+	readdata : std_logic_vector(15 downto 0);
+	cycle: std_logic;
+	write : std_logic;
+	strobe : std_logic;
+	ack : std_logic;
+end record;
+
+
 type array_of_addr is array(NATURAL range <>) of std_logic_vector(15 downto 0);
 type array_of_slv16 is array(NATURAL range <>) of std_logic_vector(15 downto 0);
 
