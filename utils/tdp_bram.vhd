@@ -91,7 +91,7 @@ begin
 		  if(b_wr='1') then
 				mem(conv_integer(b_addr & std_logic_vector(to_unsigned(i,log2(RATIO))))):= b_din((i+1)*minWidth-1 downto i*minWidth);
         end if;
-        b_dout((i+1)*minWidth downto i*minWidth) <= mem(conv_integer(b_addr & std_logic_vector(to_unsigned(i,log2(RATIO)))));
+        b_dout(((i+1)*minWidth)-1 downto i*minWidth) <= mem(conv_integer(b_addr & std_logic_vector(to_unsigned(i,log2(RATIO)))));
 	 end loop ;
     end if;
 end process;
