@@ -60,7 +60,7 @@ begin
 		if load_counter = '1' then
 			time_counter <= load_value ;
 		else
-			time_counter <= time_counter -1 ;
+			time_counter <= time_counter - 1 ;
 		end if ;
 	end if ;
 end process ;

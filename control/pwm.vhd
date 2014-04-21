@@ -78,7 +78,7 @@ begin
 process(clk, resetn)
 begin
 	if resetn = '0' then	
-		divider_counter <= divider ;
+		divider_counter <= (others => '0') ;
 	elsif clk'event and clk = '1' then
 		if divider_counter = 0 then
 			divider_counter <= divider ;
