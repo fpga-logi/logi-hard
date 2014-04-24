@@ -8,7 +8,7 @@ entity tdp_bram is
 generic (
     DATA_A    : integer := 16;
     ADDR_A    : integer := 10;
-	 DATA_B    : integer := 16;
+    DATA_B    : integer := 16;
     ADDR_B    : integer := 10
 );
 port (
