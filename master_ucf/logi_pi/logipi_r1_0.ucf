@@ -130,9 +130,9 @@ NET "SDRAM_DQ<15>"		LOC = "P55"			| IOSTANDARD = LVTTL ;
 ##NET "RP_SPI_CE1N"			LOC = "P78"			| IOSTANDARD = LVTTL;
 #NET "SYS_SDA"				LOC = "P98" 		| IOSTANDARD = LVTTL;			#Shared with Arduino SDA
 #NET "SYS_SCL"				LOC = "P97" 		| IOSTANDARD = LVTTL;			#Shared with Arduino SCL
-#UART FROM RASPBERRY PI - As labeled in the schematic
-#NET "SYS_TX" 				LOC= "P83" 			| IOSTANDARD = LVTTL;			#Shared with Arduino TX
-#NET "SYS_RX" 				LOC= "P82" 			| IOSTANDARD = LVTTL;			#Shared with Arduino RX
+#UART FROM RASPBERRY PI - As labeled in the Rpi schematic
+#NET "SYS_TX" 				LOC= "P83" 			| IOSTANDARD = LVTTL;	#Pi TX Pin		#Shared with Arduino TX
+#NET "SYS_RX" 				LOC= "P82" 			| IOSTANDARD = LVTTL;	#Pi RX Pin		#Shared with Arduino RX
 #NET "RP_GPIO_GCLK" 		LOC = "P95"			| IOSTANDARD = LVTTL;
 #NET "RP_GPIO_GEN2" 		LOC = "P81"			| IOSTANDARD = LVTTL;
 #NET "RP_GPIO_GEN3" 		LOC = "P80"			| IOSTANDARD = LVTTL;
