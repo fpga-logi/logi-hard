@@ -53,7 +53,7 @@ use IEEE.STD_LOGIC_UNSIGNED.ALL;
 --use UNISIM.VComponents.all;
 
 library work ;
-use work.utils_pack.all ;
+use work.logi_utils_pack.all ;
 
 
 
@@ -67,8 +67,9 @@ port(
 	K, AK : in std_logic_vector(15 downto 0);
 	B : in std_logic_vector(15 downto 0);
 	setpoint : in signed(15 downto 0);
-	ENC_A : in std_logic ;
-	ENC_B : in std_logic ;
+	measure : in signed(15 downto 0);
+	
+	
 	cmd : out std_logic_vector(15 downto 0);
 	dir : out std_logic 
 );
@@ -77,14 +78,8 @@ end pid_filter;
 architecture Behavioral of pid_filter is
 constant tick_modulo : integer := (pid_period_ns/clk_period_ns)-1 ;
 
-
-signal ENC_A_OLD, ENC_A_RE : std_logic ;
-signal std_encoder_value : std_logic_vector(15 downto 0) ;
-signal encoder_value : signed(15 downto 0) ;
-
-
 signal tick_count : std_logic_vector(nbit(tick_modulo)-1 downto 0);
-signal cycle_count : std_logic_vector(1 downto 0);
+signal cycle_count, cycle_count_old : std_logic_vector(1 downto 0);
 signal en_cycle_counter : std_logic ;
 signal reload : std_logic ;
 signal acc, sum : signed(31 downto 0); 
@@ -96,60 +91,39 @@ signal xn_sign, xnn_sign, mc_sign, sign, sign_latched : std_logic ;
 signal latch_res : std_logic ;
 begin
 
--- encoder management part
+
+
 process(clk, resetn)
-	begin
-		if resetn = '0' then
-			ENC_A_OLD <= '0';
-		elsif clk'event and clk = '1' then
-			ENC_A_OLD <= ENC_A ;
+begin
+	if resetn= '0' then
+		tick_count <= std_logic_vector(to_unsigned(tick_modulo, nbit(tick_modulo)));
+	elsif clk'event and clk='1' then
+		if reload= '1' then
+			tick_count <= std_logic_vector(to_unsigned(tick_modulo, nbit(tick_modulo)));
+		else
+			tick_count <= tick_count - 1 ;
 		end if ;
-	end process ;
-	ENC_A_RE <= (ENC_A and (NOT ENC_A_OLD)) and  en;	
+	end if ;
+end process ;
 
-encoder_chan : up_down_counter
-	 generic map(NBIT => 16)
-	 port map( clk => clk,
-				  resetn => resetn,
-				  sraz => reload,
-				  en => ENC_A_RE ,  -- must detect rising edge
-				  load => '0',
-				  up_downn => ENC_B,
-				  E => (others => '0'),
-				  Q => std_encoder_value
-				  );
-	 encoder_value <= signed(std_encoder_value) ;
-
-
-
-counter0 : up_down_counter
-				generic map(NBIT => nbit(tick_modulo))				
-				port map(
-					clk => clk,
-					resetn => resetn ,
-					sraz => '0' ,
-					en => '1' ,
-					up_downn => '0',
-					load => reload,
-					E => std_logic_vector(to_unsigned(tick_modulo, nbit(tick_modulo))),
-					Q => tick_count
-				);
 reload	<= '1' when tick_count = 0 else
 				'0' ;
 
+process(clk, resetn)
+begin
+	if resetn= '0' then
+		cycle_count <=(others => '1');
+		cycle_count_old <= (others => '0');
+	elsif clk'event and clk='1' then
+		if reload= '1' then
+			cycle_count <=(others => '1');
+		elsif en_cycle_counter = '1' then
+			cycle_count <= cycle_count - 1 ;
+		end if ;
+		cycle_count_old <= cycle_count ;
+	end if ;
+end process ;
 
-cycles_counter : up_down_counter
-				generic map(NBIT => 2)				
-				port map(
-					clk => clk,
-					resetn => resetn ,
-					sraz => '0' ,
-					en => en_cycle_counter ,
-					up_downn => '0',
-					load => reload,
-					E => (others => '1'),
-					Q => cycle_count
-				);
 en_cycle_counter <= '1' when cycle_count /= 0 else
 						  '0';
 						
@@ -185,6 +159,13 @@ begin
 	end if ;
 end process ;
 
+-- sequence
+-- 1) acc += K * xn
+-- 2) acc -= AK * xn-1
+-- 3) acc += B * mcn-1
+-- 4) mcn = acc/1024
+
+
 with cycle_count select 
 op1 <= unsigned(K) when "11",
 		 unsigned(AK) when "10",
@@ -217,20 +198,14 @@ begin
 		xn <= (others => '0') ;
 	elsif clk'event and clk = '1' then
 		if reload = '1' then
-			xn <= setpoint - encoder_value ;
+			xn <= setpoint - measure ;
 			xnn <= xn ;
 		end if ;
 	end if ;
 end process ;
 
-
-delay_latch_res : generic_delay
-	generic map( WIDTH => 1, DELAY => 4)
-	port map(
-		clk => clk, resetn => resetn,
-		input(0)	=> reload,
-		output(0) => latch_res
-);		
+latch_res <= '1' when cycle_count = 0 and cycle_count_old=1 else
+				 '0' ;
 
 process(clk, resetn)
 begin

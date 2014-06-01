@@ -64,7 +64,11 @@ generic(CLK_DIV : positive := 100;
 port(
 
 		  clk, resetn : std_logic ;
-
+		  
+		  
+		  offset_x : in std_logic_vector(15 downto 0);
+		  offset_y : in std_logic_vector(15 downto 0);
+		  offset_z : in std_logic_vector(15 downto 0);
 		  sample_x : out std_logic_vector(15 downto 0);
 		  sample_y : out std_logic_vector(15 downto 0);
 		  sample_z : out std_logic_vector(15 downto 0);
@@ -109,7 +113,9 @@ signal init_done : std_logic ;
 signal ssn_d : std_logic ;
 signal shift_in_en, shift_out_en : std_logic ;
 signal end_of_xfer: std_logic ;
+signal latch_data : std_logic ;
 
+signal sample_x_temp, sample_y_temp, sample_z_temp : std_logic_vector(15 downto 0);
 begin
 
 -- tempo
@@ -236,7 +242,8 @@ data_clk_re <= data_clk and (not data_clk_old);
 data_clk_fe <= (not data_clk) and data_clk_old;
 
 -- command to send on reset ...
-config_word <= X"200F";
+-- starting on register 2, and auto increment of address enabled
+config_word <= X"60" & X"0F" ;--& X"00" & X"80" ;
 
 -- L3GD20_REGISTER_OUT_X_L | 0x80 for reading the data
 cmd_word <= X"E8FF" ;
@@ -312,13 +319,35 @@ with current_transfer_state select
 				'0' when xfer_data,
 				'1' when others ;
 				
-				
---sample <= data_in_shift_reg(9 downto 0);
-sample_x <= data_in_shift_reg(47 downto 32);
-sample_x <= data_in_shift_reg(31 downto 16);
-sample_z <= data_in_shift_reg(15 downto 0);
-dv <= '1' when current_transfer_state=xfer_data and byte_count = 7 and bit_count_eq_8 = '1' else
+
+latch_data <= '1' when current_transfer_state=xfer_data and byte_count = 7 and bit_count_eq_8 = '1' else
 		'0' ;
+		
+sample_x_temp(7 downto 0) <= data_in_shift_reg(47 downto 40);
+sample_x_temp(15 downto 8) <= data_in_shift_reg(39 downto 32);
+
+sample_y_temp(7 downto 0) <= data_in_shift_reg(31 downto 24);
+sample_y_temp(15 downto 8) <= data_in_shift_reg(23 downto 16);
+
+sample_z_temp(7 downto 0) <= data_in_shift_reg(15 downto 8);
+sample_z_temp(15 downto 8) <= data_in_shift_reg(7 downto 0);
+		
+process(clk, resetn)
+begin 
+	if resetn = '0' then
+		sample_x <=(others => '0');
+		sample_y <= (others => '0');
+		sample_z <= (others => '0');
+	elsif clk'event and clk = '1' then
+		if latch_data <= '1' then
+			sample_x <= sample_x_temp - offset_x ;
+			sample_y <= sample_y_temp - offset_y ;
+			sample_z <= sample_z_temp - offset_z ;
+		end if ;
+		dv <= latch_data ;
+	end if ;
+end process ;				
+		
 				
 				
 -- todo may delete following stuf, output are not combinatorial ...
