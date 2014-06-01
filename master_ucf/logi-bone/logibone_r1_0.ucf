@@ -38,8 +38,8 @@ NET "ARD_D<0>" LOC = "P84" | IOSTANDARD = LVTTL | DRIVE = 2 | SLEW = SLOW |PULLU
 #NET "ARD_TX_MODE0" LOC = "P69" | IOSTANDARD = LVTTL | DRIVE = 2 | SLEW = SLOW ;
 #NET "ARD_RX_MODE1" LOC = "P60" | IOSTANDARD = LVTTL | DRIVE = 2 | SLEW = SLOW ;
 #LED######################################################################################
-NET "LED<0>"           LOC = "P140" | IOSTANDARD = LVTTL | DRIVE = 2 | SLEW = SLOW  ;   # 
-NET "LED<1>"           LOC = "P74"| IOSTANDARD = LVTTL | DRIVE = 2 | SLEW = SLOW  ;   # 
+NET "LED<0>"           LOC = "P74" | IOSTANDARD = LVTTL | DRIVE = 2 | SLEW = SLOW  ;   # 
+NET "LED<1>"           LOC = "P140"| IOSTANDARD = LVTTL | DRIVE = 2 | SLEW = SLOW  ;   # 
 #PUSH BUTTONS##############################################################################
 NET "PB<0>"           LOC = "P83" | IOSTANDARD = LVTTL | DRIVE = 2 | SLEW = SLOW  ;   # 
 NET "PB<1>"           LOC = "P59" | IOSTANDARD = LVTTL | DRIVE = 2 | SLEW = SLOW  ;   # 
