@@ -100,9 +100,5 @@ NET "sseg<7>"  LOC = P139	; 	# decimal point 	p2_10
 # TX = FGPA TX  = Host RX				
 # RX = FPGA RX  = Host TX				
 #========================================================
-#NET "rx"  LOC =pxx;		--use tx on rpi
-#NET "tx"  LOC =pxx;  	--use rx on rpi
-
-NET "PWM<0>"  LOC =pxx;	#P4_9
-NET "PWN<1>"  LOC =pxx;  	#P4_1
-
+NET "rx" 				LOC= "P83" 			| IOSTANDARD = LVTTL;	#Pi output FPGA input		#Shared with Arduino TX
+NET "tx" 				LOC= "P82" 			| IOSTANDARD = LVTTL;	#Pi input FPGA output		#Shared with Arduino RX
