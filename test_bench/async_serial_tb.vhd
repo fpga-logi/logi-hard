@@ -40,7 +40,6 @@ ENTITY async_serial_tb IS
 END async_serial_tb;
  
 ARCHITECTURE behavior OF async_serial_tb IS 
- 
     -- Component Declaration for the Unit Under Test (UUT)
  
     COMPONENT async_serial
@@ -65,7 +64,9 @@ ARCHITECTURE behavior OF async_serial_tb IS
 		nmea_byte_in : in std_logic_vector(7 downto 0);
 		new_byte_in : in std_logic ;
 		nmea_byte_out : out std_logic_vector(7 downto 0);
-		new_byte_out : out std_logic 
+		new_byte_out : out std_logic;
+		frame_size : out std_logic_vector(7 downto 0);
+		end_of_frame : out std_logic 
 		);
 	end component;
     
@@ -84,13 +85,15 @@ ARCHITECTURE behavior OF async_serial_tb IS
 	signal available : std_logic ;
 	signal new_byte_out : std_logic ;
 	signal nmea_byte_out : std_logic_vector(7 downto 0) ;
+	signal frame_size : std_logic_vector(7 downto 0) ;
+	signal end_of_frame : std_logic ;
 
    -- Clock period definitions
    constant clk_period : time := 10 ns;
 	constant baud_period : time := 8680 ns;
 	
 	constant data_serial : std_logic_vector(7 downto 0) := X"5A";
- 
+	constant gps_string : STRING (1 to 27):="$GPRMC,0,0,0,1,0,0,0,0,0*56";
 BEGIN
  
 	-- Instantiate the Unit Under Test (UUT)
@@ -116,7 +119,9 @@ BEGIN
 			nmea_byte_in => data_out,
 			new_byte_in  => data_ready,
 			nmea_byte_out => nmea_byte_out,
-			new_byte_out => new_byte_out
+			new_byte_out => new_byte_out,
+			frame_size => frame_size,
+			end_of_frame => end_of_frame
 		);
    -- Clock process definitions
    clk_process :process
@@ -168,173 +173,22 @@ BEGIN
 --		rx <= '1' ;
 --		wait for baud_period*10 ;
 --		rx <= tx ;
-		data_in <= X"24";
-		data_send <= '1' ;
-		wait for clk_period ;
-		data_send <= '0' ;
-		wait on data_ready ;
-		data_in <= X"47";
-		data_send <= '1' ;
-		wait for 2*clk_period ;
-		data_send <= '0' ;
-		wait on data_ready ;
-		data_in <= X"50";
-		data_send <= '1' ;
-		wait for 2*clk_period ;
-		data_send <= '0' ;
-
-		wait on data_ready ;
-		data_in <= X"52";
-		data_send <= '1' ;
-		wait for 2*clk_period ;
-		data_send <= '0' ;
-
-		wait on data_ready ;
-		data_in <= X"4D";
-		data_send <= '1' ;
-		wait for 2*clk_period ;
-		data_send <= '0' ;
-		wait on data_ready ;
-		data_in <= X"43";
-		data_send <= '1' ;
-		wait for 2*clk_period ;
-		data_send <= '0' ;
-		wait on data_ready ;
-		data_in <= X"30";
-		data_send <= '1' ;
-		wait for 2*clk_period ;
-		data_send <= '0' ;
-		wait on data_ready ;
-		data_in <= X"30";
-		data_send <= '1' ;
-		wait for 2*clk_period ;
-		data_send <= '0' ;
-		wait on data_ready ;
-		data_in <= X"30";
-		data_send <= '1' ;
-		wait for 2*clk_period ;
-		data_send <= '0' ;wait on data_ready ;
-		data_in <= X"30";
-		data_send <= '1' ;
-		wait for 2*clk_period ;
-		data_send <= '0' ;
-		wait on data_ready ;
-		data_in <= X"30";
-		data_send <= '1' ;
-		wait for 2*clk_period ;
-		data_send <= '0' ;
-		wait on data_ready ;
-		data_in <= X"30";
-		data_send <= '1' ;
-		wait for 2*clk_period ;
-		data_send <= '0' ;
-		wait on data_ready ;
-		data_in <= X"30";
-		data_send <= '1' ;
-		wait for 2*clk_period ;
-		data_send <= '0' ;
-		wait on data_ready ;
-		data_in <= X"30";
-		data_send <= '1' ;
-		wait for 2*clk_period ;
-		data_send <= '0' ;
-		wait on data_ready ;
-		data_in <= X"30";
-		data_send <= '1' ;
-		wait for 2*clk_period ;
-		data_send <= '0' ;
-		wait on data_ready ;
-		data_in <= X"30";
-		data_send <= '1' ;
-		wait for 2*clk_period ;
-		data_send <= '0' ;
-		wait on data_ready ;
-		data_in <= X"30";
-		data_send <= '1' ;
-		wait for 2*clk_period ;
-		data_send <= '0' ;
-		wait on data_ready ;
-		data_in <= X"30";
-		data_send <= '1' ;
-		wait for 2*clk_period ;
-		data_send <= '0' ;
-		wait on data_ready ;
-		data_in <= X"0A";
-		data_send <= '1' ;
-		wait for 2*clk_period ;
-		data_send <= '0' ;
-		wait on data_ready ;
-		data_in <= X"30";
-		data_send <= '1' ;
-		wait for 2*clk_period ;
-		data_send <= '0' ;
-		wait on data_ready ;
-		data_in <= X"30";
-		data_send <= '1' ;
-		wait for 2*clk_period ;
-		data_send <= '0' ;
-		wait on data_ready ;
-		data_in <= X"30";
-		data_send <= '1' ;
-		wait for 2*clk_period ;
-		data_send <= '0' ;
-		wait on data_ready ;
-		wait on data_ready ;
-		data_in <= X"30";
-		data_send <= '1' ;
-		wait for 2*clk_period ;
-		data_send <= '0' ;
-		wait on data_ready ;
-		wait on data_ready ;
-		data_in <= X"30";
-		data_send <= '1' ;
-		wait for 2*clk_period ;
-		data_send <= '0' ;
-		wait on data_ready ;
-		wait on data_ready ;
-		data_in <= X"30";
-		data_send <= '1' ;
-		wait for 2*clk_period ;
-		data_send <= '0' ;
-		wait on data_ready ;
-		wait on data_ready ;
-		data_in <= X"30";
-		data_send <= '1' ;
-		wait for 2*clk_period ;
-		data_send <= '0' ;
-		wait on data_ready ;
-		wait on data_ready ;
-		data_in <= X"30";
-		data_send <= '1' ;
-		wait for 2*clk_period ;
-		data_send <= '0' ;
-		wait on data_ready ;
-		wait on data_ready ;
-		data_in <= X"30";
-		data_send <= '1' ;
-		wait for 2*clk_period ;
-		data_send <= '0' ;
-		wait on data_ready ;
-		wait on data_ready ;
-		data_in <= X"30";
-		data_send <= '1' ;
-		wait for 2*clk_period ;
-		data_send <= '0' ;
-		wait on data_ready ;
-		wait on data_ready ;
-		data_in <= X"30";
-		data_send <= '1' ;
-		wait for 2*clk_period ;
-		data_send <= '0' ;
-		wait on data_ready ;
-		wait on data_ready ;
-		data_in <= X"30";
-		data_send <= '1' ;
-		wait for 2*clk_period ;
-		data_send <= '0' ;
-		wait on data_ready ;
+		for i in 1 to gps_string'length loop
+				data_in <= std_logic_vector(to_unsigned(character'pos(gps_string(i)), 8));
+				data_send <= '1' ;
+				wait until available = '0' ;
+				data_send <= '0' ;
+				wait until data_ready = '1' ;
+		end loop ;
 		
-
+		for i in 0 to 8 loop
+			data_in <= X"0D";
+			data_send <= '1' ;
+			wait until available = '0' ;
+			data_send <= '0' ;
+			wait until data_ready = '1' ;
+		end loop ;
+	
 		wait;
    end process;
 	rx <= tx ;

@@ -55,7 +55,7 @@ use IEEE.STD_LOGIC_UNSIGNED.ALL;
 entity wishbone_double_buffer is
 generic( wb_add_width: positive := 16; --! width of the address bus
 			wb_data_width	: positive := 16; --! width of the data bus
-			buffer_size	: positive	:= 4096 --! buffer size
+			buffer_size	: positive	:= 64 --! buffer size
 			); 
 port(
 	-- Syscon signals
@@ -71,11 +71,12 @@ port(
 	wbs_ack       : out std_logic;
 		  
 	-- logic signals  
-	write_buffer : in std_logic ;
-	buffer_index : out std_logic ;
-	buffer_full : out std_logic ;
+	buffer_index : out std_logic ; -- index of buffer currently in use
+	free_buffer : in std_logic ; -- indicate that written buffer is free to switch
 	
-	buffer_input : in std_logic_vector(15 downto 0)
+	write_buffer : in std_logic ;
+	buffer_input : in std_logic_vector(15 downto 0);
+	buffer_address : in std_logic_vector(15 downto 0)
 	
 );
 end wishbone_double_buffer;
@@ -96,13 +97,10 @@ component dpram_NxN is
 end component;
 
 
-signal buffer_write_index, buffer_read_index : std_logic ;
-signal buffer_free_flag, buffer_overwrite_flag : std_logic;
-signal read_register, write_register : std_logic_vector(15 downto 0);
+signal buffer_use : std_logic_vector(1 downto 0);
 signal buffer_read_data : std_logic_vector(15 downto 0);
 signal read_address, write_address : std_logic_vector(12 downto 0);
-signal reset_free_flag, reset_overwrite_flag, reset_buffer :std_logic ;
-
+signal buffer_locked : std_logic ;
 signal read_ack : std_logic ;
 signal write_ack : std_logic ;
 
@@ -128,7 +126,7 @@ end process write_bloc;
 read_bloc : process(gls_clk, gls_reset)
 begin
     if gls_reset = '1' then
-        
+         read_ack <= '0';
     elsif rising_edge(gls_clk) then
         if (wbs_strobe = '1' and wbs_write = '0'  and wbs_cycle = '1' ) then
             read_ack <= '1';
@@ -137,25 +135,12 @@ begin
         end if;
     end if;
 end process read_bloc;
-
-					
-buffer_read_index <= not buffer_write_index ;
-
-wbs_readdata <= read_register when wbs_address(read_address'high) = '1' else
-					 buffer_read_data ;
-
-read_register(0) <= NOT buffer_free_flag ;
-read_register(1) <= buffer_overwrite_flag ;
-read_register(15 downto 2) <= (others => '0') ;
-
-reset_free_flag <= write_register(0);
-reset_overwrite_flag <= write_register(1);
-reset_buffer <= write_register(2);
-
-write_register <= wbs_writedata when (wbs_strobe and wbs_write and wbs_cycle) = '1' and wbs_address(read_address'high) = '1' else
-						(others => '0');
+		
+buffer_locked <= read_ack ;
+wbs_readdata <= buffer_read_data ;
 
 
+-- ram being used to implement the double buffer memory
 ram0 : dpram_NxN 
 	generic map(SIZE => (buffer_size*2),  NBIT => wb_data_width, ADDR_WIDTH=> 13) -- need to be computed
 	port map(
@@ -171,45 +156,22 @@ ram0 : dpram_NxN
 
 
 -- highest bit select buffer to write to 
-write_address(write_address'high) <= buffer_write_index ;
-read_address(read_address'high) <=buffer_read_index ;
+write_address(write_address'high) <= buffer_use(1) ;
+write_address(write_address'high-1 downto 0) <= buffer_address(write_address'high-1 downto 0);											 
+
+read_address(read_address'high) <= buffer_use(0) ;
 read_address(read_address'high-1 downto 0) <= wbs_address(read_address'high-1 downto 0);											 
+
+
 
 process(gls_clk, gls_reset)
 begin
 	if gls_reset = '1' then	
-		buffer_free_flag <= '1' ;
-		buffer_overwrite_flag <= '0' ;
-		write_address(write_address'high - 1 downto 0) <= (others => '0');
-		buffer_write_index <= '0' ;
-		buffer_full <= '0' ;
+		buffer_use <= "01" ;
 	elsif gls_clk'event and gls_clk = '1' then
-		if reset_buffer = '1' then
-			buffer_free_flag <= '1' ;
-			buffer_overwrite_flag <= '0' ;
-			write_address(write_address'high - 1 downto 0) <= (others => '0');
-			buffer_write_index <= '0' ;
-			buffer_full <= '0' ;
-		elsif write_buffer = '1' then -- if write and one buffer at least is available
-			write_address(write_address'high - 1 downto 0) <= write_address(write_address'high - 1 downto 0) + 1 ;
-			if write_address(write_address'high - 1 downto 0) = (buffer_size-1) and buffer_free_flag = '1' then -- last address is just being written
-				-- switching buffer
-				buffer_write_index <= not buffer_write_index ;
-				buffer_free_flag <= '0' ;
-				buffer_full <= not buffer_free_flag ; -- if buffer is not free, buffer is full
-			elsif write_address(write_address'high - 1 downto 0) = (buffer_size-1) and buffer_free_flag = '1' then
-				buffer_overwrite_flag <= '1' ;
-			end if ;
+		if free_buffer = '1' and buffer_locked = '0' then -- if write and one buffer at least is available
+			buffer_use <= not buffer_use ;
 		end if ;
-		
-		if reset_free_flag = '1' then -- command from wishbone bus
-				buffer_free_flag <= '1' ;
-		end if ;
-		
-		if reset_overwrite_flag = '1' then -- command from wishbone bus
-				buffer_overwrite_flag <= '0' ;
-		end if ;
-		
 	end if ;
 end process ;
 	

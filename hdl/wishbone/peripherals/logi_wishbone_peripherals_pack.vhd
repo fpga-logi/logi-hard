@@ -323,6 +323,51 @@ port(
 end component;
 
 
+component wishbone_gps is
+generic(
+			wb_size : natural := 16 ; -- Data port size for wishbone
+			baudrate : positive := 115_200
+		  );
+port(
+-- Syscon signals
+		  gls_reset    : in std_logic ;
+		  gls_clk      : in std_logic ;
+		  -- Wishbone signals
+		  wbs_address       : in std_logic_vector(15 downto 0) ;
+		  wbs_writedata : in std_logic_vector( wb_size-1 downto 0);
+		  wbs_readdata  : out std_logic_vector( wb_size-1 downto 0);
+		  wbs_strobe    : in std_logic ;
+		  wbs_cycle      : in std_logic ;
+		  wbs_write     : in std_logic ;
+		  wbs_ack       : out std_logic ;
+		  rx_in : in std_logic 
+);
+end component;
+
+
+component wishbone_ping is
+generic(	nb_ping : positive := 2;
+			clock_period_ns           : integer := 10
+		  );
+port(
+		  -- Syscon signals
+		  gls_reset    : in std_logic ;
+		  gls_clk      : in std_logic ;
+		  -- Wishbone signals
+		  wbs_address       : in std_logic_vector(15 downto 0) ;
+		  wbs_writedata : in std_logic_vector( 15 downto 0);
+		  wbs_readdata  : out std_logic_vector( 15 downto 0);
+		  wbs_strobe    : in std_logic ;
+		  wbs_cycle      : in std_logic ;
+		  wbs_write     : in std_logic ;
+		  wbs_ack       : out std_logic;
+			
+	     trigger : out std_logic_vector(nb_ping-1 downto 0 );
+		  echo : in std_logic_vector(nb_ping-1 downto 0)
+
+);
+end component;
+
 end logi_wishbone_peripherals_pack;
 
 package body logi_wishbone_peripherals_pack is

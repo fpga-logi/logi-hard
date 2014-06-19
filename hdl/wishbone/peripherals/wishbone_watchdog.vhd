@@ -29,7 +29,7 @@ use work.logi_utils_pack.all ;
 entity wishbone_watchdog is
 	generic(
 		  wb_size : natural := 16; -- Data port size for wishbone
-		  watchdog_timeout_ms : positive := 500;
+		  watchdog_timeout_ms : positive := 1000;
 		  clock_period_ns : positive := 10
 	 );
 	 port 
