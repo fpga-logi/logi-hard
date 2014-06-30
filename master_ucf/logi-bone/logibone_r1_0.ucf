@@ -47,10 +47,10 @@ NET "PB<1>"           LOC = "P59" | IOSTANDARD = LVTTL | DRIVE = 2 | SLEW = SLOW
 NET "SW<0>"           LOC = "P75" | IOSTANDARD = LVTTL | DRIVE = 2 | SLEW = SLOW  ;   # 
 NET "SW<1>"           LOC = "P78" | IOSTANDARD = LVTTL | DRIVE = 2 | SLEW = SLOW  ;   # 
 #BB SPI PORT################################################################################
-#NET "SYS_SPI_MISO"	LOC = "P61";#
-#NET "SYS_SPI_SCK"		LOC = "P70";		#used to bitbang bitstream to fpga / Arduino SPI / BB SPI - see http://valentfx.com/wiki/index.php?title=LOGi-Bone_User_Guide
-#NET "SYS_SPI_SS"		LOC = "P59"; #		
-#NET "SYS_SPI_MOSI"	LOC = "P65";		#used to bitbang bitstream to fpga / Arduino SPI / BB SPI
+NET "SYS_SPI_MISO"    LOC = "P82";
+NET "SYS_SPI_SCK"        LOC = "P70";
+NET "SYS_SPI_SS"        LOC = "P81";        
+NET "SYS_SPI_MOSI"    LOC = "P65"; 
 #PMOD1######################################################################################
 NET "PMOD1<0>"	LOC = "P112"| IOSTANDARD = LVTTL | DRIVE = 2 | SLEW = SLOW  |PULLUP;
 NET "PMOD1<1>"	LOC = "P111"| IOSTANDARD = LVTTL | DRIVE = 2 | SLEW = SLOW  |PULLUP;
