@@ -50,7 +50,7 @@ entity wishbone_mp_sdram_controller is
 generic( ADDR_WIDTH: positive := 16; --! width of the address bus
 			WIDTH	: positive := 16; --! width of the data bus
 			NB_PORT : positive := 2;
-			ACCESS_CACHE_SIZE : positive  := 1024 -- expressed in 16bits
+			ACCESS_CACHE_SIZE : positive  := 1024 -- expressed in 16bits multiple
 			); 
 port(
 	-- Syscon signals
@@ -72,7 +72,6 @@ port(
 	logic_readdata  : out slv16_array(0 to NB_PORT-1);
 	logic_read, logic_write : in std_logic_vector(0 to NB_PORT-1) ;
 	logic_refresh : in std_logic_vector(0 to NB_PORT-1) ;
-	cache_base : in slv32_array(0 to NB_PORT-1) ;
 	cache_available : out std_logic_vector(0 to NB_PORT-1) ;
 	
 	-- SDRAM interface

@@ -70,8 +70,7 @@ generic( ADDR_WIDTH: positive := 16; --! width of the address bus
 			SIZE	: positive	:= 128; --! fifo depth
 			B_BURST_SIZE : positive := 4;
 			A_BURST_SIZE : positive := 4;
-			SYNC_LOGIC_INTERFACE : boolean := false;
-			AUTO_INC : boolean := false
+			SYNC_LOGIC_INTERFACE : boolean := false
 			); 
 port(
 	-- Syscon signals
@@ -288,8 +287,8 @@ generic(
 		  wbs_write     : in std_logic ;
 		  wbs_ack       : out std_logic;
 		  -- SSEG to EDU from Host
-		  sseg_edu_cathode_out : out std_logic_vector(4 downto 0); -- common cathode
-		  sseg_edu_anode_out : out std_logic_vector(7 downto 0) -- sseg anode	  
+		  sseg_cathode_out : out std_logic_vector(4 downto 0); -- common cathode
+		  sseg_anode_out : out std_logic_vector(7 downto 0) -- sseg anode	  
 	 );
 end component;
 
