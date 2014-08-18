@@ -107,7 +107,7 @@ generic(
 port(
 
 		  clk, reset : in std_logic ;
-		  pixel_addr : in std_logic_vector((nbit(32*nb_panels*16))-1 downto 0);
+		  pixel_addr : in std_logic_vector((nbit(32*32*nb_panels))-1 downto 0);
 		  pixel_value_out : out std_logic_vector((bits_per_color*3)-1 downto 0);
 		  pixel_value_in : in std_logic_vector((bits_per_color*3)-1 downto 0);
 		  write_pixel : in std_logic ;

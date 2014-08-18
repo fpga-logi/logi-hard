@@ -47,7 +47,7 @@ generic(
 port(
 
 		  clk, reset : in std_logic ;
-		  pixel_addr : in std_logic_vector((nbit(32*nb_panels*16))-1 downto 0);
+		  pixel_addr : in std_logic_vector((nbit(32*32*nb_panels))-1 downto 0);
 		  pixel_value_out : out std_logic_vector((bits_per_color*3)-1 downto 0);
 		  pixel_value_in : in std_logic_vector((bits_per_color*3)-1 downto 0);
 		  write_pixel : in std_logic ;
@@ -110,7 +110,8 @@ signal R1_Q, G1_Q, B1_Q, R0_Q, G0_Q, B0_Q : std_logic ;
 signal A_OUT_Q : std_logic_vector(3 downto 0);
 
 
-signal pixel_write_addr, pixel_write_addr_line0, pixel_write_addr_line16 : std_logic_vector((nbit(32*nb_panels*16))-1 downto 0);
+signal pixel_write_addr_line0, pixel_write_addr_line16 : std_logic_vector((nbit(32*32*nb_panels))-1 downto 0);
+signal pixel_write_addr : std_logic_vector((nbit(32*32*nb_panels))-1 downto 0);
 signal pixel_value_out_0, pixel_value_out_1 : std_logic_vector((bits_per_color*3)-1 downto 0);
 signal write_mem0, write_mem1 : std_logic ;
 begin

@@ -79,7 +79,7 @@ architecture Behavioral of wishbone_led_matrix_ctrl is
 signal read_ack : std_logic ;
 signal write_ack, write_pixel: std_logic ;
 
-signal pixel_addr : std_logic_vector((nbit(32*nb_panels*16))-1 downto 0);
+signal pixel_addr : std_logic_vector((nbit(32*32*nb_panels))-1 downto 0);
 
 begin
 
