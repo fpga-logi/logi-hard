@@ -84,6 +84,8 @@ signal pwm_regs : slv16_array(0 to (nb_chan+1)) ;
 signal read_ack : std_logic ;
 signal write_ack : std_logic ;
 
+signal reverse_outputs : std_logic_vector(0 to (nb_chan-1));
+
 begin
 
 wbs_ack <= read_ack or write_ack;
@@ -139,9 +141,13 @@ pwm_ctrl : pwm
 	divider => pwm_regs(0),
 	period => pwm_regs(1),
 	pulse_width => pwm_regs(2 to (2+(nb_chan-1))),
-	pwm => pwm_out 
+	pwm => reverse_outputs
 	);
 
+
+gen_reverse : for i in 0 to nb_chan-1 generate
+pwm_out(i) <= reverse_outputs(i) ;
+end generate ;
 
 end Behavioral;
 
