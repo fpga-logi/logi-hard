@@ -367,6 +367,38 @@ port(
 );
 end component;
 
+component wishbone_led_matrix_ctrl is
+generic(wb_size : positive := 16;
+		  clk_div : positive := 10;
+		  nb_panels : positive := 1 ;
+		  bits_per_color : INTEGER RANGE 1 TO 4 := 4 ;
+		  expose_step_cycle : positive := 1910
+		  );
+port(
+		  -- Syscon signals
+		  gls_reset    : in std_logic ;
+		  gls_clk      : in std_logic ;
+		  -- Wishbone signals
+		  wbs_address       : in std_logic_vector(15 downto 0) ;
+		  wbs_writedata : in std_logic_vector( wb_size-1 downto 0);
+		  wbs_readdata  : out std_logic_vector( wb_size-1 downto 0);
+		  wbs_strobe    : in std_logic ;
+		  wbs_cycle      : in std_logic ;
+		  wbs_write     : in std_logic ;
+		  wbs_ack       : out std_logic;
+		  
+		  
+		  SCLK_OUT : out std_logic ;
+		  BLANK_OUT : out std_logic ;
+		  LATCH_OUT : out std_logic ;
+		  A_OUT : out std_logic_vector(3 downto 0);
+		  R_out : out std_logic_vector(1 downto 0);
+		  G_out : out std_logic_vector(1 downto 0);
+		  B_out : out std_logic_vector(1 downto 0)
+
+);
+end component;
+
 end logi_wishbone_peripherals_pack;
 
 package body logi_wishbone_peripherals_pack is

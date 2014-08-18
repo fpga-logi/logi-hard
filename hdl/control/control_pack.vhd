@@ -32,6 +32,9 @@
 library IEEE;
 use IEEE.STD_LOGIC_1164.all;
 
+library work;
+use work.logi_utils_pack.all ;
+
 package control_pack is
 
 type slv16_array is array(natural range <>) of std_logic_vector(15 downto 0);
@@ -89,6 +92,33 @@ component heart_beat is
 	 port ( gls_clk : in  STD_LOGIC;
            gls_reset : in  STD_LOGIC;
            beat_out : out  STD_LOGIC);
+end component;
+
+
+component rgb_32_32_matrix_ctrl is
+generic(
+		  clk_div : positive := 10;
+		  -- TODO: nb_panels is untested, still need to be validated
+		  nb_panels : positive := 4 ;
+		  bits_per_color : INTEGER RANGE 1 TO 4 := 4 ;
+		  expose_step_cycle: positive := 1910
+);
+
+port(
+
+		  clk, reset : in std_logic ;
+		  pixel_addr : in std_logic_vector((nbit(32*nb_panels*16))-1 downto 0);
+		  pixel_value_out : out std_logic_vector((bits_per_color*3)-1 downto 0);
+		  pixel_value_in : in std_logic_vector((bits_per_color*3)-1 downto 0);
+		  write_pixel : in std_logic ;
+		  SCLK_OUT : out std_logic ;
+		  BLANK_OUT : out std_logic ;
+		  LATCH_OUT : out std_logic ;
+		  A_OUT : out std_logic_vector(3 downto 0);
+		  R_out : out std_logic_vector(1 downto 0);
+		  G_out : out std_logic_vector(1 downto 0);
+		  B_out : out std_logic_vector(1 downto 0)
+);
 end component;
 
 

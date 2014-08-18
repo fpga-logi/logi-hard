@@ -56,7 +56,7 @@ library work ;
 use work.control_pack.all ;
 
 entity wishbone_pwm is
-generic( nb_chan : positive := 3;
+generic( nb_chan : positive := 7;
 			wb_size : natural := 16  -- Data port size for wishbone
 		  );
 port(
