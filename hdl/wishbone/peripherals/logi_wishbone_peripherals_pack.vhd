@@ -361,9 +361,7 @@ port(
 		  wbs_write     : in std_logic ;
 		  wbs_ack       : out std_logic;
 			
-	     trigger : out std_logic_vector(nb_ping-1 downto 0 );
-		  echo : in std_logic_vector(nb_ping-1 downto 0)
-
+	     ping_io : inout std_logic_vector(nb_ping-1 downto 0 )
 );
 end component;
 
