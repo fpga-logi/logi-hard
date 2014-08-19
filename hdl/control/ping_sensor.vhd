@@ -54,7 +54,7 @@ architecture Behavioral of ping_sensor is
 	signal trigger_out_temp: std_logic;
 	
 	signal echo_in_r: std_logic;
-	
+	signal echo_in_debounced: std_logic_vector(7 downto 0);
 	
 	
 	
@@ -78,8 +78,15 @@ process(clk, reset)
 begin
 	if reset = '1' then
 		echo_in_r <= '0';
+		echo_in_debounced <= (others => '0');
 	elsif clk'event and clk = '1' then
-		echo_in_r <= echo_in;
+		echo_in_debounced(echo_in_debounced'high downto 1) <=  echo_in_debounced((echo_in_debounced'high-1) downto 0);
+		echo_in_debounced(0) <= echo_in ;
+		if echo_in_debounced = 0 then 
+			echo_in_r <= '0' ;
+		elsif echo_in_debounced = X"FF" then
+			echo_in_r <= '1';
+		end if ;
 	end if;
 end process ;
 
