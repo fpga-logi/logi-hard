@@ -121,6 +121,22 @@ port(
 );
 end component;
 
+component ping_sensor  is
+generic (CLK_FREQ_NS : positive := 20);
+port( 	clk : in std_logic;
+		reset: in std_logic;
+		--ping signals
+		ping_io: inout std_logic;  	--tristate option usage
+		--trigger_out: out std_logic;	--trigger output signal (if not using trisate)
+		--echo_in: in std_logic;  	--echo in signal (if not using trisate)
+		echo_length : out std_logic_vector(15 downto 0);
+		ping_enable: in std_logic;
+		echo_done_out: out std_logic;
+		state_debug: out std_logic_vector(2 downto 0);
+		timeout: out std_logic;
+		busy : out std_logic 
+);
+end component ;
 
 end control_pack;
 
