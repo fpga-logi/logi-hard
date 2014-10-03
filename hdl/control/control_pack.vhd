@@ -138,6 +138,21 @@ port( 	clk : in std_logic;
 );
 end component ;
 
+component ADCS7476_ctrl is
+generic(clk_period_ns : positive := 10;
+		  sclk_period_ns : positive := 40;
+		  time_between_sample_ns : positive :=20_833);
+port(
+	clk, resetn : in std_logic;
+	sclk, ss : out std_logic ;
+	miso : in std_logic ;
+	sample_out : out std_logic_vector(11 downto 0);
+	sample_valid : out std_logic 
+);
+end component;
+
+
+
 end control_pack;
 
 
