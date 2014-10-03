@@ -67,9 +67,10 @@ end component;
 component wishbone_fifo is
 generic( ADDR_WIDTH: positive := 16; --! width of the address bus
 			WIDTH	: positive := 16; --! width of the data bus
-			SIZE	: positive	:= 128; --! fifo depth
-			B_BURST_SIZE : positive := 4;
-			A_BURST_SIZE : positive := 4;
+			SIZE	: positive	:= 128; --! fifo depth;
+			BURST_SIZE : positive := 4;
+			B_THRESHOLD : positive := 4;
+			A_THRESHOLD : positive := 4;
 			SYNC_LOGIC_INTERFACE : boolean := false
 			); 
 port(
@@ -85,16 +86,18 @@ port(
 	wbs_write     : in std_logic ;
 	wbs_ack       : out std_logic;
 		  
-	-- logic signals  
-	wrB, rdA : in std_logic ; --! logic side fifo control signal
-	inputB: in std_logic_vector((WIDTH - 1) downto 0); --! data input of fifo B
-	outputA	: out std_logic_vector((WIDTH - 1) downto 0); --! data output of fifo A
-	emptyA, fullA, emptyB, fullB, burst_available_B, burst_available_A	:	out std_logic ;--! fifo state signals
-	fifoA_reset, fifoB_reset : out std_logic
+	-- logic signals
+	write_fifo, read_fifo : in std_logic ;
+	fifo_input: in std_logic_vector((WIDTH - 1) downto 0); --! data input of fifo B
+	fifo_output	: out std_logic_vector((WIDTH - 1) downto 0); --! data output of fifo A
+	
+	read_fifo_empty, read_fifo_full, read_fifo_threshold : out std_logic ;
+	write_fifo_empty, write_fifo_full, write_fifo_threshold : out std_logic ;
+	read_fifo_reset, write_fifo_reset : out std_logic
 );
 end component;
 
-component max7219_wb is
+component wishbone_max7219 is
 generic(NB_DEVICE : positive := 2; 
 		  CLK_DIV : positive := 1024;
 		  wb_size : natural := 16 -- Data port size for wishbone

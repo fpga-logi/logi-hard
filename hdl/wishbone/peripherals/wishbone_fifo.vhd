@@ -54,9 +54,10 @@ use work.utils_pack.all ;
 entity wishbone_fifo is
 generic( ADDR_WIDTH: positive := 16; --! width of the address bus
 			WIDTH	: positive := 16; --! width of the data bus
-			SIZE	: positive	:= 128; --! fifo depth
-			B_BURST_SIZE : positive := 4;
-			A_BURST_SIZE : positive := 4;
+			SIZE	: positive	:= 128; --! fifo depth;
+			BURST_SIZE : positive := 4;
+			B_THRESHOLD : positive := 4;
+			A_THRESHOLD : positive := 4;
 			SYNC_LOGIC_INTERFACE : boolean := false
 			); 
 port(
@@ -72,12 +73,14 @@ port(
 	wbs_write     : in std_logic ;
 	wbs_ack       : out std_logic;
 		  
-	-- logic signals  
-	wrB, rdA : in std_logic ; --! logic side fifo control signal
-	inputB: in std_logic_vector((WIDTH - 1) downto 0); --! data input of fifo B
-	outputA	: out std_logic_vector((WIDTH - 1) downto 0); --! data output of fifo A
-	emptyA, fullA, emptyB, fullB, burst_available_B, burst_available_A	:	out std_logic; --! fifo state signals
-	fifoA_reset, fifoB_reset : out std_logic
+	-- logic signals
+	write_fifo, read_fifo : in std_logic ;
+	fifo_input: in std_logic_vector((WIDTH - 1) downto 0); --! data input of fifo B
+	fifo_output	: out std_logic_vector((WIDTH - 1) downto 0); --! data output of fifo A
+	
+	read_fifo_empty, read_fifo_full, read_fifo_threshold : out std_logic ;
+	write_fifo_empty, write_fifo_full, write_fifo_threshold : out std_logic ;
+	read_fifo_reset, write_fifo_reset : out std_logic
 );
 end wishbone_fifo;
 
@@ -85,7 +88,7 @@ end wishbone_fifo;
 
 architecture RTL of wishbone_fifo is
 
-constant address_space_nbit : integer := MAX((nbit(B_BURST_SIZE)+1), 3);
+constant address_space_nbit : integer := MAX((nbit(BURST_SIZE)+1), 3);
 signal fifoA_wr, fifoB_rd, srazA, srazB : std_logic ;
 signal fifoA_in,  fifoB_out : std_logic_vector((WIDTH - 1) downto 0 ); 
 signal nb_availableA, nb_availableB  :  unsigned((WIDTH - 1) downto 0 ); 
@@ -136,10 +139,10 @@ fifo_A : dp_fifo -- write from bus, read from logic
 	generic map(N => SIZE , W => WIDTH, SYNC_RD => SYNC_LOGIC_INTERFACE, SYNC_WR => false)
 	port map(
  		clk => gls_clk, resetn => gls_resetn , sraz => srazA , 
- 		wr => fifoA_wr, rd => rdA,
-		empty => emptyA,
-		full => fullA ,
- 		data_out => outputA , 
+ 		wr => fifoA_wr, rd => read_fifo,
+		empty => read_fifo_empty,
+		full => read_fifo_full ,
+ 		data_out => fifo_output , 
  		data_in => fifoA_in ,
 		nb_available => nb_availableA(nbit(SIZE)   downto 0)
 	); 
@@ -148,11 +151,11 @@ fifo_B : dp_fifo -- read from bus, write from logic
 	generic map(N => SIZE , W => WIDTH, SYNC_WR => SYNC_LOGIC_INTERFACE, SYNC_RD => false)
 	port map(
  		clk => gls_clk, resetn => gls_resetn , sraz => srazB , 
- 		wr => wrB, rd => fifoB_rd,
-		empty => emptyB,
-		full => fullB ,
+ 		wr => write_fifo, rd => fifoB_rd,
+		empty => write_fifo_empty,
+		full => write_fifo_full ,
  		data_out => fifoB_out , 
- 		data_in => inputB ,
+ 		data_in => fifo_input ,
 		nb_available => nb_availableB(nbit(SIZE)  downto 0)
 	); 
 
@@ -189,15 +192,15 @@ srazA <= '1' when wbs_strobe = '1' and wbs_write = '1' and wbs_cycle = '1' and c
 srazB <= '1' when wbs_strobe = '1' and wbs_write = '1' and wbs_cycle = '1' and control_space_data_spacen = '1' and wbs_address(1 downto 0) = "10" else
 			'0' ;
 
-fifoA_reset <= srazA ;
-fifoB_reset <= srazB ;
+read_fifo_reset <= srazA ;
+write_fifo_reset <= srazB ;
 			
 fifoA_in <= wbs_writedata ;
 
-burst_available_B <= '1' when nb_availableB_latched > B_BURST_SIZE else
+write_fifo_threshold <= '1' when nb_availableB_latched > B_THRESHOLD else
 							'0' ;
 							
-burst_available_A <= '1' when nb_availableA_latched > A_BURST_SIZE else
+read_fifo_threshold <= '1' when nb_availableA_latched > A_THRESHOLD else
 							'0' ;
 
 end RTL;
