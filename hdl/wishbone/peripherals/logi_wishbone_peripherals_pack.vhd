@@ -400,6 +400,29 @@ port(
 );
 end component;
 
+component wishbone_pmic is
+generic(
+			wb_size : natural := 16 ; -- Data port size for wishbone
+			sample_rate : positive := 48_000;
+			sclk_period_ns : positive := 80
+		  );
+port(
+-- Syscon signals
+		  gls_reset    : in std_logic ;
+		  gls_clk      : in std_logic ;
+		  -- Wishbone signals
+		  wbs_address       : in std_logic_vector(15 downto 0) ;
+		  wbs_writedata : in std_logic_vector( wb_size-1 downto 0);
+		  wbs_readdata  : out std_logic_vector( wb_size-1 downto 0);
+		  wbs_strobe    : in std_logic ;
+		  wbs_cycle      : in std_logic ;
+		  wbs_write     : in std_logic ;
+		  wbs_ack       : out std_logic ;
+		  ss, sck : out std_logic ;
+		  miso : in std_logic 
+);
+end component;
+
 end logi_wishbone_peripherals_pack;
 
 package body logi_wishbone_peripherals_pack is
