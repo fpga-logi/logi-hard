@@ -94,6 +94,8 @@ signal reset_fifo : std_logic ;
 signal fifo_empty, fifo_full, pop_fifo, push_fifo : std_logic ;
 signal fifo_out : std_logic_vector(15 downto 0);
 signal fifo_in : std_logic_vector(15 downto 0);
+signal enable_fifo, sample_valid : std_logic ;
+signal read_ack_old : std_logic ;
 begin
 
 wbs_ack <= read_ack or write_ack;
@@ -105,15 +107,13 @@ begin
     elsif rising_edge(gls_clk) then
         if ((wbs_strobe and wbs_write and wbs_cycle) = '1' ) then
             write_ack <= '1';
+				reset_fifo <= wbs_writedata(0);
+				enable_fifo <= wbs_writedata(1);
         else
             write_ack <= '0';
         end if;
     end if;
 end process write_bloc;
-
-reset_fifo <= wbs_writedata(0) when write_ack = '1' else
-				  --- '1' when frame_error = '1' else -- could corrupt ongoing frames ...
-				  (NOT gls_reset);
 
 read_bloc : process(gls_clk, gls_reset)
 begin
@@ -126,11 +126,12 @@ begin
         else
             read_ack <= '0';
         end if;
+		  read_ack_old <= read_ack ;
     end if;
 end process read_bloc;
 
 wbs_readdata <= (NOT fifo_empty)  & fifo_full & "00" & fifo_out(11 downto 0);
-pop_fifo <= '1' when read_ack = '1' and (wbs_strobe = '1' and wbs_write = '0'  and wbs_cycle = '1') else
+pop_fifo <= '1' when read_ack = '0' and read_ack_old = '1' else
 				'0' ;
 
 mi_0 : ADCS7476_ctrl
@@ -140,14 +141,15 @@ generic map(clk_period_ns => 10,
 )
 port map(
 	clk => gls_clk,
-	resetn => NOT gls_reset,
+	resetn => reset_fifo,
 	sclk => sck, 
 	ss => ss,
 	miso => miso,
 	sample_out => fifo_in(11 downto 0),
-	sample_valid => push_fifo
+	sample_valid => sample_valid
 );
 
+push_fifo <= enable_fifo and sample_valid ;
 
 fifo0 : small_fifo 
 generic map( WIDTH => 16, DEPTH => 512)

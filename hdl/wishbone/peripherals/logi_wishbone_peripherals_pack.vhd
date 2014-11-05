@@ -423,6 +423,28 @@ port(
 );
 end component;
 
+component wishbone_i2c_master is
+	generic(
+		  wb_size : natural := 16 -- data port size for wishbone
+	 );
+	 port 
+	 (
+		  -- Syscon signals
+		  gls_reset    : in std_logic ;
+		  gls_clk      : in std_logic ;
+		  -- Wishbone signals
+		  wbs_address       : in std_logic_vector(15 downto 0) ;
+		  wbs_writedata : in std_logic_vector( wb_size-1 downto 0);
+		  wbs_readdata  : out std_logic_vector( wb_size-1 downto 0);
+		  wbs_strobe    : in std_logic ;
+		  wbs_cycle      : in std_logic ;
+		  wbs_write     : in std_logic ;
+		  wbs_ack       : out std_logic;
+		  -- out signals
+		  scl, sda : inout std_logic
+	 );
+end component;
+
 end logi_wishbone_peripherals_pack;
 
 package body logi_wishbone_peripherals_pack is

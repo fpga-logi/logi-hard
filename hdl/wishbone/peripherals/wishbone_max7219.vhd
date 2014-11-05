@@ -114,7 +114,7 @@ signal fifo_out, fifo_in : std_logic_vector(15 downto 0 );
 
 signal write_sig, old_write_sig : std_logic ;
 
-signal load_d : std_logic ;
+signal load_d, resetn : std_logic ;
 
 
 begin
@@ -147,10 +147,12 @@ begin
         end if;
     end if;
 end process read_bloc;
+wbs_readdata <= X"DEAD";
 
+resetn <= (not gls_reset) ;
 data_fifo : small_fifo 
 generic map( WIDTH =>  16 , DEPTH => NB_DEVICE*16, THRESHOLD => NB_DEVICE)
-port map(clk => gls_clk, resetn => (not gls_reset),
+port map(clk => gls_clk, resetn => resetn,
 	  push => fifo_push, pop => fifo_pop,
 	  full => fifo_full, limit => fifo_burst,
 	  data_in => fifo_in,
@@ -217,7 +219,7 @@ begin
 end process ; 
 
 
-process(fifo_burst, bit_count, device_count, end_tempo)
+process(current_transfer_state, fifo_burst, bit_count, device_count, end_tempo, device_count_lt_nb_dev_m1)
 begin
 	next_transfer_state <= current_transfer_state ;
 	case current_transfer_state is

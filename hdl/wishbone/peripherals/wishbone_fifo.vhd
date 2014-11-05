@@ -45,7 +45,7 @@ use IEEE.STD_LOGIC_UNSIGNED.ALL;
 use IEEE.NUMERIC_STD.ALL;
 
 library work ;
-use work.utils_pack.all ;
+use work.logi_utils_pack.all ;
 
 
 --! peripheral with fifo interface to the logic
@@ -89,7 +89,7 @@ end wishbone_fifo;
 architecture RTL of wishbone_fifo is
 
 constant address_space_nbit : integer := MAX((nbit(BURST_SIZE)+1), 3);
-signal fifoA_wr, fifoB_rd, srazA, srazB : std_logic ;
+signal fifoA_wr, fifoB_rd, resetA, resetB : std_logic ;
 signal fifoA_in,  fifoB_out : std_logic_vector((WIDTH - 1) downto 0 ); 
 signal nb_availableA, nb_availableB  :  unsigned((WIDTH - 1) downto 0 ); 
 signal nb_availableA_latched, nb_availableB_latched : std_logic_vector((WIDTH - 1) downto 0  );
@@ -138,7 +138,7 @@ wbs_ack <= read_ack or write_ack;
 fifo_A : dp_fifo -- write from bus, read from logic
 	generic map(N => SIZE , W => WIDTH, SYNC_RD => SYNC_LOGIC_INTERFACE, SYNC_WR => false)
 	port map(
- 		clk => gls_clk, resetn => gls_resetn , sraz => srazA , 
+ 		clk => gls_clk, resetn => gls_resetn , sraz => resetA , 
  		wr => fifoA_wr, rd => read_fifo,
 		empty => read_fifo_empty,
 		full => read_fifo_full ,
@@ -150,7 +150,7 @@ fifo_A : dp_fifo -- write from bus, read from logic
 fifo_B : dp_fifo -- read from bus, write from logic
 	generic map(N => SIZE , W => WIDTH, SYNC_WR => SYNC_LOGIC_INTERFACE, SYNC_RD => false)
 	port map(
- 		clk => gls_clk, resetn => gls_resetn , sraz => srazB , 
+ 		clk => gls_clk, resetn => gls_resetn , sraz => resetB , 
  		wr => write_fifo, rd => fifoB_rd,
 		empty => write_fifo_empty,
 		full => write_fifo_full ,
@@ -186,14 +186,14 @@ fifoB_rd <= '1' when control_space_data_spacen = '0'  and wbs_strobe = '1' and w
 fifoA_wr <= '1' when control_space_data_spacen = '0' and (wbs_strobe and wbs_write and wbs_cycle)= '1' else
 				'0' ;
 	
-srazA <= '1' when wbs_strobe = '1' and wbs_write = '1' and wbs_cycle = '1' and control_space_data_spacen = '1' and wbs_address(1 downto 0) = "01" else
+resetA <= '1' when wbs_strobe = '1' and wbs_write = '1' and wbs_cycle = '1' and control_space_data_spacen = '1' and wbs_address(1 downto 0) = "01" else
 			'0' ;
 
-srazB <= '1' when wbs_strobe = '1' and wbs_write = '1' and wbs_cycle = '1' and control_space_data_spacen = '1' and wbs_address(1 downto 0) = "10" else
+resetB <= '1' when wbs_strobe = '1' and wbs_write = '1' and wbs_cycle = '1' and control_space_data_spacen = '1' and wbs_address(1 downto 0) = "10" else
 			'0' ;
 
-read_fifo_reset <= srazA ;
-write_fifo_reset <= srazB ;
+read_fifo_reset <= resetA ;
+write_fifo_reset <= resetB ;
 			
 fifoA_in <= wbs_writedata ;
 
