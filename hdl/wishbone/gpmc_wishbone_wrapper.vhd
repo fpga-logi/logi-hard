@@ -28,7 +28,7 @@ use IEEE.numeric_std.all;
 -- ----------------------------------------------------------------------------
     entity gpmc_wishbone_wrapper is
 -- ----------------------------------------------------------------------------
-    generic(sync : boolean := false; burst : boolean := false );
+    generic(sync : boolean := true; burst : boolean := false );
 	 port
     (
       -- GPMC SIGNALS
@@ -66,7 +66,7 @@ signal burst_counter : std_logic_vector(16 downto 0);
 signal wbm_readdata_bridge : std_logic_vector(15 downto 0); 
 signal csn_bridge,wen_bridge, oen_bridge : std_logic;
 signal gpmc_clk_old, gpmc_clk_re : std_logic;
-
+signal bus_control : std_logic ;
 attribute IOB: string;
 attribute IOB of csn_bridge: signal is "true";
 attribute IOB of wen_bridge: signal is "true";
@@ -174,6 +174,15 @@ gen_syn : if sync = true generate
 			writedata_bridge <= gpmc_ad;
 		end if;
 	end process;
+	
+	process(gpmc_clk, gls_reset)
+	begin
+		if(gls_reset='1') then
+			bus_control <= '0' ;
+		elsif(falling_edge(gpmc_clk)) then
+			bus_control <= (not gpmc_oen) and (not gpmc_csn) ;
+		end if;
+	end process;
 
 	process(gls_clk, gls_reset)
 	begin
@@ -197,7 +206,7 @@ gen_syn : if sync = true generate
 		end if ;
 	end process;
 
-	gpmc_ad <= readdata when (gpmc_csn = '0' and gpmc_oen = '0') else
+	gpmc_ad <= readdata when bus_control = '1' else
 		(others => 'Z');
 
 	wbm_address <= address;
