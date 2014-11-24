@@ -448,8 +448,8 @@ end component;
 component wishbone_to_xil_fifo is
 generic( ADDR_WIDTH: positive := 16; --! width of the address bus
 			WIDTH	: positive := 16; --! width of the data bus
-			WR_FIFO_SIZE : positive := 128;
-			RD_FIFO_SIZE : positive := 128
+			WR_FIFO_SIZE : natural := 128;
+			RD_FIFO_SIZE : natural := 128
 			); 
 port(
 	-- Syscon signals
