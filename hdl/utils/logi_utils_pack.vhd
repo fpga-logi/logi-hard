@@ -140,6 +140,9 @@ package body logi_utils_pack is
 
 	function nbit (max : integer) return integer is
 		begin
+		if max = 0 then
+			return 1 ;
+		end if;
 		return (integer(ceil(log2(real(max)))));
 	end nbit;
  

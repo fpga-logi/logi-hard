@@ -57,11 +57,18 @@ begin
 		if push = '1' and full_t = '0' then
 			wr_ptr <= (wr_ptr + 1) ;
 			fifo(wr_ptr) <= data_in ;
-			nb_available <= nb_available + 1 ;
-		elsif pop = '1' and empty_t = '0' then
-			rd_ptr <= rd_ptr + 1 ;
-			nb_available <= nb_available - 1 ;
+			if pop = '0' then
+				nb_available <= nb_available + 1 ;
+			end if ;
 		end if ;
+		
+		if pop = '1' and empty_t = '0' then
+			rd_ptr <= rd_ptr + 1 ;
+			if push = '0' then
+				nb_available <= nb_available - 1 ;
+			end if ;
+		end if ;
+		
 	end if ;
 end process ;
 
