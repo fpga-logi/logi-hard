@@ -98,7 +98,7 @@ constant address_space_nbit : integer := MAX(nbit(WR_FIFO_SIZE), nbit(RD_FIFO_SI
 signal write_ack, read_ack : std_logic ;
 signal gls_resetn : std_logic ;
 signal control_latched : std_logic_vector(15 downto 0) ;
-signal control_data : std_logic_vector(15 downto 0) ;
+signal control_data, fifo_status : std_logic_vector(15 downto 0) ;
 signal fifo_data : std_logic_vector(15 downto 0) ;
 signal data_access : std_logic ;
 signal control_space_data_spacen : std_logic ;
@@ -151,16 +151,17 @@ rd_en <= '1' when control_space_data_spacen = '0'  and wbs_strobe = '1' and wbs_
 wr_en <= '1' when control_space_data_spacen = '0' and (wbs_strobe and wbs_write and wbs_cycle)= '1' and write_ack = '0' else				
 			'0' ;
 
-with wbs_address(address_space_nbit-1 downto 0) select
+with conv_integer(wbs_address(address_space_nbit-1 downto 0)) select
 control_data <= std_logic_vector(to_unsigned(RD_FIFO_SIZE, 16)) when 0,
 					 std_logic_vector(to_unsigned(WR_FIFO_SIZE, 16)) when 1,
-					 resize(rd_data_count, 16) when 2,
-					 resize(wr_data_count, 16) when 3,
+					 std_logic_vector(resize(unsigned(rd_data_count), 16)) when 2,
+					 std_logic_vector(resize(unsigned(wr_data_count), 16)) when 3,
 					 fifo_status when others;
 
 fifo_status <= X"000" & empty & underflow & full & overflow ;
 
-fifo_rst <= '1' when control_space_data_spacen = '1' and (wbs_strobe and wbs_write and wbs_cycle)= '1' else
+fifo_rst <= '1' when gls_reset = '1' else
+				'1' when control_space_data_spacen = '1' and (wbs_strobe and wbs_write and wbs_cycle)= '1' else
 				'0' ;
 dout <= wbs_writedata ;
 
