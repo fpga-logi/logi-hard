@@ -180,7 +180,7 @@ fifo_data <= fifoB_out ;
 wbs_readdata <= control_latched when control_space_data_spacen = '1' else --data_access = '0' else
 					 fifo_data ; 
 
-fifoB_rd <= '1' when control_space_data_spacen = '0'  and wbs_strobe = '1' and wbs_write = '0'  and wbs_cycle = '1' else
+fifoB_rd <= '1' when control_space_data_spacen = '0'  and wbs_strobe = '1' and wbs_write = '0' and wbs_cycle = '1' else
 			'0' ;
 		
 fifoA_wr <= '1' when control_space_data_spacen = '0' and (wbs_strobe and wbs_write and wbs_cycle)= '1' else

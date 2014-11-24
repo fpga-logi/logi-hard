@@ -445,6 +445,45 @@ component wishbone_i2c_master is
 	 );
 end component;
 
+component wishbone_to_xil_fifo is
+generic( ADDR_WIDTH: positive := 16; --! width of the address bus
+			WIDTH	: positive := 16; --! width of the data bus
+			WR_FIFO_SIZE : positive := 128;
+			RD_FIFO_SIZE : positive := 128
+			); 
+port(
+	-- Syscon signals
+	gls_reset    : in std_logic ;
+	gls_clk      : in std_logic ;
+	-- Wishbone signals
+	wbs_address       : in std_logic_vector(ADDR_WIDTH-1 downto 0) ;
+	wbs_writedata : in std_logic_vector( WIDTH-1 downto 0);
+	wbs_readdata  : out std_logic_vector( WIDTH-1 downto 0);
+	wbs_strobe    : in std_logic ;
+	wbs_cycle      : in std_logic ;
+	wbs_write     : in std_logic ;
+	wbs_ack       : out std_logic;
+			
+			
+	-- fifo signals
+	fifo_rst : out std_logic;	  
+	-- write xil_fifo signals
+	wr_clk : out std_logic ;
+	dout : out std_logic_vector(15 downto 0);
+	wr_en : out std_logic ;
+	full : in std_logic ;
+	wr_data_count : in std_logic_vector(15 downto 0);
+	overflow : in std_logic;
+	-- read xil_fifo signals
+	rd_clk : out std_logic ;
+	din : in std_logic_vector(15 downto 0);
+	rd_en : out std_logic ;
+	empty : in std_logic ;
+	rd_data_count : in std_logic_vector(15 downto 0);
+	underflow : in std_logic 
+);
+end component;
+
 end logi_wishbone_peripherals_pack;
 
 package body logi_wishbone_peripherals_pack is
