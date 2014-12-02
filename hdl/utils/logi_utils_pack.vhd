@@ -163,5 +163,7 @@ package body logi_utils_pack is
 			 else return RIGHT;
 		end if;
 	end max;
+
+	
  
 end logi_utils_pack;
