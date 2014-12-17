@@ -174,7 +174,7 @@ begin
 				fifo_data <= din ;
 		  end if ;
     end if;
-end process read_bloc;
+end process;
 
 end RTL;
 
