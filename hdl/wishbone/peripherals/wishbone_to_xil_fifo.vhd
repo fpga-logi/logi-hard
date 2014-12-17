@@ -143,7 +143,7 @@ control_space_data_spacen <= wbs_address(address_space_nbit) ;
 
 				
 wbs_readdata <= control_latched when control_space_data_spacen = '1' else --data_access = '0' else
-					 din ; 
+					 fifo_data ; 
 
 rd_en <= '1' when control_space_data_spacen = '0'  and wbs_strobe = '1' and wbs_write = '0' and wbs_cycle = '1' and read_ack = '0' else
 			'0' ;
@@ -164,6 +164,17 @@ fifo_rst <= '1' when gls_reset = '1' else
 				'1' when control_space_data_spacen = '1' and (wbs_strobe and wbs_write and wbs_cycle)= '1' else
 				'0' ;
 dout <= wbs_writedata ;
+
+process(gls_clk, gls_reset)
+begin
+    if gls_reset = '1' then
+        fifo_data <= (others => '0');
+    elsif rising_edge(gls_clk) then
+		  if control_space_data_spacen = '0'  and wbs_strobe = '1' and wbs_write = '0' and wbs_cycle = '1' and read_ack = '0' then
+				fifo_data <= din ;
+		  end if ;
+    end if;
+end process read_bloc;
 
 end RTL;
 
