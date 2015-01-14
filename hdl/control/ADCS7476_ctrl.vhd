@@ -57,6 +57,9 @@ signal end_divider : std_logic ;
 signal shift_in : std_logic ;
 signal data_reg : std_logic_vector(15 downto 0);
 
+
+signal ss_comb, sclk_comb, miso_latched : std_logic ;
+
 begin
 
 process(clk, resetn)
@@ -104,8 +107,8 @@ if resetn = '0' then
 	data_reg <= (others => '0');
 elsif clk'event and clk = '1' then
 	if shift_in = '1' then
-	data_reg(15 downto 1) <= data_reg(14 downto 0);
-	data_reg(0) <= miso ;
+		data_reg(15 downto 1) <= data_reg(14 downto 0);
+		data_reg(0) <= miso_latched ;
 	end if ;
 end if;
 end process ;
@@ -155,15 +158,29 @@ with cur_state select
 					'0' ;
 	sample_valid <= '1' when cur_state = SCLK_HIGH and next_state = DEASSERT_SS else
 						 '0' ;
-	sample_out <= data_reg(11 downto 0);
+	sample_out <= data_reg(12 downto 1);
 	
-	ss <= '1' when cur_state = WAIT_SAMPlE else
+	ss_comb <= '1' when cur_state = WAIT_SAMPLE else
 			'1' when cur_state = DEASSERT_SS else
 			'0' ;
 			
 	with cur_state select
-		sclk <= 	'0' when SCLK_LOW,
+		sclk_comb <= 	'0' when SCLK_LOW,
 					'1' when others ;
+	
+	process(clk, resetn)
+begin
+if resetn = '0' then
+	ss <= '1' ;
+	sclk <= '1' ;
+	miso_latched <= '0' ;
+elsif clk'event and clk = '1' then
+	ss <= ss_comb;
+	sclk <= sclk_comb ;
+	miso_latched <= miso ;
+end if;
+end process ;
+	
 	
 end Behavioral;
 
