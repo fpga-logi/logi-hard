@@ -41,7 +41,7 @@ component simple_counter is
 	 generic(NBIT : positive := 4);
     Port ( clk : in  STD_LOGIC;
            resetn : in  STD_LOGIC;
-           sraz : in  STD_LOGIC;
+           sreset : in  STD_LOGIC;
            en : in  STD_LOGIC;
 			  load : in  STD_LOGIC;
 			  E : in	STD_LOGIC_VECTOR(NBIT - 1 downto 0);

@@ -55,6 +55,10 @@ port(
 		data_out : out std_logic_vector(15 downto 0);
 		data_in : in std_logic_vector(15 downto 0);
 		
+		
+		refresh_active, flush_active : out std_logic ;
+		
+		
 		-- Interface to issue reads or write data
 		cmd_ready         : in STD_LOGIC;                     -- '1' when a new command will be acted on
 		cmd_enable        : out  STD_LOGIC;                     -- Set to '1' to issue new command (only acted on when cmd_read = '1')
@@ -100,12 +104,15 @@ signal fifo_nb_available_t : std_logic_vector(31 downto 0);
 signal fifo_ready : std_logic ;
 signal flushed_line_count : std_logic_vector(15 downto 0);
 signal read_cache_init : std_logic_vector(1 downto 0);
-signal flush_refresh_priority : std_logic ;
 begin
+
+refresh_active <= '1' when cache_current_state = REFRESH else
+						'0' ;
+flush_active <= '1' when cache_current_state = FLUSH else
+					 '0' ;
+
 cmd_byte_enable <= (others => '1');
-
 -- CACHE MANAGEMENT 
-
 process(clk, reset)
 begin
 	if reset = '1' then 
@@ -119,7 +126,7 @@ begin
 	end if ;
 end process ;
 
-process(cache_require_refresh, cache_require_flush, refresh_done, flush_done, cache_current_state)
+process(cache_ready, cache_require_refresh, cache_require_flush, refresh_done, flush_done, cache_current_state)
 begin
 	cache_next_state <= cache_current_state ;
 	case cache_current_state is
@@ -230,6 +237,7 @@ begin
 		end if ;
 	end if ;
 end process ;
+
 cache_read_address <= sdram_write_address(cache_read_address'high downto 0);
 flush_done <= '1' when cache_current_state = FLUSH and old_write_line_index /= sdram_write_address(cache_index_low_sdram_side) else
 				  '0' ;
@@ -245,7 +253,7 @@ begin
 	elsif clk'event and clk = '1' then 
 		if reset_fifo = '1' then
 			sdram_read_address <= CACHE_ADDRESS(sdram_address_width-2 downto 0);
-		elsif cache_current_state = REFRESH and cmd_ready = '1' and cache_write_address(cache_write_address'high) = sdram_read_address(cache_write_address'high) then
+		elsif cache_current_state = REFRESH and refresh_done = '0' and cmd_ready = '1' and cache_write_address(cache_write_address'high) = sdram_read_address(cache_write_address'high) then
 			if sdram_read_address = CACHE_END_ADDRESS then
 				sdram_read_address <= CACHE_ADDRESS(sdram_address_width-2 downto 0) ;
 			else
@@ -289,21 +297,26 @@ cache_require_refresh_reset <= '1' when cache_current_state = REFRESH and cache_
 									  '0' ;
 									  
 									  
--- WRITE COMMAND IS ACTIVE ON FLUSH
-cmd_wr <= cmd_ready when cache_current_state = FLUSH  else
+---- WRITE COMMAND IS ACTIVE ON FLUSH
+--cmd_wr <= cmd_ready when cache_current_state = FLUSH  else
+cmd_wr <= '1' when cache_current_state = FLUSH  else
 			 '0' ;
--- CMD_ENABLE IS ACTIVE ON FLUSH AND ON REFRESH UNTIL THE SDRAM_READ_ADDRESS INDICATING CACHE_LINE_INDEX
--- CHANGES
+---- CMD_ENABLE IS ACTIVE ON FLUSH AND ON REFRESH UNTIL THE SDRAM_READ_ADDRESS INDICATING CACHE_LINE_INDEX
+---- CHANGES
+---- THIS SEEMS TO AFFECT TIMING ...
 cmd_enable <= '0' when cache_current_state = IDLE else
-				  cmd_ready when cache_current_state = REFRESH and cache_write_address(cache_write_address'high) = sdram_read_address(cache_write_address'high) else
-				  cmd_ready when cache_current_state = FLUSH ;
+				  '1' when cache_current_state = REFRESH and cache_write_address(cache_write_address'high) = sdram_read_address(cache_write_address'high) else
+				  '1' when cache_current_state = FLUSH else
+				  '0';
 				  
 
---CMD_ADDRESS IS EITHER READ_ADDRESS OR WRITE_ADDRESS DEPENDING ON FLUSH OR REFRESH				  
+----CMD_ADDRESS IS EITHER READ_ADDRESS OR WRITE_ADDRESS DEPENDING ON FLUSH OR REFRESH				  
+---- THIS SEEMS TO AFFECT TIMING ...
 with cache_current_state select
 	cmd_address <= sdram_write_address when FLUSH,
 						sdram_read_address when REFRESH,
 						(others => '0') when others ;
+							
 cache_in <= sdram_data_out ;
 cmd_data_in <= cache_out ;
 
@@ -448,8 +461,6 @@ end process ;
 
 nb_available <= fifo_nb_available_t when fifo_ready = '1' else
 					 (others => '0');
-
-wr_data <= fifo_wr ;
 
 end Behavioral;
 

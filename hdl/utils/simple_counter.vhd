@@ -37,7 +37,7 @@ entity simple_counter is
 	 generic(NBIT : positive := 4);
     Port ( clk : in  STD_LOGIC;
            resetn : in  STD_LOGIC;
-           sraz : in  STD_LOGIC;
+           sreset : in  STD_LOGIC;
            en : in  STD_LOGIC;
 			  load : in  STD_LOGIC;
 			  E : in	STD_LOGIC_VECTOR(NBIT - 1 downto 0);
@@ -54,7 +54,7 @@ begin
 	if resetn = '0' then
  	    Qp <= (others => '0') ;
 	elsif clk'event and clk = '1' then
-	    if sraz = '1' then
+	    if sreset = '1' then
 			Qp <= (others => '0') ;
 		 elsif load = '1' then
 			Qp <= E ;
