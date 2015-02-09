@@ -145,4 +145,44 @@ package body logi_wishbone_pack is
   return 0;
 end function find_X;
 
+--function sim_wishbone_write(data :integer; address : integer; wish_bus : wishbone16_bus ; clk : std_logic) return natural is
+--  
+--	begin
+--		wish_bus.cycle <= '0' ;
+--		wish_bus.strobe <= '0';
+--		wish_bus.write <= '0' ;
+--		wish_bus.writedata <= std_logic_vector(to_unsigned(data, 16));
+--		wish_bus.address <= std_logic_vector(to_unsigned(address, 16));
+--		wait for rising_edge(clk);
+--		wish_bus.cycle <= '1' ;
+--		wish_bus.strobe <= '1';
+--		wish_bus.write <= '1' ;
+--		wait for wish_bus.ack = '1' ;
+--		wish_bus.cycle <= '0' ;
+--		wish_bus.strobe <= '0';
+--		wish_bus.write <= '0' ;
+--		wait for falling_edge(clk);
+--		return 1;
+--end function sim_wishbone_write;
+--
+--function sim_wishbone_write(data :integer; address : integer; wish_bus : wishbone16_bus ; clk : std_logic) return std_logic_vector(15 downto 0) is
+--  
+--	begin
+--		wish_bus.cycle <= '0' ;
+--		wish_bus.strobe <= '0';
+--		wish_bus.write <= '0' ;
+--		wish_bus.writedata <= std_logic_vector(to_unsigned(0, 16));
+--		wish_bus.address <= std_logic_vector(to_unsigned(address, 16));
+--		wait for rising_edge(clk);
+--		wish_bus.cycle <= '1' ;
+--		wish_bus.strobe <= '1';
+--		wish_bus.write <= '0' ;
+--		wait for wish_bus.ack = '1' ;
+--		wish_bus.cycle <= '0' ;
+--		wish_bus.strobe <= '0';
+--		wish_bus.write <= '0' ;
+--		wait for falling_edge(clk);
+--		return wish_bus.readdata;
+--end function sim_wishbone_write;
+
 end logi_wishbone_pack;

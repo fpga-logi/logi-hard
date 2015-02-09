@@ -177,7 +177,7 @@ control_data <= std_logic_vector(to_unsigned(SIZE, 16)) when wbs_address(1 downt
 fifo_data <= fifoB_out ;
 				
 				
-wbs_readdata <= control_latched when control_space_data_spacen = '1' else --data_access = '0' else
+wbs_readdata <= control_latched when control_space_data_spacen = '1' else 
 					 fifo_data ; 
 
 fifoB_rd <= '1' when control_space_data_spacen = '0'  and wbs_strobe = '1' and wbs_write = '0' and wbs_cycle = '1' else

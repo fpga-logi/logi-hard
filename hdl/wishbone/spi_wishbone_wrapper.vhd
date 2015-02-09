@@ -85,8 +85,7 @@ process(sck, ss)
 begin
 if ss = '1' then
 	data_out_sr <= (others => '0') ;
---elsif sck'event and sck = '0' then
-elsif sck'event and sck = '1' then
+elsif sck'event and sck = '1' then -- data change should only occur on falling edge ...
 	if bit_count = 0 then
 		data_out_sr(15 downto 1) <= data_out_temp(14 downto 0) ;
 		data_out_sr(0) <= '0' ;
@@ -107,10 +106,12 @@ begin
 		data_confn <= '0' ;
 		auto_inc <= '0' ;
 		rd_wrn <= '0' ;
-		--data_in_latched <= (others => '0') ;
+		rd_latched <= '0' ;		
 	elsif sck'event and sck = '1' then
-		if data_confn = '0' and bit_count = 15 then
-			addr_bus_latched <= "00" & data_in_sr(14 downto 1);
+		if data_confn = '0' and bit_count = 14 then
+			addr_bus_latched <= "00" & data_in_sr(13 downto 0);-- getting address ready as early as possible to ease on reads ...
+		elsif data_confn = '0' and bit_count = 15 then
+			--addr_bus_latched <= "00" & data_in_sr(14 downto 1);
 			auto_inc <= data_in_sr(0) ;
 			rd_wrn <=  mosi ;
 			data_confn <= '1' ;
@@ -124,16 +125,22 @@ begin
 			end if;
 		end if ;
 		
+		if bit_count = 15 and data_confn = '0' then
+			rd_latched <= mosi ;
+		elsif data_confn = '1' and bit_count = 0 and rd_wrn = '1' then
+			rd_latched <= '1' ;
+		else
+			rd_latched <= '0' ;
+		end if ;
 	end if ;
 end process ;
 
-
+-- write occurs only when in data mode
 process(sck, ss)
 begin
 	if ss = '1' then
 		data_byte <= '0' ;
 		wr_latched <= '0' ;
-		rd_latched <= '0' ;
 	elsif sck'event and sck = '1' then
 		if data_confn = '1' and rd_wrn = '0' and bit_count = 15 then
 			wr_latched <= '1' ;
@@ -141,13 +148,6 @@ begin
 		else
 			wr_latched <= '0' ;
 		end if ;
-		
-		if data_confn = '1' and bit_count = 1 and rd_wrn = '1' then
-			rd_latched <= '1' ;
-		else
-			rd_latched <= '0' ;
-		end if ;
-
 	end if ;
 end process ;
 

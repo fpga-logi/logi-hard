@@ -25,6 +25,9 @@ use IEEE.std_logic_1164.all;
 use IEEE.std_logic_unsigned.all;
 use IEEE.numeric_std.all;
 
+library UNISIM;
+use UNISIM.VComponents.all;
+
 -- ----------------------------------------------------------------------------
     entity gpmc_wishbone_wrapper is
 -- ----------------------------------------------------------------------------
@@ -60,17 +63,21 @@ Architecture RTL of gpmc_wishbone_wrapper is
 signal write, writen      : std_logic;
 signal read, readn      : std_logic;
 signal cs, csn : std_logic ;
-signal writedata, writedata_bridge,readdata, readdata_bridge  : std_logic_vector(15 downto 0);
+signal writedata, iob_writedata, writedata_bridge,iob_readdata, readdata_bridge  : std_logic_vector(15 downto 0);
 signal address, address_bridge : std_logic_vector(15 downto 0);
 signal burst_counter : std_logic_vector(16 downto 0);
 signal wbm_readdata_bridge : std_logic_vector(15 downto 0); 
 signal csn_bridge,wen_bridge, oen_bridge : std_logic;
 signal gpmc_clk_old, gpmc_clk_re : std_logic;
-signal bus_control : std_logic ;
+signal bus_control_logic_side, bus_control_bus_side : std_logic ;
+signal is_read, is_write, iob_dq_hiz : std_logic ;
 attribute IOB: string;
 attribute IOB of csn_bridge: signal is "true";
 attribute IOB of wen_bridge: signal is "true";
 attribute IOB of oen_bridge    : signal is "true";
+attribute IOB of iob_readdata: signal is "true";
+attribute IOB of iob_writedata: signal is "true";
+
 --attribute IOB of address_bridge : signal is "true" ;
 begin
 
@@ -123,7 +130,7 @@ gen_syn : if sync = true generate
 				address_bridge <= (others => '0');
 			elsif(falling_edge(gpmc_clk)) then
 				if gpmc_advn = '0' then
-					address_bridge <= gpmc_ad;
+					address_bridge <= iob_writedata;
 			 	elsif readn = '0' and burst_counter(16) = '0' then
 					address_bridge <= address_bridge + 1;
 			 	end if;
@@ -152,7 +159,7 @@ gen_syn : if sync = true generate
 				address_bridge <= (others => '0');
 		  	elsif(falling_edge(gpmc_clk)) then
 				if gpmc_advn = '0' then
-					address_bridge <= gpmc_ad;
+					address_bridge <= iob_writedata;
 				end if;
 		  	end if;
 		end process;
@@ -164,25 +171,18 @@ gen_syn : if sync = true generate
 			csn_bridge <= '1';
 			wen_bridge   <= '1';
 			oen_bridge <= '1';
-			readdata <= (others => '0');
+			iob_readdata <= (others => '0');
 			writedata_bridge <= (others => '0');
 		elsif(falling_edge(gpmc_clk)) then
 			csn_bridge  <= gpmc_csn;
 			wen_bridge   <= gpmc_wen;
 			oen_bridge   <= gpmc_oen;
-			readdata <= readdata_bridge;
-			writedata_bridge <= gpmc_ad;
+			iob_readdata <= readdata_bridge;
+			writedata_bridge <= iob_writedata;
+			iob_dq_hiz <= gpmc_oen;
 		end if;
 	end process;
 	
-	process(gpmc_clk, gls_reset)
-	begin
-		if(gls_reset='1') then
-			bus_control <= '0' ;
-		elsif(falling_edge(gpmc_clk)) then
-			bus_control <= (not gpmc_oen) and (not gpmc_csn) ;
-		end if;
-	end process;
 
 	process(gls_clk, gls_reset)
 	begin
@@ -192,7 +192,21 @@ gen_syn : if sync = true generate
 			readn <= '1';
 			writedata <= (others => '0');
 			address <= (others => '0');
+			is_read <= '0' ;
+			is_write <= '0' ;
 		elsif(rising_edge(gls_clk)) then
+--			if csn_bridge = '0' and readn = '0' and writen = '1' then
+--				is_read <= '1' ;
+--			elsif is_read = '1' and readn = '1' and csn_bridge = '1' then
+--				is_read <= '0' ;
+--			end if ;
+--			
+--			if csn_bridge = '0' and readn = '1' and writen = '0' then
+--				is_write <= '1' ;
+--			elsif is_write = '1' and writen = '1' and csn_bridge = '1' then
+--				is_write <= '0' ;
+--			end if ;
+			
 			csn  <= csn_bridge;
 			writen   <= wen_bridge;
 			readn   <= oen_bridge;
@@ -206,14 +220,27 @@ gen_syn : if sync = true generate
 		end if ;
 	end process;
 
-	gpmc_ad <= readdata when bus_control = '1' else
-		(others => 'Z');
+	iob_dq_g: for i in 0 to 15 generate
+		begin
+		iob_dq_iob: IOBUF
+		generic map (DRIVE => 12, IOSTANDARD => "LVTTL", SLEW => "FAST")
+		port map ( O  => iob_writedata(i), IO => gpmc_ad(i), I  => iob_readdata(i), T  => oen_bridge);
+	end generate;
+	
+--	gpmc_ad <= --readdata when ((not gpmc_oen) and (not gpmc_csn) and gpmc_advn) = '1' else
+--				  readdata when bus_control_logic_side = '1' else
+--				(others => 'Z');
 
 	wbm_address <= address;
 	wbm_writedata  <= writedata;
+	
 	wbm_strobe     <= (not csn) and (writen xor readn );
 	wbm_write      <= (not writen);
 	wbm_cycle      <= (not csn) and (writen xor readn );
+--	wbm_strobe <= is_read xor is_write ;
+--	wbm_write <= is_write ;
+--	wbm_cycle <= is_read xor is_write ;
+	
 end generate;
 
 
