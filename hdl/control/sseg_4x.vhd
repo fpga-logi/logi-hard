@@ -123,10 +123,10 @@ end process ;
 
 
 with cathode_buffer select
-	sseg_anode_out <=     segs(0) when 	"00001",
-								 segs(1) when "00010",
-								 segs(2) when 	"00100",
-								 segs(3) when "01000",
+	sseg_anode_out <=     segs(0) when 	"01000",
+								 segs(1) when  "00100",
+								 segs(2) when 	"00010",
+								 segs(3) when "00001",
 								 (others => '0') when others ;
 								 
 								 

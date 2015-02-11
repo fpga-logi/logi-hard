@@ -151,6 +151,21 @@ port(
 );
 end component;
 
+component sseg_4x is
+generic(
+		  clock_freq_hz : natural := 100_000_000;
+		  refresh_rate_hz : natural := 100
+	 );
+port(
+		  clk, reset : in std_logic ;
+		  bcd_in : in std_logic_vector(15 downto 0);
+			
+			  -- SSEG to EDU from Host
+		  sseg_cathode_out : out std_logic_vector(4 downto 0); -- common cathode
+		  sseg_anode_out : out std_logic_vector(7 downto 0) -- sseg anode	  
+
+);
+end component;
 
 
 end control_pack;
