@@ -60,11 +60,11 @@ use UNISIM.VComponents.all;
 Architecture RTL of gpmc_wishbone_wrapper is
 -- ----------------------------------------------------------------------------
 
-signal write, writen      : std_logic;
-signal read, readn      : std_logic;
-signal cs, csn : std_logic ;
-signal writedata, iob_writedata, writedata_bridge,iob_readdata, readdata_bridge  : std_logic_vector(15 downto 0);
-signal address, address_bridge : std_logic_vector(15 downto 0);
+signal write, writen, writen_sync_0      : std_logic;
+signal read, readn, readn_sync_0      : std_logic;
+signal cs, csn, csn_sync_0 : std_logic ;
+signal writedata, writedata_sync_0,iob_writedata, writedata_bridge,iob_readdata, readdata_bridge  : std_logic_vector(15 downto 0);
+signal address, address_sync_0, address_bridge : std_logic_vector(15 downto 0);
 signal burst_counter : std_logic_vector(16 downto 0);
 signal wbm_readdata_bridge : std_logic_vector(15 downto 0); 
 signal csn_bridge,wen_bridge, oen_bridge : std_logic;
@@ -76,8 +76,6 @@ attribute IOB of csn_bridge: signal is "true";
 attribute IOB of wen_bridge: signal is "true";
 attribute IOB of oen_bridge    : signal is "true";
 attribute IOB of iob_readdata: signal is "true";
-attribute IOB of iob_writedata: signal is "true";
-
 --attribute IOB of address_bridge : signal is "true" ;
 begin
 
@@ -173,6 +171,7 @@ gen_syn : if sync = true generate
 			oen_bridge <= '1';
 			iob_readdata <= (others => '0');
 			writedata_bridge <= (others => '0');
+			iob_dq_hiz <= '1' ;
 		elsif(falling_edge(gpmc_clk)) then
 			csn_bridge  <= gpmc_csn;
 			wen_bridge   <= gpmc_wen;
@@ -190,46 +189,47 @@ gen_syn : if sync = true generate
 			csn <= '1';
 			writen   <= '1';
 			readn <= '1';
+			csn_sync_0 <= '1';
+			writen_sync_0   <= '1';
+			readn_sync_0 <= '1';
 			writedata <= (others => '0');
+			writedata_sync_0 <= (others => '0');
 			address <= (others => '0');
-			is_read <= '0' ;
-			is_write <= '0' ;
-		elsif(rising_edge(gls_clk)) then
---			if csn_bridge = '0' and readn = '0' and writen = '1' then
---				is_read <= '1' ;
---			elsif is_read = '1' and readn = '1' and csn_bridge = '1' then
---				is_read <= '0' ;
---			end if ;
---			
---			if csn_bridge = '0' and readn = '1' and writen = '0' then
---				is_write <= '1' ;
---			elsif is_write = '1' and writen = '1' and csn_bridge = '1' then
---				is_write <= '0' ;
---			end if ;
-			
-			csn  <= csn_bridge;
-			writen   <= wen_bridge;
-			readn   <= oen_bridge;
-			writedata <= writedata_bridge;
-			if wbm_ack = '1' then
+			address_sync_0 <= (others => '0');
+			readdata_bridge <= x"0000";
+		elsif(rising_edge(gls_clk)) then		
+			-- Dual flop synchronizer stage 1
+			csn_sync_0  <= csn_bridge;
+			writen_sync_0   <= wen_bridge;
+			readn_sync_0   <= oen_bridge;
+			writedata_sync_0 <= writedata_bridge;
+			address_sync_0 <= address_bridge;
+
+			-- Dual flop synchronizer stage 2
+			csn  <= csn_sync_0;
+			writen   <= writen_sync_0;
+			readn   <= readn_sync_0;
+			writedata <= writedata_sync_0;
+			address <= address_sync_0;
+
+			-- wbm_readdata does not go through the dual flop synchronize as its goes the other direction
+			--if wbm_ack = '1' then
 				readdata_bridge <= wbm_readdata;
-			else
-				readdata_bridge <= x"0000";
-			end if;
-			address <= address_bridge;
+			--else
+			--	readdata_bridge <= x"0000";
+			--end if;
 		end if ;
 	end process;
+
+
 
 	iob_dq_g: for i in 0 to 15 generate
 		begin
 		iob_dq_iob: IOBUF
-		generic map (DRIVE => 12, IOSTANDARD => "LVTTL", SLEW => "FAST")
-		port map ( O  => iob_writedata(i), IO => gpmc_ad(i), I  => iob_readdata(i), T  => oen_bridge);
+		generic map (DRIVE => 12, IOSTANDARD => "LVTTL", SLEW => "SLOW")
+		port map ( O  => iob_writedata(i), IO => gpmc_ad(i), I  => iob_readdata(i), T  => iob_dq_hiz);
 	end generate;
 	
---	gpmc_ad <= --readdata when ((not gpmc_oen) and (not gpmc_csn) and gpmc_advn) = '1' else
---				  readdata when bus_control_logic_side = '1' else
---				(others => 'Z');
 
 	wbm_address <= address;
 	wbm_writedata  <= writedata;
@@ -237,9 +237,7 @@ gen_syn : if sync = true generate
 	wbm_strobe     <= (not csn) and (writen xor readn );
 	wbm_write      <= (not writen);
 	wbm_cycle      <= (not csn) and (writen xor readn );
---	wbm_strobe <= is_read xor is_write ;
---	wbm_write <= is_write ;
---	wbm_cycle <= is_read xor is_write ;
+
 	
 end generate;
 

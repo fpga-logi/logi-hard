@@ -131,6 +131,14 @@ component generic_rs_latch is
 		  q : out std_logic );
 end component;
 
+component detect_value is
+generic(to_be_detected : integer := 16; 
+		  nbit : positive := 32);
+port(
+	value : in std_logic_vector(nbit-1 downto 0);
+	detected : out std_logic 
+);
+end component;
 
 
 

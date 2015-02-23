@@ -58,7 +58,6 @@ port(
 		
 		refresh_active, flush_active : out std_logic ;
 		
-		
 		-- Interface to issue reads or write data
 		cmd_ready         : in STD_LOGIC;                     -- '1' when a new command will be acted on
 		cmd_enable        : out  STD_LOGIC;                     -- Set to '1' to issue new command (only acted on when cmd_read = '1')
@@ -186,7 +185,7 @@ begin
 			read_cache_init(0) <= read_cache_init(1) ;
 		elsif read_cache_init /= 0 and flushed_line_count > 0 then
 			cache_require_refresh <= '1';
-		elsif read_fifo_index /= fifo_read_address(fifo_read_address'high) and flushed_line_count > 0 then
+		elsif read_cache_init = 0 and read_fifo_index /= fifo_read_address(fifo_read_address'high) and flushed_line_count > 0 then
 			cache_require_refresh <= '1';
 		end if ;
 		read_fifo_index <= fifo_read_address(fifo_read_address'high) ;
