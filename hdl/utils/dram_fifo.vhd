@@ -75,7 +75,7 @@ architecture Behavioral of dram_fifo is
 
 type cache_controller_state is (IDLE, REFRESH, FLUSH);
 
-constant CACHE_END_ADDRESS : std_logic_vector(sdram_address_width-2 downto 0) := CACHE_ADDRESS(sdram_address_width-2 downto 0) + (FIFO_SIZE/4);
+constant CACHE_END_ADDRESS : std_logic_vector(sdram_address_width-2 downto 0) := CACHE_ADDRESS(sdram_address_width-2 downto 0) + (FIFO_SIZE/2);
 constant cache_byte_granularity : positive := 256 ;
 constant cache_index_low_fifo_side : positive := nbit(cache_byte_granularity)-1;
 constant cache_index_low_sdram_side : positive := nbit(cache_byte_granularity)-2;
