@@ -1,12 +1,13 @@
 ##############################################################################
-# Timing Constraints #
+# LOGI Pi UCF file.  R1.5  checked 050310 - mj
+#-changes from R1.  removed CE1/2 pins and added dedicated mosi/sck pins to fpga (off of flash). 
 ##############################################################################
 
 ##### Grouping Constraints #####
 NET OSC_FPGA TNM_NET = clk50_grp;
 #NET DRAM_CLK TNM_NET = clk100_grp;
 NET SYS_SPI_SCK TNM_NET = clk32_grp;
-
+=-098765tzcx`	
 ##### Clock Period Constraints #####
 TIMESPEC TS_PER_CLK50 = PERIOD "clk50_grp" 20.0 ns ;
 #TIMESPEC TS_PER_CLK100 = PERIOD "clk100_grp" 10.0 ns;
@@ -80,7 +81,7 @@ NET "SDRAM_DQ<15>"		LOC = "P55"			| IOSTANDARD = LVTTL ;
 #NET "PMOD1<1>" 			LOC = "P2" 			| IOSTANDARD = LVTTL;
 #NET "PMOD1<2>" 			LOC = "P1" 			| IOSTANDARD = LVTTL;
 #NET "PMOD1<3>" 			LOC = "P16" 		| IOSTANDARD = LVTTL;
-#NET "PMOD1<4>"				LOC = "P88" 		| IOSTANDARD = LVTTL;
+#NET "PMOD1<4>"				LOC = "P88" 		| IOSTANDARD = LVTTL;  
 #NET "PMOD1<5>" 			LOC = "P92" 		| IOSTANDARD = LVTTL;
 #NET "PMOD1<6>" 			LOC = "P93" 		| IOSTANDARD = LVTTL;
 #NET "PMOD1<7>" 			LOC = "P94" 		| IOSTANDARD = LVTTL;
@@ -123,11 +124,10 @@ NET "SDRAM_DQ<15>"		LOC = "P55"			| IOSTANDARD = LVTTL ;
 #NET "P4_10_LVDS2_N"		LOC = "P133" 		| IOSTANDARD = LVDS_33;
 
 #RASPBERRY-PI CONNECTOR###############################################################
-NET "SYS_SPI_MOSI" 		LOC = "P80" 		| IOSTANDARD = LVTTL;			#Shared - Used to clk bitstream data to fpga / ARduino MOSI
-NET "SYS_SPI_MISO" 		LOC = "P75" 		| IOSTANDARD = LVTTL;
-NET "SYS_SPI_SCK" 			LOC = "P78" 		| IOSTANDARD = LVTTL;			#Shared - Used to clk bitstream data to fpga / ARduino SCK
+NET "SYS_SPI_MOSI" 		LOC = "P80" 			| IOSTANDARD = LVTTL;			#! dedicated in R1.5 - buffered to DIN pin for configuration only
+NET "SYS_SPI_MISO" 		LOC = "P75" 			| IOSTANDARD = LVTTL;
+NET "SYS_SPI_SCK" 			LOC = "P78" 		| IOSTANDARD = LVTTL;			#! dedicated pin in R1.5 - buffered to CCLK pin for configuration only
 NET "RP_SPI_CE0N" 			LOC = "P79" 		| IOSTANDARD = LVTTL;
-#!##NET "RP_SPI_CE1N"			LOC = "P78"			| IOSTANDARD = LVTTL;
 #NET "SYS_SDA"				LOC = "P98" 		| IOSTANDARD = LVTTL;			#Shared with Arduino SDA
 #NET "SYS_SCL"				LOC = "P97" 		| IOSTANDARD = LVTTL;			#Shared with Arduino SCL
 #UART FROM RASPBERRY PI - As labelled in the Rpi (master) schematic 
@@ -135,7 +135,7 @@ NET "RP_SPI_CE0N" 			LOC = "P79" 		| IOSTANDARD = LVTTL;
 #NET "SYS_RX" 				LOC= "P82" 			| IOSTANDARD = LVTTL;	#Pi input FPGA output		#Shared with Arduino RX
 #NET "RP_GPIO_GCLK" 		LOC = "P95"			| IOSTANDARD = LVTTL;
 #NET "RP_GPIO_GEN2" 		LOC = "P81"			| IOSTANDARD = LVTTL;
-#NET "RP_GPIO_GEN3" 		LOC = "P80"			| IOSTANDARD = LVTTL;
+
 
 #ARDUINO HEADERS########################################################################
 #SYS_SCL																		#Shared with RPI i2c		

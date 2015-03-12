@@ -77,23 +77,24 @@ NET "ps2d_2" LOC=P116	;	##PMOD3_10  #!PMOD2_7
 # 4-digit time-multiplexed 7-segment LED display
 #========================================================
 # This is from 3-0 right to left
-# digit enable					
-NET "an<3>"  LOC = 	P144	;	#p3_2	 !
-NET "an<2>"  LOC = 	P142	;  #p3_1	!
-NET "an<1>"  LOC = 	P15	;  #p2_2	!
-NET "an<0>"  LOC = 	P14	;  #p2_8	!
-#NET "an_l"   LOC =   P141	;	#p2_2	 !???
+# digit enable			
+#low bits right to left	on sseg display
+NET "an<3>"  LOC = 	P143		;	#p2_8	
+NET "an<2>"  LOC = 	P141		;  	#p2_2	
+NET "an<1>"  LOC = 	P138		;  	#p3_1	
+NET "an<0>"  LOC = 	P137		;  	#p3_2	
+#NET "an_l"   LOC =   P15		;	#p2_3	
 
 # This is wired low bit = a , etc.  the book code is reversed order.
 # 7-segment led segments
-NET "sseg<0>"  LOC = P118	; 	# segment a			p3_9
-NET "sseg<1>"  LOC = P119	; 	# segment b			p3_8
-NET "sseg<2>"  LOC = P137	; 	# segment c			p3_4
-NET "sseg<3>"  LOC = P143	; 	# segment d			p2_9
-NET "sseg<4>"  LOC = P140	; 	# segment e			p2_10
-NET "sseg<5>"  LOC = P117	; 	# segment f 		p3_10
-NET "sseg<6>"  LOC = P138	; 	# segment g			p3_3
-NET "sseg<7>"  LOC = P139	; 	# decimal point 	p3_10	
+NET "sseg<0>"  LOC = P117	; 	# segment a			p3_9
+NET "sseg<1>"  LOC = P118	; 	# segment b			p3_8
+NET "sseg<2>"  LOC = P123	; 	# segment c			p3_4
+NET "sseg<3>"  LOC = P140	; 	# segment d			p2_9
+NET "sseg<4>"  LOC = P139	; 	# segment e			p2_10
+NET "sseg<5>"  LOC = P116	; 	# segment f 		p3_10
+NET "sseg<6>"  LOC = P124	; 	# segment g			p3_3
+NET "sseg<7>"  LOC = P119	; 	# decimal point 	p3_7	!
 
 #========================================================
 # UART for Rpi
