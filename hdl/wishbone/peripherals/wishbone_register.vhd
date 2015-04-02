@@ -84,6 +84,9 @@ architecture Behavioral of wishbone_register is
 	signal reg_in_d, reg_out_d : slv16_array(0 to nb_regs-1) ;
 	signal read_ack : std_logic ;
 	signal write_ack : std_logic ;
+	
+
+	
 begin
 wbs_ack <= read_ack or write_ack;
 
