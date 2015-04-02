@@ -73,8 +73,6 @@ port(
 		  wbs_ack       : out std_logic;
 		  
 		  pwm_out : out std_logic_vector(nb_chan-1 downto 0)
-		  
-
 );
 end wishbone_pwm;
 
@@ -109,8 +107,8 @@ begin
     if gls_reset = '1' then
         
     elsif rising_edge(gls_clk) then
+		  wbs_readdata <= pwm_regs(conv_integer(wbs_address)) ;
         if (wbs_strobe = '1' and wbs_write = '0'  and wbs_cycle = '1' ) then
-				wbs_readdata <= pwm_regs(conv_integer(wbs_address)) ;
             read_ack <= '1';
         else
             read_ack <= '0';

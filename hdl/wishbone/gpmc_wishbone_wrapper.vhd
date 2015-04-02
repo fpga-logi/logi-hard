@@ -71,6 +71,7 @@ signal csn_bridge,wen_bridge, oen_bridge : std_logic;
 signal gpmc_clk_old, gpmc_clk_re : std_logic;
 signal bus_control_logic_side, bus_control_bus_side : std_logic ;
 signal is_read, is_write, iob_dq_hiz : std_logic ;
+signal debounce_counter : std_logic_vector(1 downto 0);
 attribute IOB: string;
 attribute IOB of csn_bridge: signal is "true";
 attribute IOB of wen_bridge: signal is "true";
@@ -171,17 +172,26 @@ gen_syn : if sync = true generate
 			oen_bridge <= '1';
 			iob_readdata <= (others => '0');
 			writedata_bridge <= (others => '0');
-			iob_dq_hiz <= '1' ;
 		elsif(falling_edge(gpmc_clk)) then
 			csn_bridge  <= gpmc_csn;
 			wen_bridge   <= gpmc_wen;
 			oen_bridge   <= gpmc_oen;
 			iob_readdata <= readdata_bridge;
 			writedata_bridge <= iob_writedata;
-			iob_dq_hiz <= gpmc_oen;
 		end if;
 	end process;
 	
+
+	process(gpmc_clk, gls_reset)
+	begin
+		if(gls_reset='1') then
+			iob_dq_hiz <= '1' ;
+		elsif(falling_edge(gpmc_clk)) then
+			iob_dq_hiz <= gpmc_oen;
+		end if;
+	end process;
+
+readdata_bridge <= wbm_readdata;
 
 	process(gls_clk, gls_reset)
 	begin
@@ -196,8 +206,9 @@ gen_syn : if sync = true generate
 			writedata_sync_0 <= (others => '0');
 			address <= (others => '0');
 			address_sync_0 <= (others => '0');
-			readdata_bridge <= x"0000";
+			--readdata_bridge <= x"0000";
 		elsif(rising_edge(gls_clk)) then		
+		
 			-- Dual flop synchronizer stage 1
 			csn_sync_0  <= csn_bridge;
 			writen_sync_0   <= wen_bridge;
@@ -211,10 +222,16 @@ gen_syn : if sync = true generate
 			readn   <= readn_sync_0;
 			writedata <= writedata_sync_0;
 			address <= address_sync_0;
-
+			
+--			csn  <= csn_bridge;
+--			writen   <= wen_bridge;
+--			readn   <= oen_bridge;
+--			writedata <= writedata_bridge;
+--			address <= address_bridge;
+			
 			-- wbm_readdata does not go through the dual flop synchronize as its goes the other direction
 			--if wbm_ack = '1' then
-				readdata_bridge <= wbm_readdata;
+			--readdata_bridge <= wbm_readdata;
 			--else
 			--	readdata_bridge <= x"0000";
 			--end if;
@@ -234,10 +251,12 @@ gen_syn : if sync = true generate
 	wbm_address <= address;
 	wbm_writedata  <= writedata;
 	
-	wbm_strobe     <= (not csn) and (writen xor readn );
-	wbm_write      <= (not writen);
-	wbm_cycle      <= (not csn) and (writen xor readn );
 
+	wbm_strobe     <= (not csn) and ((not writen) or (not readn)) ;
+	wbm_write      <= (not writen) and (not csn) ;
+	wbm_cycle      <= (not csn) and ((not writen) or (not readn)) ;
+
+		
 	
 end generate;
 

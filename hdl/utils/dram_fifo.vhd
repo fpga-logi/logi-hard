@@ -115,7 +115,7 @@ cmd_byte_enable <= (others => '1');
 process(clk, reset)
 begin
 	if reset = '1' then 
-		cache_current_state <= IDLE;
+		cache_current_state <= IDLE; -- CACHE init state is IDLE
 	elsif clk'event and clk = '1' then
 		if reset_fifo = '1' then
 			cache_current_state <= IDLE;
@@ -131,7 +131,7 @@ begin
 	case cache_current_state is
 		when IDLE =>
 			if cache_require_refresh = '1' and cache_ready = '1' then
-				cache_next_state <= REFRESH ;
+				cache_next_state <= REFRESH ; -- CACHE can only be refreshed if already flushed onces
 			elsif cache_require_flush = '1' then
 				cache_next_state <= FLUSH ;
 			end if ;
@@ -169,7 +169,8 @@ begin
 		elsif cache_require_flush_reset = '1' then
 			cache_require_flush <= '0';
 		elsif write_fifo_index /= fifo_write_address(fifo_write_address'high) then
-			cache_require_flush <= '1';
+			cache_require_flush <= '1'; -- CACHE require flush when one line of cache was written
+												 -- fifo write address highest byte indicate cache line address
 		end if ;
 		write_fifo_index <= fifo_write_address(fifo_write_address'high) ;
 		
@@ -177,16 +178,16 @@ begin
 		-- CACHE IS REFRESHED ONCE TWICE AND THEN
 		-- WHENEVER THE FIFO_INDEX BIT CHANGES
 		if reset_fifo = '1' then
-			read_cache_init <= "11";
+			read_cache_init <= "11"; -- at reset init indicates that cache can be refreshed twice
 			cache_require_refresh <= '0' ;
-		elsif cache_require_refresh_reset = '1' then
+		elsif cache_require_refresh_reset = '1' then -- a refresh was performed
 			cache_require_refresh <= '0';
 			read_cache_init(1) <= '0' ;
 			read_cache_init(0) <= read_cache_init(1) ;
-		elsif read_cache_init /= 0 and flushed_line_count > 0 then
+		elsif read_cache_init /= 0 and flushed_line_count > 0 then -- a refresh is required  as init of cache was not performed
 			cache_require_refresh <= '1';
 		elsif read_cache_init = 0 and read_fifo_index /= fifo_read_address(fifo_read_address'high) and flushed_line_count > 0 then
-			cache_require_refresh <= '1';
+			cache_require_refresh <= '1'; -- normal case to trigger a refresh. One line of cache was fully consumed
 		end if ;
 		read_fifo_index <= fifo_read_address(fifo_read_address'high) ;
 		
@@ -206,13 +207,13 @@ begin
 		elsif cache_current_state = REFRESH and cache_next_state = IDLE then
 			fifo_ready <= '1' ;
 		elsif fifo_ready = '1' and fifo_nb_available_t = 0 then
-			fifo_ready <= '0' ;
+			fifo_ready <= '0' ;-- fifo is fully empty the cache is not ready anymore
 		end if ;
 	end if ;	
 end process ;
 
 
--- SDRAM WRITE ADDRESS IS INCREMENT WHEN CACHE IS FLUSHED
+-- SDRAM WRITE ADDRESS IS INCREMENTED WHEN CACHE IS FLUSHED
 -- END OF FLUSH IS REACHED WHEN THE CACHE_LINE_INDEX CHANGES
 process(clk, reset)
 begin

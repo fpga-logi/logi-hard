@@ -74,8 +74,11 @@ gen_cs : for i in 0 to (memory_map'length-1) generate
 	
 	cs_vector(i) <= '1' when wbs_address(wbs_address'length-1 downto find_X(memory_map(i))) = memory_map(i)(wbs_address'length-1 downto find_X(memory_map(i))) else
 					    '0' ;
-	ack_vector(i) <= wbm_ack(i) and cs_vector(i) ;				 
-	wbm_address(i) <= wbs_address ;
+	ack_vector(i) <= wbm_ack(i) and cs_vector(i) ;	
+	
+	wbm_address(i)(wbs_address'length-1 downto find_X(memory_map(i))) <= (others => '0') ;
+	wbm_address(i)(find_X(memory_map(i))-1 downto 0) <= wbs_address(find_X(memory_map(i))-1 downto 0) ;
+
 	wbm_writedata(i) <= wbs_writedata ;
 	wbm_write(i) <= wbs_write and cs_vector(i) ;
 	wbm_strobe(i) <= wbs_strobe and cs_vector(i) ;

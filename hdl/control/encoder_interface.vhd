@@ -48,7 +48,7 @@ end encoder_interface;
 
 architecture Behavioral of encoder_interface is
 
-constant DEBOUNCER_DIV : positive := 100 ;
+constant DEBOUNCER_DIV : positive := 10 ;
 
 type enc_states is (IDLE, A_H, B_H, A_L, B_L);
 signal cur_state, next_state : enc_states ;
@@ -159,10 +159,10 @@ begin
 end process ;
 
 
-inc_counter <= '1' when cur_state = IDLE and channel_a_deb = '1' and channel_b_deb = '0' else
+inc_counter <= '1' when cur_state = IDLE and next_state = A_H else
 					'0' ;
 					
-dec_counter <= '1' when cur_state = A_H and channel_a_deb = '0' and channel_b_deb = '0' else
+dec_counter <= '1' when cur_state = A_H and next_state = IDLE else
 					'0' ;
 					
 					

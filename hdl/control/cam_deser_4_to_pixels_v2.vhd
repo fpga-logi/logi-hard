@@ -51,10 +51,24 @@ architecture Behavioral of cam_deser_4_to_pixels_v2 is
 type synced_states is (WAIT_SYNC, ACC) ;
 type array_3 is array(0 to 2) of std_logic_vector(9 downto 0);
 
+COMPONENT fifo_sync
+  PORT (
+    rst : IN STD_LOGIC;
+    wr_clk : IN STD_LOGIC;
+    rd_clk : IN STD_LOGIC;
+    din : IN STD_LOGIC_VECTOR(9 DOWNTO 0);
+    wr_en : IN STD_LOGIC;
+    rd_en : IN STD_LOGIC;
+    dout : OUT STD_LOGIC_VECTOR(9 DOWNTO 0);
+    full : OUT STD_LOGIC;
+    empty : OUT STD_LOGIC
+  );
+END COMPONENT;
+
 signal current_state, next_state : synced_states ;
 signal data_acc : array_3 ;
 
-signal data_shift_register : std_logic_vector(15 downto 0);
+signal data_shift_register : std_logic_vector(17 downto 0);
 signal sync_phase, sync_mask, old_phase : std_logic_vector(3 downto 0);
 signal shift_counter : std_logic_vector(2 downto 0);
 signal en_shift, reset_shift : std_logic ;
@@ -72,6 +86,9 @@ signal raw_deser_data, raw_deser_deser_clk, raw_deser_sync1 : std_logic_vector(9
 signal sync_pattern : std_logic ;
 
 signal in_sync_0, in_sync_1 : std_logic ;
+
+signal rd_sync, sync_empty, sync_full : std_logic ;
+signal sync_out : std_logic_vector(9 downto 0);
 begin
 
 
@@ -81,7 +98,7 @@ begin
 	if sys_reset = '1' then
 		data_shift_register <= (others => '0') ;
 	elsif deser_clk'event and deser_clk = '1' then
-		data_shift_register(data_shift_register'high-4 downto 0) <=  data_shift_register(15 downto 4) ;
+		data_shift_register(data_shift_register'high-4 downto 0) <=  data_shift_register(data_shift_register'high downto 4) ;
 		data_shift_register(data_shift_register'high downto data_shift_register'high-3) <= not data_in_deser ;
 	end if ;
 end process ;
@@ -93,7 +110,7 @@ begin
 	if sys_reset = '1' then
 		data_shift_register <= (others => '0') ;
 	elsif deser_clk'event and deser_clk = '1' then
-		data_shift_register(data_shift_register'high-4 downto 0) <=  data_shift_register(15 downto 4) ;
+		data_shift_register(data_shift_register'high-4 downto 0) <=  data_shift_register(data_shift_register'high downto 4) ;
 		data_shift_register(data_shift_register'high downto data_shift_register'high-3) <= data_in_deser ;
 	end if ;
 end process ;
@@ -101,8 +118,8 @@ end generate ;
 
 
 gen_detect_start_stop : for i in 0 to 3 generate
-	sync_phase(i) <= '1' when data_shift_register(i) = '1' and data_shift_register(i+11) = '0' else
-						  '0' ;
+	sync_phase(i) <= '1' when data_shift_register(i+1 downto i) = "10" and data_shift_register(i+12) = '0' else
+						  '0' ; -- start bit is a 0 to 1 transition
 end generate ;	
 
 process(deser_clk, sys_reset)
@@ -142,8 +159,8 @@ end process ;
 en_shift <= '1' when current_state = WAIT_SYNC and sync_phase /=0 else
 				'1' when current_state = ACC else
 				'0' ;
-reset_shift <= '1' when current_state = WAIT_SYNC and sync_phase = 0 else
-					'0' ;
+reset_shift <= '0' ; --'1' when current_state = WAIT_SYNC and sync_phase = 0 else
+					--'0' ;
 
 process(deser_clk, sys_reset)
 begin
@@ -171,101 +188,52 @@ begin
 	end case ;
 end process ;		
 
-pixel_valid <= '1' when current_state = WAIT_SYNC and  sync_phase /= 0 else
-					'0' ;
-					
-pixel_valid_long <= '1' when current_state = WAIT_SYNC and  sync_phase /= 0 else
-						  '1' when current_state = ACC and  shift_counter(1)='1' else
-						  '0' ;					
-					
-
-
+pixel_valid <= '1' when current_state = WAIT_SYNC and sync_phase /= 0 and sync_full = '0' else
+					'0' ;			
+				  
 with sync_mask select
-	line_valid <= data_shift_register(9) when "0001",
-					  data_shift_register(10) when "0010",
-					  data_shift_register(11) when "0100",
-					  data_shift_register(12) when "1000",
-					  '0' when others ;
-with sync_mask select
-	frame_valid <= data_shift_register(10) when "0001",
-						data_shift_register(11) when "0010",
-						data_shift_register(12) when "0100",
-						data_shift_register(13) when "1000",
-						'0' when others ;	
-
-with sync_mask select
-	pixel_data <= data_shift_register(8 downto 1) when "0001",
-					  data_shift_register(9 downto 2) when "0010",
-					  data_shift_register(10 downto 3) when "0100",
-					  data_shift_register(11 downto 4) when "1000",
-					  (others => '0') when others ;					  
-					  
-with sync_mask select
-	raw_deser_data <= data_shift_register(10 downto 1) when "0001",
-					  data_shift_register(11 downto 2) when "0010",
-					  data_shift_register(12 downto 3) when "0100",
-					  data_shift_register(13 downto 4) when "1000",
+	raw_deser_data <= data_shift_register(11 downto 2) when "0001",
+					  data_shift_register(12 downto 3) when "0010",
+					  data_shift_register(13 downto 4) when "0100",
+					  data_shift_register(14 downto 5) when "1000",
 					  (others => '0') when others ;	
 
-process(deser_clk, sys_reset)
-begin
-	if sys_reset = '1' then
-		pixel_out_hsync_deser_clk <= '1' ;
-		pixel_out_vsync_deser_clk <= '1' ;
-		pixel_out_clk_deser_clk <= '0' ;
-		pixel_out_data_deser_clk <= (others => '0');
-		raw_deser_deser_clk <= (others => '0');
-		data_acc <= (others => (others => '0'));
-	elsif deser_clk'event and deser_clk = '1' then
-		pixel_out_clk_deser_clk <= pixel_valid_long ;
-		if pixel_valid = '1' then
-			data_acc(0) <= raw_deser_data ;
-			data_acc(1 to 2) <= data_acc(0 to 1); 
-			raw_deser_deser_clk <= raw_deser_data ;
-			pixel_out_hsync_deser_clk <= not line_valid ;
-			pixel_out_vsync_deser_clk <= not frame_valid ;
-			pixel_out_data_deser_clk <= pixel_data ;
-		end if ;
-	end if ;
-end process ;	
 
 
+synchronizer_0 : fifo_sync
+  PORT MAP (
+    rst => sys_reset,
+    wr_clk => deser_clk,
+    rd_clk => sys_clk,
+    din => raw_deser_data,
+    
+	 wr_en => pixel_valid,
+    rd_en => rd_sync,
+    dout => sync_out,
+    full => sync_full,
+    empty => sync_empty
+  );
 
 process(sys_clk, sys_reset)
 begin
-	if sys_reset = '1' then
-		pixel_out_hsync <= '1' ;
-		pixel_out_vsync <= '1' ;
-		pixel_out_clk <= '0' ;
-		pixel_out_data <= (others => '0');
-		pixel_out_hsync_sync1 <= '1' ;
-		pixel_out_vsync_sync1 <= '1' ;
-		pixel_out_clk_sync1 <= '0' ;
-		pixel_out_data_sync1 <= (others => '0');
-		raw_deser_sync1 <= (others => '0');
-		raw_deser <= (others => '0');
-		in_sync_1 <= '0';
-		synced_out <= '0' ;
+	if sys_reset = '1' then 
+			rd_sync <= '0' ;
 	elsif sys_clk'event and sys_clk = '1' then
-		--synced_out <= sync_pattern ;
-		in_sync_1 <= in_sync_0 ;
-		synced_out <= in_sync_1 ;
-		raw_deser_sync1 <= raw_deser_deser_clk ;
-		raw_deser <= raw_deser_sync1 ;
-		pixel_out_clk_sync1 <= pixel_out_clk_deser_clk ;
-		pixel_out_hsync_sync1 <= pixel_out_hsync_deser_clk ;
-		pixel_out_vsync_sync1 <= pixel_out_vsync_deser_clk;
-		pixel_out_data_sync1 <= pixel_out_data_deser_clk ;
-		pixel_out_clk <= pixel_out_clk_sync1 ;
-		pixel_out_hsync <= pixel_out_hsync_sync1 ;
-		pixel_out_vsync <= pixel_out_vsync_sync1 ;
-		pixel_out_data <= pixel_out_data_sync1 ;		
+		if sync_empty = '0' then
+			rd_sync <= '1' ;
+		else
+			rd_sync <= '0' ;
+		end if ;
 	end if ;
-end process ;	
-in_sync_0 <= '1' when current_state = ACC else
-				  '1' when current_state = WAIT_SYNC and (sync_phase and old_phase) /= 0 else
-				  '0' ;
-sync_pattern <= '1' when data_acc(0) = "1111111111" and data_acc(1) = "0000000000" and data_acc(2) = "1111111111" else
+end process ;
+
+pixel_out_clk <= not sync_empty ;
+pixel_out_hsync <= not sync_out(8) ;
+pixel_out_vsync <= not sync_out(9) ;
+pixel_out_data <= sync_out(7 downto 0) ;	
+raw_deser <= sync_out;
+synced_out <= '1' when current_state = ACC else
+				  '1' when current_state = WAIT_SYNC and sync_phase /= 0 else
 				  '0' ;
 
 end Behavioral;
