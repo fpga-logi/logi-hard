@@ -79,6 +79,8 @@ begin
 		end if ;
 	end if ;
 end process;
+
+
 	gen_sing : if SINGLE_CHANNEL = true generate
 			process(clk, reset)
 			begin
@@ -250,7 +252,7 @@ begin
 			end if;
 			pv <= '1' ;
 		elsif period_counter = X"7FFF" or period_counter = X"8000" then
-			period_latched <= X"7FFF" ;
+			period_latched <= X"8000" ;
 			pv <= '1' ;
 		else
 			pv <= '0' ;

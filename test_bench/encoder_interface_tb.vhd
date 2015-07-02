@@ -40,6 +40,7 @@ ARCHITECTURE behavior OF encoder_interface_tb IS
     -- Component Declaration for the Unit Under Test (UUT)
  
     COMPONENT encoder_interface
+	 generic(FREQ_DIV : positive := 100; SINGLE_CHANNEL : boolean := true);
     PORT(
          clk : IN  std_logic;
          reset : IN  std_logic;
@@ -73,7 +74,9 @@ ARCHITECTURE behavior OF encoder_interface_tb IS
 BEGIN
  
 	-- Instantiate the Unit Under Test (UUT)
-   uut: encoder_interface PORT MAP (
+   uut: encoder_interface 
+	generic map(SINGLE_CHANNEL => false)
+	PORT MAP (
           clk => clk,
           reset => reset,
           channel_a => channel_a,
@@ -116,6 +119,8 @@ BEGIN
 			channel_b <= '0' ;
 			wait for enc_period/4;
 		end loop ;
+		
+		wait for enc_period*2;
 		
 		for i in 0 to 10 loop
 			channel_a <= '0' ;

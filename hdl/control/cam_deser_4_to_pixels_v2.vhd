@@ -68,7 +68,7 @@ END COMPONENT;
 signal current_state, next_state : synced_states ;
 signal data_acc : array_3 ;
 
-signal data_shift_register : std_logic_vector(17 downto 0);
+signal data_shift_register : std_logic_vector(23 downto 0);
 signal sync_phase, sync_mask, old_phase : std_logic_vector(3 downto 0);
 signal shift_counter : std_logic_vector(2 downto 0);
 signal en_shift, reset_shift : std_logic ;
@@ -119,6 +119,7 @@ end generate ;
 
 gen_detect_start_stop : for i in 0 to 3 generate
 	sync_phase(i) <= '1' when data_shift_register(i+1 downto i) = "10" and data_shift_register(i+12) = '0' else
+						  --'1' when data_shift_register(i+1) = '1' and data_shift_register(i+12) = '0' else
 						  '0' ; -- start bit is a 0 to 1 transition
 end generate ;	
 

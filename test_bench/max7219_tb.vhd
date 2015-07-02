@@ -61,11 +61,11 @@ ARCHITECTURE behavior OF max7219_tb IS
  
     -- Component Declaration for the Unit Under Test (UUT)
  
-    COMPONENT max7219_wb
+    COMPONENT wishbone_max7219
     PORT(
          gls_reset : IN  std_logic;
          gls_clk : IN  std_logic;
-         wbs_add : IN  std_logic_vector(15 downto 0);
+         wbs_address : IN  std_logic_vector(15 downto 0);
          wbs_writedata : IN  std_logic_vector(15 downto 0);
          wbs_readdata : OUT  std_logic_vector(15 downto 0);
          wbs_strobe : IN  std_logic;
@@ -82,7 +82,7 @@ ARCHITECTURE behavior OF max7219_tb IS
    --Inputs
    signal gls_reset : std_logic := '0';
    signal gls_clk : std_logic := '0';
-   signal wbs_add : std_logic_vector(15 downto 0) := (others => '0');
+   signal wbs_address : std_logic_vector(15 downto 0) := (others => '0');
    signal wbs_writedata : std_logic_vector(15 downto 0) := (others => '0');
    signal wbs_strobe : std_logic := '0';
    signal wbs_cycle : std_logic := '0';
@@ -102,11 +102,11 @@ ARCHITECTURE behavior OF max7219_tb IS
 BEGIN
  
 	-- Instantiate the Unit Under Test (UUT)
-   uut: max7219_wb
+   uut: wishbone_max7219
 		  PORT MAP (
           gls_reset => gls_reset,
           gls_clk => gls_clk,
-          wbs_add => wbs_add,
+          wbs_address => wbs_address,
           wbs_writedata => wbs_writedata,
           wbs_readdata => wbs_readdata,
           wbs_strobe => wbs_strobe,
@@ -141,6 +141,7 @@ BEGIN
       wait for 100 ns;	
 	   gls_reset <= '0' ;
       wait for gls_clk_period*10;
+		wbs_address <= X"0000";
 	   wbs_writedata <= X"AA55" ;
 		wbs_strobe <= '1';
 		wbs_cycle <= '1' ; 
@@ -150,6 +151,7 @@ BEGIN
 		wbs_cycle <= '0' ; 
 		wbs_write <= '0' ;
 		wait for gls_clk_period*10;
+		wbs_address <= X"0001";
 		wbs_writedata <= X"55AA" ;
 		wbs_strobe <= '1';
 		wbs_cycle <= '1' ; 

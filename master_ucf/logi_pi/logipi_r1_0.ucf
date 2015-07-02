@@ -29,51 +29,51 @@ NET "SW<1>"        		LOC = "P100" 		| IOSTANDARD = LVTTL;
 	
 
 #SATA###########################################################################
-NET "SATA_D1_P"			LOC = "P127"		| IOSTANDARD = LVDS_33;
-NET "SATA_D1_N"			LOC = "P126"		| IOSTANDARD = LVDS_33;
-NET "SATA_D2_P"			LOC = "P121"		| IOSTANDARD = LVDS_33;
-NET "SATA_D2_N"			LOC = "P120"		| IOSTANDARD = LVDS_33;
+#NET "SATA_D1_P"			LOC = "P127"		| IOSTANDARD = LVDS_33;
+#NET "SATA_D1_N"			LOC = "P126"		| IOSTANDARD = LVDS_33;
+#NET "SATA_D2_P"			LOC = "P121"		| IOSTANDARD = LVDS_33;
+#NET "SATA_D2_N"			LOC = "P120"		| IOSTANDARD = LVDS_33;
 			
 #SDRAM#########################################################################
-NET "SDRAM_CKE"			LOC = "P48"			| IOSTANDARD = LVTTL ;
-NET "SDRAM_CLK"			LOC = "P50"			| IOSTANDARD = LVTTL | SLEW = FAST ;
-NET "SDRAM_nCAS"		LOC = "P7"			| IOSTANDARD = LVTTL ;
-NET "SDRAM_nRAS"		LOC = "P6"			| IOSTANDARD = LVTTL ;
-NET "SDRAM_nWE"			LOC = "P8"			| IOSTANDARD = LVTTL ;
-#NET "DRAM_CS_N" #CS IS PULLED LOW TO SAVE ON PIN COUNT - Can be pulled high with solder jumper on bottom of board
-NET "SDRAM_BA<0>"		LOC = "P26"			| IOSTANDARD = LVTTL ;
-NET "SDRAM_BA<1>"		LOC = "P27"			| IOSTANDARD = LVTTL ;
-NET "SDRAM_DQM<0>"		LOC = "P9"			| IOSTANDARD = LVTTL ;
-NET "SDRAM_DQM<1>" 		LOC = "P67"			| IOSTANDARD = LVTTL ;	
-NET "SDRAM_ADDR<0>"		LOC = "P30"			| IOSTANDARD = LVTTL ;	
-NET "SDRAM_ADDR<1>"		LOC = "P32"			| IOSTANDARD = LVTTL ;	
-NET "SDRAM_ADDR<2>"		LOC = "P33"			| IOSTANDARD = LVTTL ;	
-NET "SDRAM_ADDR<3>"		LOC = "P34"			| IOSTANDARD = LVTTL ;	
-NET "SDRAM_ADDR<4>"		LOC = "P35"			| IOSTANDARD = LVTTL ;	
-NET "SDRAM_ADDR<5>"		LOC = "P40"			| IOSTANDARD = LVTTL ;	
-NET "SDRAM_ADDR<6>"		LOC = "P41"			| IOSTANDARD = LVTTL ;	
-NET "SDRAM_ADDR<7>"		LOC = "P43"			| IOSTANDARD = LVTTL ;	
-NET "SDRAM_ADDR<8>"		LOC = "P44"			| IOSTANDARD = LVTTL ;	
-NET "SDRAM_ADDR<9>"		LOC = "P45"			| IOSTANDARD = LVTTL ;	
-NET "SDRAM_ADDR<10>"	LOC = "P29"			| IOSTANDARD = LVTTL ;		
-NET "SDRAM_ADDR<11>"	LOC = "P46"			| IOSTANDARD = LVTTL ;	
-NET "SDRAM_ADDR<12>"	LOC = "P47"			| IOSTANDARD = LVTTL ;		
-NET "SDRAM_DQ<0>" 		LOC = "P24"			| IOSTANDARD = LVTTL ;	
-NET "SDRAM_DQ<1>" 		LOC = "P23"			| IOSTANDARD = LVTTL ;	
-NET "SDRAM_DQ<2>" 		LOC = "P22"			| IOSTANDARD = LVTTL ;	
-NET "SDRAM_DQ<3>" 		LOC = "P21"			| IOSTANDARD = LVTTL ;	
-NET "SDRAM_DQ<4>" 		LOC = "P17"			| IOSTANDARD = LVTTL ;	
-NET "SDRAM_DQ<5>" 		LOC = "P12"			| IOSTANDARD = LVTTL ;	
-NET "SDRAM_DQ<6>" 		LOC = "P11"			| IOSTANDARD = LVTTL ;	
-NET "SDRAM_DQ<7>" 		LOC = "P10"			| IOSTANDARD = LVTTL ;	
-NET "SDRAM_DQ<8>" 		LOC = "P66"			| IOSTANDARD = LVTTL ;	
-NET "SDRAM_DQ<9>" 		LOC = "P62"			| IOSTANDARD = LVTTL ;	
-NET "SDRAM_DQ<10>" 		LOC = "P61"			| IOSTANDARD = LVTTL ;	
-NET "SDRAM_DQ<11>" 		LOC = "P59"			| IOSTANDARD = LVTTL ;	
-NET "SDRAM_DQ<12>" 		LOC = "P58"			| IOSTANDARD = LVTTL ;	
-NET "SDRAM_DQ<13>"		LOC = "P57"			| IOSTANDARD = LVTTL ;		
-NET "SDRAM_DQ<14>" 		LOC = "P56"			| IOSTANDARD = LVTTL ;	
-NET "SDRAM_DQ<15>"		LOC = "P55"			| IOSTANDARD = LVTTL ;
+#NET "SDRAM_CKE"			LOC = "P48"			| IOSTANDARD = LVTTL ;
+#NET "SDRAM_CLK"			LOC = "P50"			| IOSTANDARD = LVTTL | SLEW = FAST ;
+#NET "SDRAM_nCAS"		LOC = "P7"			| IOSTANDARD = LVTTL ;
+#NET "SDRAM_nRAS"		LOC = "P6"			| IOSTANDARD = LVTTL ;
+#NET "SDRAM_nWE"			LOC = "P8"			| IOSTANDARD = LVTTL ;
+##NET "DRAM_CS_N" #CS IS PULLED LOW TO SAVE ON PIN COUNT - Can be pulled high with solder jumper on bottom of board
+#NET "SDRAM_BA<0>"		LOC = "P26"			| IOSTANDARD = LVTTL ;
+#NET "SDRAM_BA<1>"		LOC = "P27"			| IOSTANDARD = LVTTL ;
+#NET "SDRAM_DQM<0>"		LOC = "P9"			| IOSTANDARD = LVTTL ;
+#NET "SDRAM_DQM<1>" 		LOC = "P67"			| IOSTANDARD = LVTTL ;	
+#NET "SDRAM_ADDR<0>"		LOC = "P30"			| IOSTANDARD = LVTTL ;	
+#NET "SDRAM_ADDR<1>"		LOC = "P32"			| IOSTANDARD = LVTTL ;	
+#NET "SDRAM_ADDR<2>"		LOC = "P33"			| IOSTANDARD = LVTTL ;	
+#NET "SDRAM_ADDR<3>"		LOC = "P34"			| IOSTANDARD = LVTTL ;	
+#NET "SDRAM_ADDR<4>"		LOC = "P35"			| IOSTANDARD = LVTTL ;	
+#NET "SDRAM_ADDR<5>"		LOC = "P40"			| IOSTANDARD = LVTTL ;	
+#NET "SDRAM_ADDR<6>"		LOC = "P41"			| IOSTANDARD = LVTTL ;	
+#NET "SDRAM_ADDR<7>"		LOC = "P43"			| IOSTANDARD = LVTTL ;	
+#NET "SDRAM_ADDR<8>"		LOC = "P44"			| IOSTANDARD = LVTTL ;	
+#NET "SDRAM_ADDR<9>"		LOC = "P45"			| IOSTANDARD = LVTTL ;	
+#NET "SDRAM_ADDR<10>"	LOC = "P29"			| IOSTANDARD = LVTTL ;		
+#NET "SDRAM_ADDR<11>"	LOC = "P46"			| IOSTANDARD = LVTTL ;	
+#NET "SDRAM_ADDR<12>"	LOC = "P47"			| IOSTANDARD = LVTTL ;		
+#NET "SDRAM_DQ<0>" 		LOC = "P24"			| IOSTANDARD = LVTTL ;	
+#NET "SDRAM_DQ<1>" 		LOC = "P23"			| IOSTANDARD = LVTTL ;	
+#NET "SDRAM_DQ<2>" 		LOC = "P22"			| IOSTANDARD = LVTTL ;	
+#NET "SDRAM_DQ<3>" 		LOC = "P21"			| IOSTANDARD = LVTTL ;	
+#NET "SDRAM_DQ<4>" 		LOC = "P17"			| IOSTANDARD = LVTTL ;	
+#NET "SDRAM_DQ<5>" 		LOC = "P12"			| IOSTANDARD = LVTTL ;	
+#NET "SDRAM_DQ<6>" 		LOC = "P11"			| IOSTANDARD = LVTTL ;	
+#NET "SDRAM_DQ<7>" 		LOC = "P10"			| IOSTANDARD = LVTTL ;	
+#NET "SDRAM_DQ<8>" 		LOC = "P66"			| IOSTANDARD = LVTTL ;	
+#NET "SDRAM_DQ<9>" 		LOC = "P62"			| IOSTANDARD = LVTTL ;	
+#NET "SDRAM_DQ<10>" 		LOC = "P61"			| IOSTANDARD = LVTTL ;	
+#NET "SDRAM_DQ<11>" 		LOC = "P59"			| IOSTANDARD = LVTTL ;	
+#NET "SDRAM_DQ<12>" 		LOC = "P58"			| IOSTANDARD = LVTTL ;	
+#NET "SDRAM_DQ<13>"		LOC = "P57"			| IOSTANDARD = LVTTL ;		
+#NET "SDRAM_DQ<14>" 		LOC = "P56"			| IOSTANDARD = LVTTL ;	
+#NET "SDRAM_DQ<15>"		LOC = "P55"			| IOSTANDARD = LVTTL ;
 
 ##PMOD1#############################################################################
 #NET "PMOD1<0>" 			LOC = "P5" 			| IOSTANDARD = LVTTL;
@@ -123,13 +123,13 @@ NET "SDRAM_DQ<15>"		LOC = "P55"			| IOSTANDARD = LVTTL ;
 #NET "P4_10_LVDS2_N"		LOC = "P133" 		| IOSTANDARD = LVDS_33;
 
 #RASPBERRY-PI CONNECTOR###############################################################
-#NET "SYS_SPI_MOSI" 		LOC = "P65" 		| IOSTANDARD = LVTTL;			#Shared - Used to clk bitstream data to fpga / ARduino MOSI
-#NET "SYS_SPI_MISO" 		LOC = "P75" 		| IOSTANDARD = LVTTL;
-#NET "SYS_SPI_SCK" 			LOC = "P70" 		| IOSTANDARD = LVTTL;			#Shared - Used to clk bitstream data to fpga / ARduino SCK
-#NET "RP_SPI_CE0N" 			LOC = "P79" 		| IOSTANDARD = LVTTL;
+NET "SYS_SPI_MOSI" 		LOC = "P65" 		| IOSTANDARD = LVTTL;			#Shared - Used to clk bitstream data to fpga / ARduino MOSI
+NET "SYS_SPI_MISO" 		LOC = "P75" 		| IOSTANDARD = LVTTL;
+NET "SYS_SPI_SCK" 			LOC = "P70" 		| IOSTANDARD = LVTTL;			#Shared - Used to clk bitstream data to fpga / ARduino SCK
+NET "RP_SPI_CE0N" 			LOC = "P79" 		| IOSTANDARD = LVTTL;
 ##NET "RP_SPI_CE1N"			LOC = "P78"			| IOSTANDARD = LVTTL;
-#NET "SYS_SDA"				LOC = "P98" 		| IOSTANDARD = LVTTL;			#Shared with Arduino SDA
-#NET "SYS_SCL"				LOC = "P97" 		| IOSTANDARD = LVTTL;			#Shared with Arduino SCL
+NET "SYS_SDA"				LOC = "P98" 		| IOSTANDARD = LVTTL;			#Shared with Arduino SDA
+NET "SYS_SCL"				LOC = "P97" 		| IOSTANDARD = LVTTL;			#Shared with Arduino SCL
 #UART FROM RASPBERRY PI - As labelled in the Rpi (master) schematic 
 #NET "SYS_TX" 				LOC= "P83" 			| IOSTANDARD = LVTTL;	#Pi output FPGA input		#Shared with Arduino TX
 #NET "SYS_RX" 				LOC= "P82" 			| IOSTANDARD = LVTTL;	#Pi input FPGA output		#Shared with Arduino RX
