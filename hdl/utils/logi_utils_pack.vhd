@@ -140,6 +140,19 @@ port(
 );
 end component;
 
+component ff_sync is
+	generic(
+		STAGES : integer := 1;
+		WIDTH : integer := 1;
+		RESET_VAL : std_logic := '0'
+	);
+	port(
+		clk   : in std_logic;
+		reset : in std_logic;
+		din   : in std_logic_vector(WIDTH-1 downto 0);
+		dout  : out std_logic_vector(WIDTH-1 downto 0)
+	);
+end component;
 
 
 end logi_utils_pack;
