@@ -154,6 +154,19 @@ component ff_sync is
 	);
 end component;
 
+component bin2gray4 is
+	port(
+		bin  : in std_logic_vector(3 downto 0);
+		gray : out std_logic_vector(3 downto 0)
+	);
+end component;
+
+component gray2bin4 is
+	port(
+		gray : in std_logic_vector(3 downto 0);
+		bin : out std_logic_vector(3 downto 0)
+	);
+end component;
 
 end logi_utils_pack;
 
