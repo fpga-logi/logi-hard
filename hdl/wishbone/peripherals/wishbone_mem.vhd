@@ -131,7 +131,7 @@ ram0 : dpram_NxN
  		we => write_mem ,
  		di => wbs_writedata, 
 		a	=> wbs_address ,
- 		dpra => X"0000",
+		dpra => (others => '0'),
 		spo => wbs_readdata,
 		dpo => open 		
 	); 

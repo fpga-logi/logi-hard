@@ -42,6 +42,7 @@ type slv32_array is array(natural range <>) of std_logic_vector(31 downto 0);
 
 component wishbone_register is
 	generic(
+		  wb_addr_size : natural := 16; -- Address port size for wishbone
 		  wb_size : natural := 16; -- Data port size for wishbone
 		  nb_regs : natural := 1 -- Data port size for wishbone
 	 );
@@ -51,7 +52,7 @@ component wishbone_register is
 		  gls_reset    : in std_logic ;
 		  gls_clk      : in std_logic ;
 		  -- Wishbone signals
-		  wbs_address       : in std_logic_vector(15 downto 0) ;
+		  wbs_address       : in std_logic_vector(wb_addr_size-1 downto 0) ;
 		  wbs_writedata : in std_logic_vector( wb_size-1 downto 0);
 		  wbs_readdata  : out std_logic_vector( wb_size-1 downto 0);
 		  wbs_strobe    : in std_logic ;
@@ -155,6 +156,7 @@ end component;
 
 component wishbone_pwm is
 generic( nb_chan : positive := 3;
+			wb_addr_size : natural := 16; -- Address port size for wishbone
 			wb_size : natural := 16  -- Data port size for wishbone
 		  );
 port(
@@ -162,7 +164,7 @@ port(
 		  gls_reset    : in std_logic ;
 		  gls_clk      : in std_logic ;
 		  -- Wishbone signals
-		  wbs_address       : in std_logic_vector(15 downto 0) ;
+		  wbs_address       : in std_logic_vector(wb_addr_size-1 downto 0) ;
 		  wbs_writedata : in std_logic_vector( wb_size-1 downto 0);
 		  wbs_readdata  : out std_logic_vector( wb_size-1 downto 0);
 		  wbs_strobe    : in std_logic ;
